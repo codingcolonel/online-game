@@ -1,8 +1,8 @@
-export async function handler() {
+exports.handler = async function () {
   return {
     statusCode: 200,
     body: JSON.stringify({
       message: "Pong!",
     }),
   };
-}
+};
