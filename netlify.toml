@@ -1,0 +1,7 @@
+[functions]
+  directory = "function"
+
+[[redirects]]
+  from = "/function/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
