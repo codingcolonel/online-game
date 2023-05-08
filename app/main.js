@@ -12,4 +12,8 @@ function messageArrived(msg) {
   document.querySelector("body").innerHTML += "<br />" + JSON.stringify(msg);
 }
 
-window.channel = channel;
+let tester = document.getElementById("test");
+
+tester.onclick = async (e) => {
+  await channel.publish("greeting", "hello!");
+};
