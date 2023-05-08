@@ -1,5 +1,3 @@
-import * as Ably from "./node_modules/ably/promises";
-
 console.log("Loading!");
 
 const ably = new Ably.Realtime.Promise({
