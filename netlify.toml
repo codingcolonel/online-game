@@ -1,6 +1,5 @@
 [build]
   publish = "app/"
-  command = "npm i"
   functions = "functions"
 
 [functions]
