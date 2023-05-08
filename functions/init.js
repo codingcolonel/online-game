@@ -1,4 +1,5 @@
 require("dotenv").config();
+import fetch from "node-fetch";
 
 exports.handler = async function () {
   let response = await fetch(
