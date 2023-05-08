@@ -15,5 +15,6 @@ function messageArrived(msg) {
 let tester = document.getElementById("test");
 
 tester.onclick = async (e) => {
+  console.log("Clicked!", channel);
   await channel.publish("greeting", "hello!");
 };
