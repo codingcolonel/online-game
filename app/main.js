@@ -29,7 +29,7 @@ let tester = document.getElementById("test");
 
 console.log("Got button", tester);
 
-tester.addEventListener(async () => {
+tester.addEventListener("click", async () => {
   console.log("Clicked!", channel);
   await channel.publish("greeting", "hello!");
 });
