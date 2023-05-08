@@ -1,5 +1,3 @@
-import { error } from "console";
-
 console.log("Loading!");
 
 const ably = new Ably.Realtime.Promise({
