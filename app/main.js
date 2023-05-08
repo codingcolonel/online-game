@@ -1,12 +1,18 @@
+import { error } from "console";
+
 console.log("Loading!");
 
 const ably = new Ably.Realtime.Promise({
-  authCallback: async () => {
-    const tokenRequest = await fetch(
-      `${location.origin}/.netlify/functions/token?}`
-    );
-    const token = await tokenRequest.json();
-    return token;
+  authCallback: async (_, callback) => {
+    try {
+      const tokenRequest = await fetch(
+        `${location.origin}/.netlify/functions/token?}`
+      );
+      const token = await tokenRequest.json();
+      callback(null, token);
+    } catch (error) {
+      callback(error, null);
+    }
   },
 });
 console.log("Created ably", ably);
