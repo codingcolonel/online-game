@@ -3,9 +3,14 @@ console.log("Loading!");
 const ably = new Ably.Realtime.Promise({
   authUrl: `${location.origin}/.netlify/functions/token?}`,
 });
+console.log("Created ably", ably);
 const channel = ably.channels.get("requests");
 
+console.log("Created channel", channel);
+
 await channel.subscribe(messageArrived);
+
+console.log("Subscribed");
 
 function messageArrived(msg) {
   console.log("Message recieved", msg);
@@ -14,7 +19,11 @@ function messageArrived(msg) {
 
 let tester = document.getElementById("test");
 
-tester.onclick = async (e) => {
+console.log("Got button", tester);
+
+tester.addEventListener(async () => {
   console.log("Clicked!", channel);
   await channel.publish("greeting", "hello!");
-};
+});
+
+window.tester = tester;
