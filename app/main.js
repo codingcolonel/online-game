@@ -1,4 +1,4 @@
-import * as Ably from "ably/promises";
+import * as Ably from "./ably/promises";
 
 console.log("Loading!");
 
