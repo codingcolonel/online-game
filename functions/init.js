@@ -7,6 +7,6 @@ exports.handler = async function () {
   let iceServers = await response.json();
   return {
     statusCode: 200,
-    body: JSON.stringify(iceServers),
+    body: JSON.stringify({ message: iceServers }),
   };
 };
