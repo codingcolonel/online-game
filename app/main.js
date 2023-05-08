@@ -1,7 +1,7 @@
 console.log("Loading!");
 
 const ably = new Ably.Realtime.Promise({
-  authUrl: `/.netlify/functions/token?}`,
+  authUrl: `${location.origin}/.netlify/functions/token?}`,
 });
 const channel = ably.channels.get("requests");
 
