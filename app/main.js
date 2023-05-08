@@ -8,14 +8,12 @@ const channel = ably.channels.get("requests");
 
 console.log("Created channel", channel);
 
-await channel.subscribe(messageArrived);
-
-console.log("Subscribed");
-
-function messageArrived(msg) {
+await channel.subscribe("greeting", (msg) => {
   console.log("Message recieved", msg);
   document.querySelector("body").innerHTML += "<br />" + JSON.stringify(msg);
-}
+});
+
+console.log("Subscribed");
 
 let tester = document.getElementById("test");
 
