@@ -36,3 +36,4 @@ tester.addEventListener("click", async () => {
 });
 
 window.tester = tester;
+window.channel = channel;
