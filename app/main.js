@@ -32,6 +32,7 @@ console.log("Got button", tester);
 tester.addEventListener("click", async () => {
   console.log("Clicked!", channel);
   await channel.publish("greeting", "hello!");
+  console.log("Sent");
 });
 
 window.tester = tester;
