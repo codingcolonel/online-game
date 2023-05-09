@@ -1,9 +1,12 @@
-body{
-    text-align: center;
-  }
-  
-  canvas{
-    border: 1px solid gray;
-    margin-bottom: 0;
-  }
-  
+body {
+  text-align: center;
+}
+
+canvas {
+  border: 1px solid gray;
+  margin-bottom: 0;
+}
+
+textarea {
+  resize: none;
+}
