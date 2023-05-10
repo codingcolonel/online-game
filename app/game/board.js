@@ -41,16 +41,16 @@ function drawBoard() {
   // Draw defending board
   ctx.fillStyle = 'White';
   ctx.fillRect(
-    centerWidth - trueWidth * 0.025 - trueWidth * 0.45,
-    centerHeight - trueWidth * 0.225,
-    trueWidth * 0.45,
-    trueWidth * 0.45
+    centerWidth - trueWidth * 0.025 - trueWidth * 0.45, // x is offset by 2.5% of the width from the center
+    centerHeight - trueWidth * 0.225, // y is offset by 22.5% of the height from the center
+    trueWidth * 0.45, // square takes up 45% of the width
+    trueWidth * 0.45 // square is same length in height as in width
   );
 
   // Draw attacking board
   ctx.fillStyle = 'White';
   ctx.fillRect(
-    centerWidth + trueWidth * 0.025,
+    centerWidth + trueWidth * 0.025, // same offsets as defending board but in other direction
     centerHeight - trueWidth * 0.225,
     trueWidth * 0.45,
     trueWidth * 0.45
