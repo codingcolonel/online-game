@@ -62,12 +62,12 @@ if (typeof ably !== "undefined") {
   connection.status = "enabled";
 }
 
-// const servers = fetch(`${location.origin}/.netlify/functions/creds`);
+const servers = fetch(`${location.origin}/.netlify/functions/creds`);
 
 const codecrypt = new CodeCrypt();
 codeOut.innerHTML = codecrypt.authenticator;
 
-if (connection.status === "enabled" && servers) {
+if (connection.status === "enabled" && typeof servers !== "undefined") {
   // -- Add Event Listeners --
   connectBtn.addEventListener("click", clickHandler);
   sendBtn.addEventListener("click", clickHandler);
