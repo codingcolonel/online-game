@@ -13,8 +13,8 @@ const sendBtn = document.getElementById("send");
 
 // Global Variables
 
-let status = getStatusProxy();
-/*
+let connection = getStatusProxy();
+
 const ably = new Ably.Realtime.Promise({
   authCallback: async (_, callback) => {
     try {
@@ -24,31 +24,31 @@ const ably = new Ably.Realtime.Promise({
       const token = await tokenRequest.json();
       callback(null, token);
     } catch (error) {
+      newMessage(error);
       callback(error, null);
     }
   },
 });
-*/
-if (typeof ably !== "undefined") status = "enabled";
 
-// const servers = fetch(`${location.origin}/.netlify/functions/creds`);
-
-window.myStatus = status;
-
-const codecrypt = new CodeCrypt();
-codeOut.innerHTML = codecrypt.authenticator;
-
-if (status === "enabled" && servers) {
+if (typeof ably !== "undefined") {
   // -- Ably Setup --
   const channel = ably.channels.get("requests");
 
   await channel.subscribe("offer", (msg) => {});
+  connection.status = "enabled";
+}
 
+// const servers = fetch(`${location.origin}/.netlify/functions/creds`);
+
+const codecrypt = new CodeCrypt();
+codeOut.innerHTML = codecrypt.authenticator;
+
+if (connection.status === "enabled" && servers) {
   // -- Add Event Listeners --
   connectBtn.addEventListener("click", clickHandler);
   sendBtn.addEventListener("click", clickHandler);
 } else {
-  displayError("Unable to connect");
+  newMessage(new Error("Unable to connect"));
 }
 
 // -- Functions --
@@ -97,4 +97,9 @@ function validateCode(code) {
   return false;
 }
 
-function displayError(errorMsg) {}
+function newMessage(msg) {
+  msgOut.innerHTML += msg + "\r\n";
+  msgOut.scrollTop = msgOut.scrollHeight;
+}
+
+window.connection = connection;
