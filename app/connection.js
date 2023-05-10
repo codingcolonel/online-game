@@ -1,4 +1,28 @@
+// -- Imports --
 import { CodeCrypt } from "./codecrypt.js";
+
+// -- Classes --
+class connectionManager {
+  #status;
+  onenabled;
+  onwaiting;
+  onoffering;
+  onanswering;
+  onconnected;
+  ondisconnected;
+  constructor() {
+    this.#status = "disabled";
+  }
+  get status() {
+    return this.#status;
+  }
+
+  set status(newStatus) {
+    if (this["on" + newStatus]) this["on" + newStatus]();
+    this.#status = newStatus;
+  }
+}
+
 // -- Initialize Variables --
 
 // HTML elements
@@ -13,7 +37,7 @@ const sendBtn = document.getElementById("send");
 
 // Global Variables
 
-let connection = getStatusProxy();
+let connection = new connectionManager();
 
 const ably = new Ably.Realtime.Promise({
   authCallback: async (_, callback) => {
@@ -52,38 +76,6 @@ if (connection.status === "enabled" && servers) {
 }
 
 // -- Functions --
-
-function getStatusProxy() {
-  let trueStatus = {
-    status: "disabled",
-    onenabled: undefined,
-    onwaiting: undefined,
-    onoffering: undefined,
-    onanswering: undefined,
-    onconnected: undefined,
-    ondisconnected: undefined,
-  };
-  let handler = {
-    set(target, key, value) {
-      if (key === "status" && target["on" + value]) target["on" + value]();
-      target[key] = value;
-    },
-  };
-  return new Proxy(trueStatus, handler);
-}
-
-function clickHandler(event) {
-  let id = event.target.id;
-
-  switch (id) {
-    case "connect":
-      let value = codeIn.value;
-      if (validateCode(value)) console.log(value);
-      break;
-    case "send":
-      break;
-  }
-}
 
 /**
  * Test inputted code for validity

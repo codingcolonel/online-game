@@ -1,6 +1,0 @@
-/*
-  cache-control: no-store 
-  cache-control: no-cache
-  cache-control: max-age=0 
-  cache-control: must-revalidate
-  cache-control: proxy-revalidate
