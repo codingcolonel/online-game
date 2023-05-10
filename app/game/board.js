@@ -1,7 +1,7 @@
 // Set up canvas and 2d graphics content
 // Change size to fullscreen
-let cnv = document.querySelector('canvas');
-let ctx = cnv.getContext('2d');
+let cnv = document.querySelector("canvas");
+let ctx = cnv.getContext("2d");
 let scale = window.devicePixelRatio;
 let trueHeight = Math.floor(window.innerHeight * scale);
 let trueWidth = Math.floor(window.innerWidth * scale);
@@ -9,7 +9,7 @@ cnv.height = trueHeight;
 cnv.width = trueWidth;
 
 // Testing listener
-document.addEventListener('click', fullscreenToggle);
+document.addEventListener("click", fullscreenToggle);
 
 function fullscreenToggle() {
   // Change width and height when switching in/out of fullscreen
@@ -35,11 +35,11 @@ function drawBoard() {
   let centerHeight = trueHeight / 2;
 
   // Draw Background
-  ctx.fillStyle = 'Navy';
+  ctx.fillStyle = "Navy";
   ctx.fillRect(0, 0, trueWidth, trueHeight);
 
   // Draw defending board
-  ctx.fillStyle = 'White';
+  ctx.fillStyle = "White";
   ctx.fillRect(
     centerWidth - trueWidth * 0.025 - trueWidth * 0.45, // x is offset by 2.5% of the width from the center
     centerHeight - trueWidth * 0.225, // y is offset by 22.5% of the height from the center
@@ -48,7 +48,7 @@ function drawBoard() {
   );
 
   // Draw attacking board
-  ctx.fillStyle = 'White';
+  ctx.fillStyle = "White";
   ctx.fillRect(
     centerWidth + trueWidth * 0.025, // same offsets as defending board but in other direction
     centerHeight - trueWidth * 0.225,
@@ -57,7 +57,7 @@ function drawBoard() {
   );
 
   // Test line
-  ctx.fillStyle = 'red';
+  ctx.fillStyle = "red";
   ctx.fillRect(0, centerHeight, trueWidth, 1);
 
   // For later
