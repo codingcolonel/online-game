@@ -4,13 +4,4 @@
 
 [functions]
   node_bundler = "esbuild"
-
-[[headers]]
- for = "/*"
- [headers.values]
-  cache-control = '''
-  no-store, 
-  no-cache, 
-  max-age=0, 
-  must-revalidate, 
-  proxy-revalidate'''
+  
