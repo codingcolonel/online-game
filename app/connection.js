@@ -77,6 +77,19 @@ if (connection.status === "enabled" && typeof servers !== "undefined") {
 
 // -- Functions --
 
+function clickHandler(event) {
+  let id = event.target.id;
+
+  switch (id) {
+    case "connect":
+      let value = codeIn.value;
+      if (validateCode(value)) console.log(value);
+      break;
+    case "send":
+      break;
+  }
+}
+
 /**
  * Test inputted code for validity
  *
