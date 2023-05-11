@@ -171,7 +171,7 @@ connection.onanswering = async function () {
     recieve.addEventListener("message", function ({ data }) {
       console.log(data);
     });
-    remote.channel = recieve;
+    connection.session.channel = recieve;
   };
 
   connection.session.onicegatheringstatechange = async function () {
