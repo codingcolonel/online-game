@@ -151,7 +151,7 @@ connection.onanswering = async function () {
     await channel.publish("answer", encryptedSDP);
   };
 
-  await connection.session.setRemoteDescription(decryptedRemoteSDP);
+  await connection.session.setRemoteDescription(JSON.parse(decryptedRemoteSDP));
 
   await connection.session.setLocalDescription(
     await connection.session.createAnswer()
