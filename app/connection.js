@@ -105,6 +105,21 @@ connection.onoffering = async function () {
   connection.session = new RTCPeerConnection({
     iceServers: iceServers,
   });
+
+  connection.session.ondatachannel = function ({ channel }) {
+    const recieve = channel;
+    recieve.addEventListener("open", function () {
+      console.log("Channel Opened");
+    });
+    recieve.addEventListener("close", function () {
+      console.log("Channel Closed");
+    });
+    recieve.addEventListener("message", function ({ data }) {
+      console.log(data);
+    });
+    remote.channel = recieve;
+  };
+
   connection.session.createDataChannel("gameInfo");
 
   connection.session.onicegatheringstatechange = async function () {
@@ -149,6 +164,20 @@ connection.onanswering = async function () {
   connection.session = new RTCPeerConnection({
     iceServers: iceServers,
   });
+
+  connection.session.ondatachannel = function ({ channel }) {
+    const recieve = channel;
+    recieve.addEventListener("open", function () {
+      console.log("Channel Opened");
+    });
+    recieve.addEventListener("close", function () {
+      console.log("Channel Closed");
+    });
+    recieve.addEventListener("message", function ({ data }) {
+      console.log(data);
+    });
+    remote.channel = recieve;
+  };
 
   connection.session.onicegatheringstatechange = async function () {
     if (connection.session.iceGatheringState !== "complete") return;
