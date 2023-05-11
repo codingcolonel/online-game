@@ -98,7 +98,7 @@ connection.onoffering = async function () {
 
     const sdp = JSON.stringify(connection.session.localDescription);
 
-    let encryptedSDP = await codecrypt.encrypt(sdp);
+    let encryptedSDP = await codecrypt.encrypt(sdp, "offer");
 
     await channel.subscribe("answer", (msg) => {});
     await channel.publish("offer", encryptedSDP);
