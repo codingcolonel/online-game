@@ -108,12 +108,14 @@ connection.onoffering = async function () {
 
   connection.session.channel = connection.session.createDataChannel("gameInfo");
   connection.session.channel.addEventListener("open", function () {
+    connection.status = "connected";
     console.log("Channel Opened");
   });
   connection.session.channel.addEventListener("close", function () {
     console.log("Channel Closed");
   });
   connection.session.channel.addEventListener("message", function ({ data }) {
+    newMessage(data);
     console.log(data);
   });
 
@@ -163,12 +165,14 @@ connection.onanswering = async function () {
   connection.session.ondatachannel = function ({ channel }) {
     const recieve = channel;
     recieve.addEventListener("open", function () {
+      connection.status = "connected";
       console.log("Channel Opened");
     });
     recieve.addEventListener("close", function () {
       console.log("Channel Closed");
     });
     recieve.addEventListener("message", function ({ data }) {
+      newMessage(data);
       console.log(data);
     });
     connection.session.channel = recieve;
@@ -226,6 +230,11 @@ function clickHandler(event) {
       connection.status = "offering";
       break;
     case "send":
+      if (connection.status === "connected") return;
+
+      connection.session.channel.send(msgIn.innerHTML);
+      msgIn.innerHTML = "";
+
       break;
   }
 }
