@@ -4,12 +4,13 @@ import { CodeCrypt } from "./codecrypt.js";
 // -- Classes --
 class connectionManager {
   #status;
-  onenabled;
   onwaiting;
   onoffering;
   onanswering;
   onconnected;
   ondisconnected;
+  /** @type {RTCPeerConnection} */
+  session;
   constructor() {
     this.#status = "disabled";
   }
@@ -54,23 +55,71 @@ const ably = new Ably.Realtime.Promise({
   },
 });
 
-if (typeof ably !== "undefined") {
-  // -- Ably Setup --
-  const channel = ably.channels.get("requests");
+let channel;
 
-  await channel.subscribe("offer", (msg) => {});
+const codecrypt = new CodeCrypt();
+
+const servers = await (
+  await fetch(`${location.origin}/.netlify/functions/creds`)
+).json();
+
+// -- Ably Setup --
+if (typeof ably !== "undefined") {
+  ably.channels.get("requests");
   connection.status = "enabled";
 }
 
-const servers = fetch(`${location.origin}/.netlify/functions/creds`);
+// -- Status change handlers --
+connection.onwaiting = async function () {
+  await channel.subscribe("offer", async function (msg) {
+    console.log(msg);
+  });
 
-const codecrypt = new CodeCrypt();
-codeOut.innerHTML = codecrypt.authenticator;
+  codecrypt.generateAuthenticator();
+  codeOut.innerHTML = codecrypt.authenticator;
+};
+
+connection.onoffering = async function () {
+  // TODO: Display connecting screen here
+
+  connection.session = new RTCPeerConnection({
+    iceServers: [
+      { urls: "stun:stun.l.google.com:19302" },
+      servers[2],
+      servers[4],
+    ],
+  });
+  connection.session.createDataChannel();
+
+  connection.session.onicegatheringstatechange = async function () {
+    if (connection.session.iceGatheringState !== "complete") return;
+
+    const sdp = JSON.stringify(connection.session.localDescription);
+
+    let encryptedSDP = await codecrypt.encrypt(sdp);
+
+    await channel.subscribe("answer", (msg) => {});
+    await channel.publish("offer", encryptedSDP);
+  };
+
+  await connection.session.setLocalDescription(
+    await connection.session.createOffer()
+  );
+};
 
 if (connection.status === "enabled" && typeof servers !== "undefined") {
   // -- Add Event Listeners --
   connectBtn.addEventListener("click", clickHandler);
   sendBtn.addEventListener("click", clickHandler);
+
+  // -- Check Query String --
+  let query = new URLSearchParams(location.search).get("g");
+  if (validateCode(query)) {
+    codecrypt.setAuthenticator(query);
+    connection.status = "offering";
+  } else {
+    connection.status = "waiting";
+  }
 } else {
   newMessage(new Error("Unable to connect"));
 }
@@ -82,8 +131,15 @@ function clickHandler(event) {
 
   switch (id) {
     case "connect":
+      if (connection.status !== "waiting") return;
+
       let value = codeIn.value;
-      if (validateCode(value)) console.log(value);
+      if (!validateCode(value)) return;
+
+      codecrypt.setAuthenticator(value);
+
+      codeIn.value = "";
+      connection.status = "offering";
       break;
     case "send":
       break;
@@ -97,6 +153,7 @@ function clickHandler(event) {
  * @returns True if code is hex & six digits long, else returns false
  */
 function validateCode(code) {
+  if (typeof code !== "string") return false;
   if (code.match(/([^0-9A-Fa-f])+/gm)) return false;
   if (code.length === 6) return true;
   return false;
