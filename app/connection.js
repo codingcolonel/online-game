@@ -84,12 +84,15 @@ connection.onwaiting = async function () {
 connection.onoffering = async function () {
   // TODO: Display connecting screen here
 
+  let iceServers = [
+    { urls: "stun:stun.l.google.com:19302" },
+    servers[2],
+    servers[4],
+  ];
+  console.log(iceServers);
+
   connection.session = new RTCPeerConnection({
-    iceServers: [
-      { urls: "stun:stun.l.google.com:19302" },
-      servers[2],
-      servers[4],
-    ],
+    iceServers: iceServers,
   });
   connection.session.createDataChannel();
 
