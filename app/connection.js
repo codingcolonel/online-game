@@ -74,7 +74,6 @@ connection.onwaiting = async function () {
   await channel.subscribe("offer", async function (msg) {
     console.log(msg);
   });
-  console.log(channel);
 
   codecrypt.generateAuthenticator();
   codeOut.innerHTML = codecrypt.authenticator;
@@ -168,3 +167,4 @@ function newMessage(msg) {
 }
 
 window.connection = connection;
+window.channel = channel;
