@@ -232,8 +232,8 @@ function clickHandler(event) {
     case "send":
       if (connection.status !== "connected") return;
 
-      connection.session.channel.send(msgIn.innerHTML);
-      msgIn.innerHTML = "";
+      connection.session.channel.send(msgIn.value);
+      msgIn.value = "";
 
       break;
   }
