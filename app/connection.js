@@ -38,6 +38,8 @@ const sendBtn = document.getElementById("send");
 
 // Global Variables
 
+let decryptedRemoteSDP;
+
 let connection = new connectionManager();
 
 const ably = new Ably.Realtime.Promise({
@@ -72,7 +74,16 @@ if (typeof ably !== "undefined") {
 // -- Status change handlers --
 connection.onwaiting = async function () {
   await channel.subscribe("offer", async function (msg) {
-    console.log(msg);
+    const data = msg.data;
+
+    try {
+      decryptedRemoteSDP = codecrypt.decrypt(data, "offer");
+      // TODO: Add user request
+      console.log(decryptedRemoteSDP);
+      connection.status = "answering";
+    } catch (error) {
+      newMessage("Invalid Message Recieved");
+    }
   });
 
   codecrypt.generateAuthenticator();
@@ -81,6 +92,9 @@ connection.onwaiting = async function () {
 
 connection.onoffering = async function () {
   // TODO: Display connecting screen here
+
+  if (typeof channel.subscriptions.events.offer !== "undefined")
+    channel.unsubscribe("offer");
 
   let iceServers = [
     { urls: "stun:stun.l.google.com:19302" },
@@ -100,12 +114,47 @@ connection.onoffering = async function () {
 
     let encryptedSDP = await codecrypt.encrypt(sdp, "offer");
 
-    await channel.subscribe("answer", (msg) => {});
+    await channel.subscribe("answer", (msg) => {
+      console.log(msg);
+    });
     await channel.publish("offer", encryptedSDP);
   };
 
   await connection.session.setLocalDescription(
     await connection.session.createOffer()
+  );
+};
+
+connection.onanswering = async function () {
+  // TODO: Display connecting screen here
+
+  if (typeof channel.subscriptions.events.answer !== "undefined")
+    channel.unsubscribe("answer");
+
+  let iceServers = [
+    { urls: "stun:stun.l.google.com:19302" },
+    servers[2],
+    servers[4],
+  ];
+
+  connection.session = new RTCPeerConnection({
+    iceServers: iceServers,
+  });
+
+  connection.session.onicegatheringstatechange = async function () {
+    if (connection.session.iceGatheringState !== "complete") return;
+
+    const sdp = JSON.stringify(connection.session.localDescription);
+
+    let encryptedSDP = await codecrypt.encrypt(sdp, "offer");
+
+    await channel.publish("answer", encryptedSDP);
+  };
+
+  await connection.session.setRemoteDescription(decryptedRemoteSDP);
+
+  await connection.session.setLocalDescription(
+    await connection.session.createAnswer()
   );
 };
 
@@ -168,3 +217,4 @@ function newMessage(msg) {
 
 window.connection = connection;
 window.channel = channel;
+window.ably = ably;
