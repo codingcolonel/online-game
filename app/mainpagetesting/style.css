@@ -1,0 +1,186 @@
+/* https://codepen.io/NyX/pen/JYOzWW */
+@import url(https://fonts.googleapis.com/css?family=Electrolize);
+html {
+  line-height: 1;
+}
+
+body {
+  font-family: "Electrolize", sans-serif;
+}
+
+.bttn {
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+}
+.bttn span {
+  display: block;
+  padding: 30px;
+  font-size: 30px;
+  color: #ffb902;
+  text-transform: uppercase;
+}
+.bttn:hover {
+  cursor: pointer;
+}
+.bttn.in .corners {
+  position: absolute;
+  width: 100%;
+  transition-duration: 0.3s;
+}
+.bttn.in .corners:before,
+.bttn.in .corners:after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-color: #ffb902;
+  border-style: solid;
+  transition-duration: 0.3s;
+  transform: translateZ(0);
+}
+.bttn.in .corners.top:before {
+  border-width: 2px 0 0 2px;
+}
+.bttn.in .corners.top:after {
+  border-width: 2px 2px 0 0;
+}
+.bttn.in .corners.bottom:before {
+  border-width: 0 0 2px 2px;
+}
+.bttn.in .corners.bottom:after {
+  border-width: 0 2px 2px 0;
+}
+.bttn.in .corners:before {
+  left: 20px;
+}
+.bttn.in .corners:after {
+  right: 20px;
+}
+.bttn.in .corners.top {
+  top: 20px;
+}
+.bttn.in .corners.bottom {
+  bottom: 27px;
+}
+.bttn.in:hover .corners:before {
+  left: 10px;
+}
+.bttn.in:hover .corners:after {
+  right: 10px;
+}
+.bttn.in:hover .corners.top {
+  top: 10px;
+}
+.bttn.in:hover .corners.bottom {
+  bottom: 17px;
+}
+
+.bttn.cyan span {
+  color: cyan;
+}
+.bttn.cyan .corners:after,
+.bttn.cyan .corners:before {
+  border-color: cyan;
+}
+
+/*  */
+
+/* HTML elements */
+
+/* ID */
+#main {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  position: absolute;
+  background-color: #001122;
+  pointer-events: none;
+}
+
+#loaderContain {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  position: absolute;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+#queryBoxContain {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  position: absolute;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: all;
+}
+
+#queryBox {
+  background: #ffffff;
+}
+
+/* Class */
+
+/* Loader styling from https://cssloaders.github.io/ - Start of loader styling*/
+.loader {
+  display: flex;
+  position: relative;
+  margin: auto;
+  box-sizing: border-box;
+  width: 15rem;
+  height: 15rem;
+  border-radius: 50%;
+  border: 10px solid rgba(255, 255, 255, 0.15);
+  transform-origin: 50% 50%;
+  transform: perspective(12rem) rotateX(66deg);
+  animation: spinner-wiggle 1.8s infinite;
+}
+.loader:before,
+.loader:after {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  border: 10px solid #00000000;
+  animation: spinner-spin 1.8s cubic-bezier(0.6, 0.2, 0, 0.8) infinite,
+    spinner-fade 1.8s linear infinite;
+}
+.loader:before {
+  border-top-color: #ffffff;
+}
+.loader:after {
+  border-top-color: #ff3d00;
+  animation-delay: 0.4s;
+}
+
+@keyframes spinner-spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes spinner-fade {
+  25%,
+  75% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+/* Loader styling from https://cssloaders.github.io/ - End of loader styling*/
+
+.hide,
+.hide * {
+  display: none;
+}
