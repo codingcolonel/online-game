@@ -114,8 +114,17 @@ connection.onoffering = async function () {
 
     let encryptedSDP = await codecrypt.encrypt(sdp, "offer");
 
-    await channel.subscribe("answer", (msg) => {
-      console.log(msg);
+    await channel.subscribe("answer", async (msg) => {
+      const data = msg.data;
+
+      try {
+        decryptedRemoteSDP = await codecrypt.decrypt(data, "answer");
+        // TODO: Add user request
+        console.log(decryptedRemoteSDP);
+        connection.session.setRemoteDescription(JSON.parse(decryptedRemoteSDP));
+      } catch (error) {
+        newMessage("Invalid Message Recieved");
+      }
     });
     await channel.publish("offer", encryptedSDP);
   };
@@ -146,7 +155,7 @@ connection.onanswering = async function () {
 
     const sdp = JSON.stringify(connection.session.localDescription);
 
-    let encryptedSDP = await codecrypt.encrypt(sdp, "offer");
+    let encryptedSDP = await codecrypt.encrypt(sdp, "answer");
 
     await channel.publish("answer", encryptedSDP);
   };
