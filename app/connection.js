@@ -65,7 +65,7 @@ const servers = await (
 
 // -- Ably Setup --
 if (typeof ably !== "undefined") {
-  ably.channels.get("requests");
+  channel = ably.channels.get("requests");
   connection.status = "enabled";
 }
 
