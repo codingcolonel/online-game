@@ -77,7 +77,7 @@ connection.onwaiting = async function () {
     const data = msg.data;
 
     try {
-      decryptedRemoteSDP = codecrypt.decrypt(data, "offer");
+      decryptedRemoteSDP = await codecrypt.decrypt(data, "offer");
       // TODO: Add user request
       console.log(decryptedRemoteSDP);
       connection.status = "answering";
