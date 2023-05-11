@@ -63,8 +63,6 @@ const servers = await (
   await fetch(`${location.origin}/.netlify/functions/creds`)
 ).json();
 
-console.log(servers);
-
 // -- Ably Setup --
 if (typeof ably !== "undefined") {
   channel = ably.channels.get("requests");
@@ -89,12 +87,11 @@ connection.onoffering = async function () {
     servers[2],
     servers[4],
   ];
-  console.log(iceServers);
 
   connection.session = new RTCPeerConnection({
     iceServers: iceServers,
   });
-  connection.session.createDataChannel();
+  connection.session.createDataChannel("gameInfo");
 
   connection.session.onicegatheringstatechange = async function () {
     if (connection.session.iceGatheringState !== "complete") return;
