@@ -230,7 +230,7 @@ function clickHandler(event) {
       connection.status = "offering";
       break;
     case "send":
-      if (connection.status === "connected") return;
+      if (connection.status !== "connected") return;
 
       connection.session.channel.send(msgIn.innerHTML);
       msgIn.innerHTML = "";
