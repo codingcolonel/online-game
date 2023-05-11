@@ -1,3 +1,5 @@
+// Draw the board and update changes to canvas
+
 // Set up canvas and 2d graphics content
 let cnv = document.querySelector('canvas');
 let ctx = cnv.getContext('2d');
@@ -11,23 +13,23 @@ cnv.width = trueWidth;
 let defendingTiles = [];
 let attackingTiles = [];
 
-// Ships arrays
-let ships = [];
+// Board info variables
+let defendingBoard, attackingBoard;
 
 function drawBoard() {
   // Update center values for drawing
   let centerWidth = trueWidth / 2;
   let centerHeight = trueHeight / 2;
 
-  // Board objects
-  let defendingBoard = {
+  // Update board objects
+  defendingBoard = {
     x:
       Math.round((centerWidth - trueWidth * 0.025 - trueWidth * 0.45) * 10) /
       10, // x is offset by 2.5% of the width from the center to the left
     y: Math.round((centerHeight - trueWidth * 0.225) * 10) / 10, // y is offset by 22.5% of the height from the center upwards
     sideLength: Math.round(trueWidth * 0.45 * 10) / 10, // length is same as height (45% of screen)
   };
-  let attackingBoard = {
+  attackingBoard = {
     x: Math.round((centerWidth + trueWidth * 0.025) * 10) / 10, // x is offset by 2.5% of the width from the center to the right
     y: Math.round((centerHeight - trueWidth * 0.225) * 10) / 10, // y is offset by 22.5% of the height from the center upwards
     sideLength: Math.round(trueWidth * 0.45 * 10) / 10, // length is same as height (45% of screen)
@@ -65,7 +67,9 @@ function drawBoard() {
         defendingBoard.sideLength / 10,
         defendingBoard.sideLength / 10
       );
-      addDefendingTileToArray(i, j);
+      if (defendingTiles.length < 100) {
+        defendingTiles.push(addDefendingTileToArray(i, j, 'miss'));
+      }
     }
   }
 
@@ -107,7 +111,9 @@ function drawBoard() {
         attackingBoard.sideLength / 10,
         attackingBoard.sideLength / 10
       );
-      addAttackingTileToArray(i, j, 'none');
+      if (attackingTiles.length < 100) {
+        attackingTiles.push(addAttackingTileToArray(i, j, 'hit'));
+      }
     }
   }
 
@@ -121,57 +127,63 @@ function drawBoard() {
     attackingBoard.sideLength
   );
 
-  // Test line
-  // ctx.fillStyle = 'red';
-  // ctx.fillRect(0, centerHeight, trueWidth, 1);
+  // Update canvas
+  updateCanvas();
 }
 
-// Testing listener
-document.addEventListener('click', fullscreenToggle);
-
-function fullscreenToggle() {
-  // Change width and height when switching in/out of fullscreen
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen();
-    trueHeight = Math.floor(screen.height * scale);
-    trueWidth = Math.floor(screen.width * scale);
-  } else if (document.exitFullscreen) {
-    document.exitFullscreen();
-    trueHeight = Math.floor(window.innerHeight * scale);
-    trueWidth = Math.floor(window.innerWidth * scale);
+function updateCanvas() {
+  // Update Defending Board for any changes
+  for (let i = 0; i < defendingTiles.length; i++) {
+    const element = defendingTiles[i];
+    const center = {
+      x: element.x + defendingBoard.sideLength / 20,
+      y: element.y + defendingBoard.sideLength / 20,
+    };
+    if (element.state === 'miss') {
+      ctx.fillStyle = 'black';
+      ctx.beginPath();
+      ctx.arc(center.x, center.y, 5, 0, 2 * Math.PI);
+      ctx.fill();
+    } else if (element.state === 'ship') {
+      // Will make later
+    } else if (element.state === 'shipsunk') {
+      // Will make later
+    }
   }
-  cnv.height = trueHeight;
-  cnv.width = trueWidth;
-  // console.log(trueHeight);
-  // console.log(trueWidth);
-  drawBoard();
-}
 
-function addDefendingTileToArray(x, y) {
-  defendingTiles.push({
-    x: x,
-    y: y,
-  });
-}
-
-function addAttackingTileToArray(x, y, state) {
-  attackingTiles.push({
-    x: x,
-    y: y,
-    state: state,
-  });
-}
-
-function addShipToArray(x, y, rotation, index) {
-  ships.push({
-    x: x,
-    y: y,
-    data: rotation + intToBin(index),
-  });
-}
-
-function intToBin(num) {
-  return ('00000000' + num.toString(2)).slice(-8);
+  // Update Attacking Board for any changes
+  for (let i = 0; i < attackingTiles.length; i++) {
+    const element = attackingTiles[i];
+    const tile = {
+      x1: element.x,
+      y1: element.y,
+      x2: element.x + attackingBoard.sideLength / 10,
+      y2: element.y + attackingBoard.sideLength / 10,
+      centerx: element.x + attackingBoard.sideLength / 20,
+      centery: element.y + attackingBoard.sideLength / 20,
+    };
+    if (element.state === 'miss') {
+      // Draw dot to mark as a miss
+      ctx.fillStyle = 'black';
+      ctx.beginPath();
+      ctx.arc(tile.centerx, tile.centery, 5, 0, 2 * Math.PI);
+      ctx.fill();
+    } else if (element.state === 'hit') {
+      // Draw red x to mark as hit
+      ctx.strokeStyle = 'red';
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(tile.x1, tile.y1);
+      ctx.lineTo(tile.x2, tile.y2);
+      ctx.stroke();
+      ctx.strokeStyle = 'red';
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(tile.x2, tile.y1);
+      ctx.lineTo(tile.x1, tile.y2);
+      ctx.stroke();
+    }
+  }
 }
 
 // http://en.battleship-game.org/
