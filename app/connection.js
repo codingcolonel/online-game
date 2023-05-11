@@ -232,6 +232,7 @@ function clickHandler(event) {
     case "send":
       if (connection.status !== "connected") return;
 
+      newMessage("You: " + msgIn.value);
       connection.session.channel.send(msgIn.value);
       msgIn.value = "";
 
