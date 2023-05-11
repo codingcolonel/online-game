@@ -63,6 +63,8 @@ const servers = await (
   await fetch(`${location.origin}/.netlify/functions/creds`)
 ).json();
 
+console.log(servers);
+
 // -- Ably Setup --
 if (typeof ably !== "undefined") {
   channel = ably.channels.get("requests");
