@@ -27,3 +27,18 @@ function addShipToArray(x, y, rotation, index) {
 function intToBin(num) {
   return ('00000000' + num.toString(2)).slice(-8);
 }
+
+function findTileByCoordinates(x, y, array) {
+  let closestIndex = 0;
+  for (let i = 0; i < array.length; i++) {
+    if (array[i].x < x && array[i].y < y) {
+      if (
+        array[i].x >= array[closestIndex].x &&
+        array[i].y >= array[closestIndex].y
+      ) {
+        closestIndex = i;
+      }
+    }
+  }
+  return closestIndex;
+}
