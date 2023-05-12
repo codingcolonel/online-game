@@ -16,7 +16,16 @@ let attackingTiles = [];
 // Board info variables
 let defendingBoard, attackingBoard;
 
+// Draw the board on load
+window.onload = function () {
+  drawBoard();
+};
+
 function drawBoard() {
+  // Reset tile array
+  defendingTiles = [];
+  attackingTiles = [];
+
   // Update center values for drawing
   let centerWidth = trueWidth / 2;
   let centerHeight = trueHeight / 2;
@@ -112,7 +121,7 @@ function drawBoard() {
         attackingBoard.sideLength / 10
       );
       if (attackingTiles.length < 100) {
-        attackingTiles.push(addAttackingTileToArray(i, j, 'hit'));
+        attackingTiles.push(addAttackingTileToArray(i, j, 'none'));
       }
     }
   }
@@ -182,6 +191,13 @@ function updateCanvas() {
       ctx.moveTo(tile.x2, tile.y1);
       ctx.lineTo(tile.x1, tile.y2);
       ctx.stroke();
+      // Draw box around the x
+      ctx.strokeRect(
+        tile.x1,
+        tile.y1,
+        attackingBoard.sideLength / 10,
+        attackingBoard.sideLength / 10
+      );
     }
   }
 }

@@ -19,3 +19,16 @@ function fullscreenToggle(e) {
     drawBoard();
   }
 }
+
+// Event Listener
+// document.addEventListener('click', getMouseCoordinates);
+// function getMouseCoordinates(e) {
+//   if (
+//     e.x >= defendingBoard.x &&
+//     e.x <= defendingBoard.x + defendingBoard.sideLength &&
+//     e.y >= defendingBoard.y &&
+//     e.y <= defendingBoard.y + defendingBoard.sideLength
+//   ) {
+//     console.log('defend');
+//   }
+// }
