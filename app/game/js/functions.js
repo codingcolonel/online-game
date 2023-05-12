@@ -1,6 +1,7 @@
 // Functions to be used in other files
 
-function addDefendingTileToArray(x, y, state) {
+// Return object of a tile to be added to array
+function addTileToArray(x, y, state) {
   return {
     x: x,
     y: y,
@@ -8,14 +9,7 @@ function addDefendingTileToArray(x, y, state) {
   };
 }
 
-function addAttackingTileToArray(x, y, state) {
-  return {
-    x: x,
-    y: y,
-    state: state,
-  };
-}
-
+// Return object of a ship
 function addShipToArray(x, y, rotation, index) {
   return {
     x: x,
@@ -24,10 +18,17 @@ function addShipToArray(x, y, rotation, index) {
   };
 }
 
+// Convert an integer into binary
 function intToBin(num) {
   return ('00000000' + num.toString(2)).slice(-8);
 }
 
+// Convert binary into an integer
+function binToInt(num) {
+  return parseInt(num, 2);
+}
+
+// Find the closest tile to provided x and y coordinates
 function findTileByCoordinates(x, y, array) {
   let closestIndex = 0;
   for (let i = 0; i < array.length; i++) {
@@ -41,4 +42,21 @@ function findTileByCoordinates(x, y, array) {
     }
   }
   return closestIndex;
+}
+
+// Process response into an object including rotation and position values
+function processResponse(response) {
+  let rotation = JSON.parse(response[0]);
+  let position = binToInt(response.substring(1));
+
+  return {
+    rotation: rotation,
+    position: {
+      1: position,
+      2: null,
+      3: null,
+      4: null,
+      5: null,
+    },
+  };
 }

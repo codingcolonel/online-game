@@ -22,6 +22,7 @@ async function fullscreenToggle(e) {
 
 document.addEventListener('fullscreenchange', fullscreenHandler);
 async function fullscreenHandler() {
+  // Update changes to the screen once the screen has transitioned in/out fullscreen
   if (!document.fullscreenElement) {
     trueHeight = Math.floor(window.innerHeight * scale);
     trueWidth = Math.floor(window.innerWidth * scale);
@@ -37,6 +38,7 @@ function getMouseCoordinates(e) {
   console.log(e);
   console.log('x' + e.x + ' y' + e.y);
 
+  // Adjust mouse x and y to pixel ratio
   let mouseX = e.x * scale;
   let mouseY = e.y * scale;
   if (
@@ -45,6 +47,7 @@ function getMouseCoordinates(e) {
     mouseY >= defendingBoard.y &&
     mouseY <= defendingBoard.y + defendingBoard.sideLength
   ) {
+    // Get index of clicked tile on defending board
     console.log(
       defendingTiles[findTileByCoordinates(mouseX, mouseY, defendingTiles)]
     );
@@ -54,6 +57,7 @@ function getMouseCoordinates(e) {
     mouseY >= attackingBoard.y &&
     mouseY <= attackingBoard.y + attackingBoard.sideLength
   ) {
+    // Get index of clicked tile on attacking board
     console.log(
       attackingTiles[findTileByCoordinates(mouseX, mouseY, attackingTiles)]
     );

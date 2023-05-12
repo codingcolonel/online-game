@@ -76,7 +76,7 @@ function drawBoard() {
         defendingBoard.sideLength / 10
       );
       if (defendingTiles.length < 100) {
-        defendingTiles.push(addDefendingTileToArray(i, j, 'miss'));
+        defendingTiles.push(addTileToArray(i, j, 'miss'));
       }
     }
   }
@@ -120,7 +120,7 @@ function drawBoard() {
         attackingBoard.sideLength / 10
       );
       if (attackingTiles.length < 100) {
-        attackingTiles.push(addAttackingTileToArray(i, j, 'none'));
+        attackingTiles.push(addTileToArray(i, j, 'none'));
       }
     }
   }
