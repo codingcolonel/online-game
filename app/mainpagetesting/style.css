@@ -17,66 +17,42 @@ body {
 h1 {
   color: #ff3d00;
   font-size: 2.8rem;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
 }
 
 h2 {
   color: #eeeeee;
-  font-size: 2.5rem;
+  font-size: 2rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+p {
+  color: #ff3d00;
+  font-size: 1.5rem;
+  font-family: "Ailerons";
+  margin: 0;
 }
 
 input[type="text"] {
   position: relative;
   outline: none;
   border: none;
-  background: none;
+  background: #eeeeee11;
   color: #eeeeee;
   border-bottom: #00000000 2px solid;
-  font-size: larger;
-  padding: 5px;
+  font-size: 2.2rem;
+  font-family: "Ailerons";
+  letter-spacing: -0.15em;
+  padding: 2px;
   z-index: 2;
   margin: 0;
-}
-.inputWrapper {
-  display: flex;
-  justify-content: center;
-}
-.inputWrapper div {
-  position: relative;
-  overflow: hidden;
-}
-.inputWrapper div::before {
-  content: "";
-  position: absolute;
-  left: -5%;
-  bottom: 0px;
-  background-color: #eeeeee;
-  height: 2px;
-  width: 110%;
-  z-index: 1;
-  transform: skewX(45deg);
-  transition: ease-in-out 500ms;
-}
-.inputWrapper div::after {
-  content: "";
-  position: absolute;
-  left: -115%;
-  bottom: 0px;
-  background-color: #ff3d00;
-  height: 2px;
-  width: 110%;
-  z-index: 1;
-  transform: skewX(45deg);
-  transition: ease-in-out 500ms;
-}
-.inputWrapper:focus-within div::before {
-  left: 105%;
-}
-.inputWrapper:focus-within div::after {
-  left: -5%;
+  text-align: center;
 }
 
 img {
-  width: 30.72vw;
+  width: 40.96vw;
 }
 
 /* ID */
@@ -115,13 +91,35 @@ img {
   align-items: center;
   pointer-events: none;
 }
-#grid {
+#vertGrid {
+  display: grid;
+  grid-template-rows: auto auto;
+}
+#vertGrid img {
+  margin-top: 8vh;
+  animation: float 4s infinite alternate-reverse ease-in-out;
+}
+
+#inputGrid {
+  padding: 2vh;
   display: grid;
   grid-template-rows: auto auto auto;
+  align-items: center;
+  row-gap: 0.5vh;
 }
-#grid img {
-  margin-top: 4vh;
-  animation: float 4s infinite alternate-reverse ease-in-out;
+#inputGrid span {
+  color: #ff3d00;
+  padding: 0 0 10px 0;
+  font-size: 2.5rem;
+}
+#inputGrid input {
+  width: 4em;
+  border-bottom: #00000000 3px solid;
+}
+
+#loaderContain .bttn {
+  position: absolute;
+  bottom: 4vh;
 }
 
 #queryBoxContain {
@@ -141,13 +139,66 @@ img {
   text-align: center;
 }
 
+#queryBox img {
+  margin: 4vh 0;
+}
+
 /* Class */
+
+.inputWrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.inputWrapper div {
+  position: relative;
+  overflow: hidden;
+}
+.inputWrapper div::before {
+  content: "";
+  position: absolute;
+  left: -5%;
+  bottom: 0px;
+  background-color: #eeeeee;
+  height: 2px;
+  width: 110%;
+  z-index: 1;
+  transform: skewX(45deg);
+  transition: ease-in-out 500ms;
+}
+.inputWrapper div::after {
+  content: "";
+  position: absolute;
+  left: -115%;
+  bottom: 0px;
+  background-color: #ff3d00;
+  height: 2px;
+  width: 110%;
+  z-index: 1;
+  transform: skewX(45deg);
+  transition: ease-in-out 500ms;
+}
+.inputWrapper:focus-within div::before {
+  left: 105%;
+}
+.inputWrapper:focus-within div::after {
+  left: -5%;
+}
+
+.inputWrapper.username input {
+  font-size: 1.7rem;
+}
+
+.inputWrapper.username div {
+  width: 50%;
+}
 
 /* Loader styling from https://cssloaders.github.io/ - Start of loader styling*/
 .loader {
   display: flex;
   position: relative;
   margin: auto;
+  margin-bottom: 3rem;
   box-sizing: border-box;
   width: 20vw;
   height: 20vw;
@@ -293,14 +344,14 @@ img {
 .bttn:active .corners::before,
 .bttn:active .corners::after {
   border-color: #ff3d00;
-  transition-duration: 50ms;
+  transition-duration: 0ms;
 }
 .bttn:hover .inner {
   opacity: 0.4;
 }
 .bttn:active .inner {
   opacity: 1;
-  transition-duration: 50ms;
+  transition-duration: 0ms;
 }
 .bttn:active span {
   transition-duration: 0ms;
@@ -311,7 +362,9 @@ img {
 
 .hide,
 .hide * {
-  display: none;
+  transition: 500ms ease-in-out;
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Animations */
@@ -330,6 +383,6 @@ img {
     transform: translateY(0);
   }
   100% {
-    transform: translateY(-4vh);
+    transform: translateY(3vw);
   }
 }

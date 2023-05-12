@@ -10,19 +10,28 @@
   </head>
   <body>
     <div id="main">
-      <div id="queryBoxContain">
+      <div id="queryBoxContain" class="hide">
         <div id="queryBox">
           <img src="../img/WeblshipsLogo.png" alt="Logo Image" />
           <h1>USERNAME:</h1>
-          <div class="inputWrapper">
+          <div class="inputWrapper username">
             <div>
               <input type="text" />
             </div>
           </div>
-          <h2>Input Code:</h2>
-          <div class="inputWrapper">
+          <div id="inputGrid">
             <div>
-              <input type="text" />
+              <h2>Input Code:</h2>
+              <div class="inputWrapper">
+                <div>
+                  <input type="text" maxlength="6" />
+                </div>
+              </div>
+            </div>
+            <p>OR</p>
+            <div>
+              <h2>Send your code:</h2>
+              <span>YOUR_CODE</span>
             </div>
           </div>
           <br />
@@ -35,17 +44,17 @@
         </div>
       </div>
 
-      <div id="loaderContain" class="hide">
-        <div id="grid">
+      <div id="loaderContain" class="">
+        <div id="vertGrid">
           <img src="../img/WeblshipsLogo.png" alt="Logo Image" />
           <span class="loader"></span>
-          <button class="bttn in">
-            <span>Cancel</span>
-            <div class="inner"></div>
-            <div class="corners top"></div>
-            <div class="corners bottom"></div>
-          </button>
         </div>
+        <button class="bttn in">
+          <span>Cancel</span>
+          <div class="inner"></div>
+          <div class="corners top"></div>
+          <div class="corners bottom"></div>
+        </button>
       </div>
     </div>
   </body>
