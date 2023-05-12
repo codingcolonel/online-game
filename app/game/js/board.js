@@ -33,15 +33,14 @@ function drawBoard() {
   // Update board objects
   defendingBoard = {
     x:
-      Math.round((centerWidth - trueWidth * 0.025 - trueWidth * 0.45) * 10) /
-      10, // x is offset by 2.5% of the width from the center to the left
-    y: Math.round((centerHeight - trueWidth * 0.225) * 10) / 10, // y is offset by 22.5% of the height from the center upwards
-    sideLength: Math.round(trueWidth * 0.45 * 10) / 10, // length is same as height (45% of screen)
+      Math.round((centerWidth - trueWidth * 0.025 - trueWidth * 0.4) * 10) / 10, // x is offset by 2.5% of the width from the center to the left
+    y: Math.round((centerHeight - trueWidth * 0.2) * 10) / 10, // y is offset by 20% of the height from the center upwards
+    sideLength: Math.round(trueWidth * 0.4 * 10) / 10, // length is same as height (40% of screen)
   };
   attackingBoard = {
     x: Math.round((centerWidth + trueWidth * 0.025) * 10) / 10, // x is offset by 2.5% of the width from the center to the right
-    y: Math.round((centerHeight - trueWidth * 0.225) * 10) / 10, // y is offset by 22.5% of the height from the center upwards
-    sideLength: Math.round(trueWidth * 0.45 * 10) / 10, // length is same as height (45% of screen)
+    y: Math.round((centerHeight - trueWidth * 0.2) * 10) / 10, // y is offset by 20% of the height from the center upwards
+    sideLength: Math.round(trueWidth * 0.4 * 10) / 10, // length is same as height (40% of screen)
   };
 
   // Draw Background
