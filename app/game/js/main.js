@@ -1,16 +1,16 @@
 // Main program for battleship game
 
 // Fullscreen event listener
-document.addEventListener('keyup', fullscreenToggle);
-function fullscreenToggle(e) {
-  if (e.key === 'f') {
+document.addEventListener("keyup", fullscreenToggle);
+async function fullscreenToggle(e) {
+  if (e.key === "f") {
     // Change width and height when switching in/out of fullscreen
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
+      await document.documentElement.requestFullscreen();
       trueHeight = Math.floor(screen.height * scale);
       trueWidth = Math.floor(screen.width * scale);
     } else if (document.exitFullscreen) {
-      document.exitFullscreen();
+      await document.exitFullscreen();
       trueHeight = Math.floor(window.innerHeight * scale);
       trueWidth = Math.floor(window.innerWidth * scale);
     }
@@ -18,6 +18,17 @@ function fullscreenToggle(e) {
     cnv.width = trueWidth;
     drawBoard();
   }
+}
+
+document.addEventListener("fullscreenchange", fullscreenHandler);
+async function fullscreenHandler() {
+  if (!document.fullscreenElement) {
+    trueHeight = Math.floor(window.innerHeight * scale);
+    trueWidth = Math.floor(window.innerWidth * scale);
+  }
+  cnv.height = trueHeight;
+  cnv.width = trueWidth;
+  drawBoard();
 }
 
 // Event Listener
