@@ -48,7 +48,6 @@ input[type="text"] {
   padding: 2px;
   z-index: 2;
   margin: 0;
-  text-align: center;
 }
 
 img {
@@ -115,6 +114,7 @@ img {
 #inputGrid input {
   width: 4em;
   border-bottom: #00000000 3px solid;
+  text-align: center;
 }
 
 #loaderContain .bttn {
@@ -137,10 +137,18 @@ img {
 
 #queryBox {
   text-align: center;
+  position: relative;
+  display: grid;
 }
 
 #queryBox img {
   margin: 4vh 0;
+  grid-area: 1 / 1;
+}
+
+#connectionBox,
+#userBox {
+  grid-area: 2 / 1;
 }
 
 /* Class */
@@ -362,9 +370,18 @@ img {
 
 .hide,
 .hide * {
-  transition: 500ms ease-in-out;
+  transition: 700ms ease-in-out;
   opacity: 0;
   pointer-events: none;
+  transform: translateY(-2.5vh);
+}
+
+.hide .loader {
+  transform: perspective(30vw) rotateX(66deg);
+}
+
+.reveal {
+  transition: 700ms ease-in-out 400ms;
 }
 
 /* Animations */
@@ -383,6 +400,6 @@ img {
     transform: translateY(0);
   }
   100% {
-    transform: translateY(3vw);
+    transform: translateY(3rem);
   }
 }

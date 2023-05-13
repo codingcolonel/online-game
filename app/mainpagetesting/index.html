@@ -6,50 +6,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" href="./style.css" />
+
+    <script src="./temp.js" defer type="module"></script>
+
     <title>Battleship</title>
   </head>
   <body>
     <div id="main">
-      <div id="queryBoxContain" class="hide">
+      <div id="queryBoxContain" class="reveal">
         <div id="queryBox">
           <img src="../img/WeblshipsLogo.png" alt="Logo Image" />
-          <h1>USERNAME:</h1>
-          <div class="inputWrapper username">
-            <div>
-              <input type="text" />
-            </div>
-          </div>
-          <div id="inputGrid">
-            <div>
-              <h2>Input Code:</h2>
-              <div class="inputWrapper">
-                <div>
-                  <input type="text" maxlength="6" />
-                </div>
+
+          <div id="userBox" class="reveal">
+            <h1>USERNAME:</h1>
+            <div class="inputWrapper username">
+              <div>
+                <input type="text" maxlength="20" />
               </div>
             </div>
-            <p>OR</p>
-            <div>
-              <h2>Send your code:</h2>
-              <span>YOUR_CODE</span>
-            </div>
+            <button class="bttn in" id="confirmBtn">
+              <span>Confirm</span>
+              <div class="inner"></div>
+              <div class="corners top"></div>
+              <div class="corners bottom"></div>
+            </button>
           </div>
-          <br />
-          <button class="bttn in">
-            <span>Connect</span>
-            <div class="inner"></div>
-            <div class="corners top"></div>
-            <div class="corners bottom"></div>
-          </button>
+
+          <div id="connectionBox" class="hide">
+            <div id="inputGrid">
+              <div>
+                <h2>Input Code:</h2>
+                <div class="inputWrapper">
+                  <div>
+                    <input type="text" maxlength="6" />
+                  </div>
+                </div>
+              </div>
+              <p>OR</p>
+              <div>
+                <h2>Send your code:</h2>
+                <span>YOUR_CODE</span>
+              </div>
+            </div>
+            <br />
+            <button class="bttn in" id="connectBtn">
+              <span>Connect</span>
+              <div class="inner"></div>
+              <div class="corners top"></div>
+              <div class="corners bottom"></div>
+            </button>
+          </div>
         </div>
       </div>
 
-      <div id="loaderContain" class="">
+      <div id="loaderContain" class="hide">
         <div id="vertGrid">
           <img src="../img/WeblshipsLogo.png" alt="Logo Image" />
           <span class="loader"></span>
         </div>
-        <button class="bttn in">
+        <button class="bttn in hide" id="cancelBtn">
           <span>Cancel</span>
           <div class="inner"></div>
           <div class="corners top"></div>

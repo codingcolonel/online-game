@@ -1,0 +1,175 @@
+#erL_body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  display: flex;
+  align-items: end;
+  overflow: hidden;
+}
+
+#erL_bodyGrid {
+  display: grid;
+  grid-auto-flow: row;
+  position: relative;
+}
+
+.erL_messageMain {
+  user-select: none;
+  transition: margin 750ms 750ms cubic-bezier(0.5, 0.1, 0.5, 0.9);
+  background-color: var(--back);
+  margin: 1rem;
+  margin-top: 0;
+  height: 14vh;
+  position: relative;
+  letter-spacing: -0.2em;
+  border-radius: 0.5vh;
+  overflow: hidden;
+}
+
+.erL_messageMain::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0.35rem;
+  background-color: var(--primary);
+  z-index: 503;
+}
+
+.erL_messageMain::before {
+  animation: slider 7.5s linear forwards;
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: -100%;
+  width: 100%;
+  height: 0.35rem;
+  background-color: var(--secondary);
+  z-index: 504;
+}
+
+.erL_messageMain.running {
+  animation: slideIn 750ms cubic-bezier(0.5, 0.1, 0.5, 0.9) forwards;
+}
+
+.erL_messageMain.done {
+  margin-bottom: 0;
+  animation: squishOut 1500ms cubic-bezier(0.5, 0.1, 0.5, 0.9) forwards;
+}
+
+.erL_messageHead {
+  color: var(--primary);
+  padding: 0 0 0 1vw;
+  width: 30vw;
+  position: relative;
+  font-size: 1.4rem;
+  z-index: 501;
+}
+
+.erL_messageBody {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  letter-spacing: normal;
+  color: black;
+  top: 0;
+  left: 0;
+  width: 25vw;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  height: 4.1rem;
+  padding: 1.4rem 1vw 0 1vw;
+  font-size: 0.8rem;
+  position: absolute;
+  z-index: 500;
+  border-radius: 0.5vh;
+}
+
+svg {
+  pointer-events: all;
+  width: 1.4rem;
+  height: 1.4rem;
+  position: absolute;
+  z-index: 502;
+  top: 0.1rem;
+  right: 0.1rem;
+  stroke: var(--primary);
+  fill: #00000000;
+  stroke-width: 0.1rem;
+  transition: 250ms ease-in-out;
+}
+
+svg:hover {
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+svg:active {
+  transition-duration: 0ms;
+  transform: scale(0.85);
+  stroke: #00000000;
+  fill: var(--primary);
+}
+
+.erL_generic {
+  --primary: #007ab7;
+  --secondary: #00578d;
+  --back: #e5e5e5;
+}
+
+.erL_success {
+  --primary: #00b75e;
+  --secondary: #008d49;
+  --back: #e5e5e5;
+}
+
+.erL_warn {
+  --primary: #b79600;
+  --secondary: #8d7600;
+  --back: #e2d5c9;
+}
+
+.erL_error {
+  --primary: #b70000;
+  --secondary: #8d0000;
+  --back: #e4b2b2;
+}
+
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-150%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes squishOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  50% {
+    height: 14vh;
+    opacity: 0;
+    transform: translateX(-150%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-150%);
+    height: 0;
+  }
+}
+
+@keyframes slider {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 0;
+  }
+}
