@@ -38,7 +38,7 @@ function drawBoard() {
     sideLength: Math.round(trueWidth * 0.4 * 10) / 10, // length is same as height (40% of screen)
   };
   attackingBoard = {
-    x: Math.round((centerWidth + trueWidth * 0.025) * 10) / 10, // x is offset by 2.5% of the width from the center to the right
+    x: Math.round((centerWidth + trueWidth * 0.05) * 10) / 10, // x is offset by 2.5% of the width from the center to the right
     y: Math.round((centerHeight - trueWidth * 0.2) * 10) / 10, // y is offset by 20% of the height from the center upwards
     sideLength: Math.round(trueWidth * 0.4 * 10) / 10, // length is same as height (40% of screen)
   };
@@ -56,7 +56,10 @@ function drawBoard() {
     defendingBoard.sideLength
   );
 
-  // Draw defending tiles
+  // Variables for drawing letters and numbers
+  let counter1 = 1;
+  let letter1 = 'A';
+
   ctx.strokeStyle = 'black';
   ctx.lineWidth = 2;
   for (
@@ -64,11 +67,22 @@ function drawBoard() {
     i < defendingBoard.sideLength + defendingBoard.x - 0.00000000001; // fix weird rounding error;
     i += defendingBoard.sideLength / 10
   ) {
+    // Draw numbers
+    ctx.font = '25px Verdana, sans-serif';
+    ctx.fillStyle = 'black';
+    ctx.textAlign = 'center';
+    ctx.fillText(
+      `${counter1}`,
+      i + defendingBoard.sideLength / 20,
+      defendingBoard.y - defendingBoard.sideLength / 50
+    );
+    counter1++;
     for (
       let j = defendingBoard.y;
       j <= defendingBoard.sideLength + defendingBoard.y - 0.00000000001; // fix weird rounding error;
       j += defendingBoard.sideLength / 10
     ) {
+      // Draw defending tiles
       ctx.strokeRect(
         i,
         j,
@@ -77,6 +91,17 @@ function drawBoard() {
       );
       if (defendingTiles.length < 100) {
         defendingTiles.push(addTileToArray(i, j, 'miss'));
+      }
+      if (letter1 !== 'END') {
+        // Draw letters
+        ctx.font = '25px Verdana, sans-serif';
+        ctx.fillStyle = 'black';
+        ctx.fillText(
+          `${letter1}`,
+          defendingBoard.x - defendingBoard.sideLength / 25,
+          j + defendingBoard.sideLength / 15
+        );
+        letter1 = nextLetter(letter1);
       }
     }
   }
@@ -100,7 +125,10 @@ function drawBoard() {
     attackingBoard.sideLength
   );
 
-  // Draw attacking tiles
+  // Variables for drawing letters and numbers
+  let counter2 = 1;
+  let letter2 = 'A';
+
   ctx.strokeStyle = 'black';
   ctx.lineWidth = 2;
   for (
@@ -108,11 +136,22 @@ function drawBoard() {
     i < attackingBoard.sideLength + attackingBoard.x - 0.00000000001; // fix weird rounding error
     i += attackingBoard.sideLength / 10
   ) {
+    // Draw numbers
+    ctx.font = '25px Verdana, sans-serif';
+    ctx.fillStyle = 'black';
+    ctx.textAlign = 'center';
+    ctx.fillText(
+      `${counter2}`,
+      i + attackingBoard.sideLength / 20,
+      attackingBoard.y - attackingBoard.sideLength / 50
+    );
+    counter2++;
     for (
       let j = attackingBoard.y;
       j <= attackingBoard.sideLength + attackingBoard.y - 0.00000000001; // fix weird rounding error;
       j += attackingBoard.sideLength / 10
     ) {
+      // Draw attacking tiles
       ctx.strokeRect(
         i,
         j,
@@ -121,6 +160,17 @@ function drawBoard() {
       );
       if (attackingTiles.length < 100) {
         attackingTiles.push(addTileToArray(i, j, 'none'));
+      }
+      if (letter2 !== 'END') {
+        // Draw letters
+        ctx.font = '25px Verdana, sans-serif';
+        ctx.fillStyle = 'black';
+        ctx.fillText(
+          `${letter2}`,
+          attackingBoard.x - attackingBoard.sideLength / 25,
+          j + attackingBoard.sideLength / 15
+        );
+        letter2 = nextLetter(letter2);
       }
     }
   }

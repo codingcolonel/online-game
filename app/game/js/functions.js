@@ -51,12 +51,31 @@ function processResponse(response) {
 
   return {
     rotation: rotation,
-    position: {
-      1: position,
-      2: null,
-      3: null,
-      4: null,
-      5: null,
-    },
+    position: [position],
   };
+}
+
+// Find the next letter in alphabetical sequence
+function nextLetter(letter) {
+  if (letter === 'A') {
+    return 'B';
+  } else if (letter === 'B') {
+    return 'C';
+  } else if (letter === 'C') {
+    return 'D';
+  } else if (letter === 'D') {
+    return 'E';
+  } else if (letter === 'E') {
+    return 'F';
+  } else if (letter === 'F') {
+    return 'G';
+  } else if (letter === 'G') {
+    return 'H';
+  } else if (letter === 'H') {
+    return 'I';
+  } else if (letter === 'I') {
+    return 'J';
+  } else if (letter === 'J') {
+    return 'END';
+  }
 }

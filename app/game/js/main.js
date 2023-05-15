@@ -61,5 +61,9 @@ function getMouseCoordinates(e) {
     console.log(
       attackingTiles[findTileByCoordinates(mouseX, mouseY, attackingTiles)]
     );
+
+    for (let i = 0; i < opponentShips.length; i++) {
+      const element = opponentShips[i];
+    }
   }
 }
