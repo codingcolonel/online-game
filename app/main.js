@@ -148,9 +148,16 @@ if (connection.status === "enabled") {
 }
 
 // -- Event Listeners --
-document.addEventListener("keydown", function ({ key }) {
-  if (key === "a") mainManager.references.query.sub.display("connect");
-  if (key === "b") mainManager.display("loader");
+confirmBtn.addEventListener("click", function () {
+  mainManager.references.query.sub.display("connect");
+});
+
+connectBtn.addEventListener("click", function () {
+  mainManager.display("loader");
+});
+
+cancelBtn.addEventListener("click", function () {
+  mainManager.display("query");
 });
 
 // -- Functions --
