@@ -20,7 +20,7 @@
   user-select: none;
   transition: margin 1200ms cubic-bezier(0.5, 0.1, 0.5, 0.9);
   background-color: var(--back);
-  margin: 1rem;
+  margin: 1.5vh;
   margin-top: 0;
   height: 14vh;
   position: relative;
@@ -77,9 +77,7 @@
   top: 0;
   left: 0;
   width: 25vw;
-  overflow: hidden;
   overflow-wrap: break-word;
-  height: 4.1rem;
   padding: 1.4rem 1vw 0 1vw;
   font-size: 0.8rem;
   position: absolute;

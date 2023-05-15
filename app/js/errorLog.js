@@ -16,6 +16,7 @@ class errorLogger {
   /** @type {HTMLDivElement} */
   #body;
   #grid;
+  #queue = [];
 
   constructor(bodyElement) {
     this.#body = document.createElement("div");
@@ -51,24 +52,29 @@ class errorLogger {
     main.innerHTML += svg;
     main.classList.add("running");
 
-    main.addEventListener("animationend", function (event) {
-      switch (event.animationName) {
-        case "slider":
-          main.classList.remove("running");
-          main.classList.add("done");
-          break;
-        case "squishOut":
-          main.remove();
-          break;
-      }
-    });
+    main.addEventListener(
+      "animationend",
+      function (event) {
+        switch (event.animationName) {
+          case "slider":
+            main.classList.remove("running");
+            main.classList.add("done");
+            break;
+          case "squishOut":
+            main.remove();
+            if (this.#queue.length) this.#grid.prepend(this.#queue.shift());
+            break;
+        }
+      }.bind(this)
+    );
 
     main.querySelector("svg").addEventListener("click", function () {
       main.classList.remove("running");
       main.classList.add("done");
     });
 
-    this.#grid.prepend(main);
+    if (this.#grid.children.length < 6) this.#grid.prepend(main);
+    else this.#queue.push(main);
   }
 
   generic(msg = "") {
