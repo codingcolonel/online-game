@@ -5,27 +5,72 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Battleship</title>
-
     <link rel="stylesheet" href="./style.css" />
-
     <script src="https://cdn.ably.com/lib/ably.min-1.js" defer></script>
-    <script src="./connection.js" type="module" defer></script>
+    <script src="./main.js" defer type="module"></script>
+
+    <title>Battleship</title>
   </head>
   <body>
-    <h2>== Temporary ==</h2>
-    <p>Your code: <span id="codeOut">NO_CODE_GENERATED</span></p>
-    <input type="text" id="codeIn" placeholder="Put code here" />
+    <div id="main">
+      <div id="queryBoxContain" class="hide">
+        <div id="queryBox">
+          <img src="../img/WeblshipsLogo.png" alt="Logo Image" />
 
-    <h1>Input:</h1>
-    <textarea name="in" id="in" cols="80" rows="10"></textarea>
-    <h1>Output:</h1>
-    <textarea name="out" id="out" cols="80" rows="10" readonly></textarea>
+          <div id="userBox" class="reveal">
+            <h1>USERNAME:</h1>
+            <div class="inputWrapper username">
+              <div>
+                <input type="text" maxlength="20" />
+              </div>
+            </div>
+            <button class="bttn in" id="confirmBtn">
+              <span>Confirm</span>
+              <div class="inner"></div>
+              <div class="corners top"></div>
+              <div class="corners bottom"></div>
+            </button>
+          </div>
 
-    <br />
-    <button id="connect">Connect</button>
-    <button id="send">Send</button>
-    <br />
-    <h2>== Temporary ==</h2>
+          <div id="connectionBox" class="hide">
+            <div id="inputGrid">
+              <div>
+                <h2>Input Code:</h2>
+                <div class="inputWrapper">
+                  <div>
+                    <input type="text" maxlength="6" />
+                  </div>
+                </div>
+              </div>
+              <p>OR</p>
+              <div>
+                <h2>Send your code:</h2>
+                <span>YOUR_CODE</span>
+              </div>
+            </div>
+            <br />
+            <button class="bttn in" id="connectBtn">
+              <span>Connect</span>
+              <div class="inner"></div>
+              <div class="corners top"></div>
+              <div class="corners bottom"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="loaderContain" class="hide">
+        <div id="vertGrid">
+          <img src="../img/WeblshipsLogo.png" alt="Logo Image" />
+          <span class="loader"></span>
+        </div>
+        <button class="bttn in hide" id="cancelBtn">
+          <span>Cancel</span>
+          <div class="inner"></div>
+          <div class="corners top"></div>
+          <div class="corners bottom"></div>
+        </button>
+      </div>
+    </div>
   </body>
 </html>

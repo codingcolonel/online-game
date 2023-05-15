@@ -1,12 +1,409 @@
+@font-face {
+  font-family: Ailerons;
+  src: url("../font/Ailerons-Regular.otf");
+}
+
+/* HTML elements */
+html {
+  line-height: 1;
+  font-family: "Ailerons", sans-serif;
+  letter-spacing: -0.5em;
+}
+
 body {
+  background-color: #001122;
+}
+
+h1 {
+  color: #ff3d00;
+  font-size: 2.8rem;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+h2 {
+  color: #eeeeee;
+  font-size: 2rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+p {
+  color: #ff3d00;
+  font-size: 1.5rem;
+  font-family: "Ailerons";
+  margin: 0;
+}
+
+input[type="text"] {
+  position: relative;
+  outline: none;
+  border: none;
+  background: #eeeeee11;
+  color: #eeeeee;
+  border-bottom: #00000000 2px solid;
+  font-size: 2.2rem;
+  font-family: "Ailerons";
+  letter-spacing: -0.15em;
+  padding: 2px;
+  z-index: 2;
+  margin: 0;
+}
+
+img {
+  width: 40.96vw;
+}
+
+/* ID */
+#main {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  position: absolute;
+  background: url("../img/Background.png");
+  background-size: 8192px 8192px;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation: backgroundMove 800s infinite linear reverse;
+}
+
+#main:after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 18vh 18vh;
+  background-color: #000000ee;
+  box-shadow: #000000ee 0 0 20vh 20vh;
+  mix-blend-mode: multiply;
+}
+
+#loaderContain {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  position: absolute;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+#vertGrid {
+  display: grid;
+  grid-template-rows: auto auto;
+}
+#vertGrid img {
+  margin-top: 8vh;
+  animation: float 4s infinite alternate-reverse ease-in-out;
+}
+
+#inputGrid {
+  padding: 2vh;
+  display: grid;
+  grid-template-rows: auto auto auto;
+  align-items: center;
+  row-gap: 0.5vh;
+}
+#inputGrid span {
+  color: #ff3d00;
+  padding: 0 0 10px 0;
+  font-size: 2.5rem;
+}
+#inputGrid input {
+  width: 4em;
+  border-bottom: #00000000 3px solid;
   text-align: center;
 }
 
-canvas {
-  border: 1px solid gray;
-  margin-bottom: 0;
+#loaderContain .bttn {
+  position: absolute;
+  bottom: 4vh;
 }
 
-textarea {
-  resize: none;
+#queryBoxContain {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  position: absolute;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: all;
+}
+
+#queryBox {
+  text-align: center;
+  position: relative;
+  display: grid;
+}
+
+#queryBox img {
+  margin: 4vh 0;
+  grid-area: 1 / 1;
+}
+
+#connectionBox,
+#userBox {
+  grid-area: 2 / 1;
+}
+
+/* Class */
+
+.inputWrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.inputWrapper div {
+  position: relative;
+  overflow: hidden;
+}
+.inputWrapper div::before {
+  content: "";
+  position: absolute;
+  left: -5%;
+  bottom: 0px;
+  background-color: #eeeeee;
+  height: 2px;
+  width: 110%;
+  z-index: 1;
+  transform: skewX(45deg);
+  transition: ease-in-out 500ms;
+}
+.inputWrapper div::after {
+  content: "";
+  position: absolute;
+  left: -115%;
+  bottom: 0px;
+  background-color: #ff3d00;
+  height: 2px;
+  width: 110%;
+  z-index: 1;
+  transform: skewX(45deg);
+  transition: ease-in-out 500ms;
+}
+.inputWrapper:focus-within div::before {
+  left: 105%;
+}
+.inputWrapper:focus-within div::after {
+  left: -5%;
+}
+
+.inputWrapper.username input {
+  width: 100%;
+  font-size: 1.7rem;
+}
+
+.inputWrapper.username div {
+  width: 50%;
+}
+
+/* Loader styling from https://cssloaders.github.io/ - Start of loader styling*/
+.loader {
+  display: flex;
+  position: relative;
+  margin: auto;
+  margin-bottom: 3rem;
+  box-sizing: border-box;
+  width: 20vw;
+  height: 20vw;
+  border-radius: 50%;
+  border: 0.8vw solid rgba(255, 255, 255, 0.15);
+  transform-origin: 50% 50%;
+  transform: perspective(30vw) rotateX(66deg);
+  animation: spinner-wiggle 1.8s infinite;
+}
+.loader:before,
+.loader:after {
+  content: "";
+  position: absolute;
+  inset: -0.8vw;
+  border-radius: 50%;
+  box-sizing: border-box;
+  border: 0.8vw solid #00000000;
+  animation: spinner-spin 1.8s cubic-bezier(0.6, 0.2, 0, 0.8) infinite,
+    spinner-fade 1.8s linear infinite;
+}
+.loader:before {
+  border-top-color: #eeeeee;
+}
+.loader:after {
+  border-top-color: #ff3d00;
+  animation-delay: 0.4s;
+}
+
+@keyframes spinner-spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes spinner-fade {
+  25%,
+  75% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+/* Loader styling from https://cssloaders.github.io/ - End of loader styling*/
+
+/* Buttons styling from https://codepen.io/NyX/pen/JYOzWW - Start of styling*/
+.bttn {
+  pointer-events: all;
+  font-family: "Ailerons";
+  padding: 0;
+  margin: 30px;
+  background-color: #00000000;
+  border: 0;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+}
+
+.bttn:hover {
+  cursor: pointer;
+}
+
+.bttn span {
+  position: relative;
+  display: block;
+  padding: 10px 15px;
+  font-size: 30px;
+  color: #ff3d00;
+  text-transform: uppercase;
+  transition-duration: 0.75s;
+  outline: #ff3d0000 solid 20px;
+  outline-offset: 5px;
+  z-index: 50;
+}
+.bttn.in .corners {
+  position: absolute;
+  width: 100%;
+  transition-duration: 0.25s;
+}
+
+.bttn.in .corners:before,
+.bttn.in .corners:after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-color: #eeeeee;
+  border-style: solid;
+  transition-duration: 0.25s;
+}
+.bttn.in .corners.top:before {
+  border-width: 2px 0 0 2px;
+}
+.bttn.in .corners.top:after {
+  border-width: 2px 2px 0 0;
+}
+.bttn.in .corners.bottom:before {
+  border-width: 0 0 2px 2px;
+}
+.bttn.in .corners.bottom:after {
+  border-width: 0 2px 2px 0;
+}
+.bttn.in .corners:before {
+  left: 5px;
+}
+.bttn.in .corners:after {
+  right: 5px;
+}
+.bttn.in .corners.top {
+  top: 5px;
+}
+.bttn.in .corners.bottom {
+  bottom: 12px;
+}
+.bttn.in:hover .corners:before {
+  left: -5px;
+}
+.bttn.in:hover .corners:after {
+  right: -5px;
+}
+.bttn.in:hover .corners.top {
+  top: -5px;
+}
+.bttn.in:hover .corners.bottom {
+  bottom: 2px;
+}
+/* Buttons styling from https://codepen.io/NyX/pen/JYOzWW - End of styling*/
+
+.bttn .inner {
+  position: absolute;
+  top: -1px;
+  bottom: -2px;
+  left: -2px;
+  right: -1px;
+  background: url("../img/Wires.png");
+  background-size: 100px 100px;
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition-duration: 0.25s;
+  box-shadow: inset 0 0 6px 6px #000000;
+  z-index: 0;
+}
+
+.bttn:active .corners::before,
+.bttn:active .corners::after {
+  border-color: #ff3d00;
+  transition-duration: 0ms;
+}
+.bttn:hover .inner {
+  opacity: 0.4;
+}
+.bttn:active .inner {
+  opacity: 1;
+  transition-duration: 0ms;
+}
+.bttn:active span {
+  transition-duration: 0ms;
+  color: #eeeeee;
+  outline: #ff3d00 solid 0px;
+  outline-offset: 0px;
+}
+
+.hide,
+.hide * {
+  transition: 700ms ease-in-out;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hide {
+  transform: translateY(-2.5vh);
+}
+
+.hide .loader {
+  transform: perspective(30vw) rotateX(66deg);
+}
+
+.reveal {
+  transition: 700ms ease-in-out 400ms;
+}
+
+/* Animations */
+
+@keyframes backgroundMove {
+  0% {
+    background-position: 0px 0px;
+  }
+  100% {
+    background-position: 16384px 8192px;
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(3rem);
+  }
 }

@@ -8,7 +8,7 @@ function registerErrorLogger() {
 
   const logger = new errorLogger(body);
 
-  window.errorLogger = logger;
+  window.logger = logger;
   return logger;
 }
 

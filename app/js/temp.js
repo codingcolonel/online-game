@@ -1,6 +1,6 @@
 // This is a temporary testing file. Will be removed eventually
 
-import { registerErrorLogger } from "./js/errorLog.js";
+import { registerErrorLogger } from "./errorLog.js";
 
 const logger = registerErrorLogger();
 
@@ -10,13 +10,13 @@ function time(ms) {
   });
 }
 
-function gdid(string) {
+function dgid(string) {
   return document.getElementById(string);
 }
 
-const confirmBtn = gdid("confirmBtn");
-const connectBtn = gdid("connectBtn");
-const cancelBtn = gdid("cancelBtn");
+const confirmBtn = dgid("confirmBtn");
+const connectBtn = dgid("connectBtn");
+const cancelBtn = dgid("cancelBtn");
 
 cancelBtn.addEventListener("click", toggle);
 
