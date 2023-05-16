@@ -58,7 +58,7 @@ class displayManager {
   }
 
   hideAll() {
-    for (const [key] of Object.entries(this.references)) {
+    for (const [key, value] of Object.entries(this.references)) {
       if (value.root.classList.contains("hide")) continue;
       value.root.classList.add("hide");
       value.root.classList.remove("reveal");
@@ -106,6 +106,8 @@ if (servers instanceof Error) {
 
 let mainManager = new displayManager();
 
+const user = { name: undefined };
+
 // HTML References
 
 const queryBoxContain = document.getElementById("queryBoxContain");
@@ -123,12 +125,24 @@ const connectBtn = document.getElementById("connectBtn");
 
 const cancelBtn = document.getElementById("cancelBtn");
 
-mainManager.add(queryBoxContain, "query", null, true);
+mainManager.add(
+  queryBoxContain,
+  "query",
+  async function (state) {
+    if (!state) return;
+    await codecrypt.generateAuthenticator();
+    codeOut.innerText = codecrypt.authenticator;
+  },
+  true
+);
 mainManager.add(
   loaderContain,
   "loader",
   async function (state) {
-    if (!state) this.hideAll();
+    if (!state) {
+      this.hideAll();
+      return;
+    }
     await timer(5000);
     this.display("button");
   },
@@ -149,7 +163,15 @@ if (connection.status === "enabled") {
 
 // -- Event Listeners --
 confirmBtn.addEventListener("click", function () {
-  mainManager.references.query.sub.display("connect");
+  const input = nameIn.value;
+
+  if (input.length > 1 && input.length <= 20) {
+    user.name = input;
+    Object.freeze(user);
+    mainManager.references.query.sub.display("connect");
+  } else {
+    logger.generic("Username must be from 2 to 20 characters long.");
+  }
 });
 
 connectBtn.addEventListener("click", function () {
@@ -181,4 +203,17 @@ async function tryCatchFetch(url) {
     console.warn(error);
     return error;
   }
+}
+
+/**
+ * Test inputted code for validity
+ *
+ * @param {string} code
+ * @returns True if code is hex & six digits long, else returns false
+ */
+function validateCode(code) {
+  if (typeof code !== "string") return false;
+  if (code.match(/([^0-9A-Fa-f])+/gm)) return false;
+  if (code.length === 6) return true;
+  return false;
 }
