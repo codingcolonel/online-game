@@ -90,7 +90,7 @@ function drawBoard() {
         defendingBoard.sideLength / 10
       );
       if (defendingTiles.length < 100) {
-        defendingTiles.push(addTileToArray(i, j, 'miss'));
+        defendingTiles.push(addTileToArray(i, j, 'none'));
       }
       if (letter1 !== 'END') {
         // Draw letters
@@ -228,27 +228,34 @@ function updateCanvas() {
       ctx.fill();
     } else if (element.state === 'hit') {
       // Draw red x to mark as hit
-      ctx.strokeStyle = 'red';
-      ctx.lineWidth = 5;
-      ctx.beginPath();
-      ctx.moveTo(tile.x1, tile.y1);
-      ctx.lineTo(tile.x2, tile.y2);
-      ctx.stroke();
-      ctx.strokeStyle = 'red';
-      ctx.lineWidth = 5;
-      ctx.beginPath();
-      ctx.moveTo(tile.x2, tile.y1);
-      ctx.lineTo(tile.x1, tile.y2);
-      ctx.stroke();
-      // Draw box around the x
-      ctx.strokeRect(
-        tile.x1,
-        tile.y1,
-        attackingBoard.sideLength / 10,
-        attackingBoard.sideLength / 10
-      );
+      drawX('red', tile);
+    } else if (element.state === 'sunk') {
+      drawX('black', tile);
     }
   }
+}
+
+function drawX(color, tile) {
+  // Draw red x to mark as hit
+  ctx.strokeStyle = `${color}`;
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(tile.x1, tile.y1);
+  ctx.lineTo(tile.x2, tile.y2);
+  ctx.stroke();
+  ctx.strokeStyle = `${color}`;
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(tile.x2, tile.y1);
+  ctx.lineTo(tile.x1, tile.y2);
+  ctx.stroke();
+  // Draw box around the x
+  ctx.strokeRect(
+    tile.x1,
+    tile.y1,
+    attackingBoard.sideLength / 10,
+    attackingBoard.sideLength / 10
+  );
 }
 
 // http://en.battleship-game.org/
