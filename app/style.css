@@ -54,6 +54,21 @@ img {
   width: 40.96vw;
 }
 
+dialog {
+  outline: none;
+  border: none;
+  background-color: #001830;
+  width: 60vw;
+  height: 60vh;
+}
+
+dialog h1 {
+  margin-top: 0.5rem;
+}
+dialog p {
+  letter-spacing: -0.2em;
+}
+
 /* ID */
 #main {
   left: 0;
@@ -151,7 +166,20 @@ img {
   grid-area: 2 / 1;
 }
 
+#inviteBtn {
+  position: fixed;
+  top: 0;
+  right: 0;
+}
+
 /* Class */
+
+.center {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 .inputWrapper {
   display: flex;

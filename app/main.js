@@ -122,6 +122,7 @@ const confirmBtn = document.getElementById("confirmBtn");
 const codeIn = document.getElementById("codeIn");
 const codeOut = document.getElementById("codeOut");
 const connectBtn = document.getElementById("connectBtn");
+const inviteBtn = document.getElementById("inviteBtn");
 
 const cancelBtn = document.getElementById("cancelBtn");
 
@@ -149,7 +150,18 @@ mainManager.add(
   true
 );
 
-mainManager.references.query.sub.add(userBox, "user", null, false);
+mainManager.references.query.sub.add(
+  userBox,
+  "user",
+  async function (state) {
+    if (!state) {
+      await timer(1000);
+      inviteBtn.classList.add("reveal");
+      inviteBtn.classList.remove("hide");
+    }
+  },
+  false
+);
 mainManager.references.query.sub.add(connectionBox, "connect", null, false);
 
 mainManager.references.loader.sub.add(cancelBtn, "button", null, false);
@@ -162,27 +174,95 @@ if (connection.status === "enabled") {
 }
 
 // -- Event Listeners --
-confirmBtn.addEventListener("click", function () {
+confirmBtn.addEventListener("click", confirmUser);
+
+connectBtn.addEventListener("click", function () {
+  if (connection.status !== "waiting") return;
+  connection.status = "offering";
+});
+
+cancelBtn.addEventListener("click", function () {
+  connection.status = "disconnected";
+});
+
+inviteBtn.addEventListener("click", copyLink);
+
+// -- Connection Manager Functions --
+
+/*
+! connection.onwaiting = async function () {
+!   await channel.subscribe("offer", async function (msg) {
+!     const data = msg.data;
+! 
+!     try {
+!       decryptedRemoteSDP = await codecrypt.decrypt(data, "offer");
+!       // TODO: Add user request
+!       console.log(decryptedRemoteSDP);
+!       connection.status = "answering";
+!     } catch (error) {
+!       newMessage("Invalid Message Recieved");
+!     }
+!   });
+! 
+!   codecrypt.generateAuthenticator();
+!   codeOut.innerHTML = codecrypt.authenticator;
+! };
+*/
+
+connection.onwaiting = async function () {
+  mainManager.references.query.sub.display("connect");
+  await channel.subscribe("offer", async function (msg) {
+    const data = msg.data;
+
+    try {
+      decryptedRemoteSDP = await codecrypt.decrypt(data, "offer");
+      // TODO: Add user request
+      console.log(decryptedRemoteSDP);
+      connection.status = "answering";
+    } catch (error) {
+      console.warn("Could not decrypt incoming request");
+    }
+  });
+};
+
+connection.onoffering = function () {
+  mainManager.display("loader");
+};
+
+connection.ondisconnected = function () {
+  mainManager.display("query");
+};
+
+// -- Functions --
+
+// Listener
+
+function confirmUser() {
+  if (Object.isFrozen(user)) return;
+  if (connection.status !== "enabled") throw new Error("Not connected");
   const input = nameIn.value;
 
   if (input.length > 1 && input.length <= 20) {
     user.name = input;
     Object.freeze(user);
-    mainManager.references.query.sub.display("connect");
+
+    let query = new URLSearchParams(location.search).get("g");
+    if (validateCode(query)) {
+      codecrypt.setAuthenticator(query);
+      connection.status = "offering";
+    } else {
+      connection.status = "waiting";
+    }
   } else {
     logger.generic("Username must be from 2 to 20 characters long.");
   }
-});
+}
 
-connectBtn.addEventListener("click", function () {
-  mainManager.display("loader");
-});
-
-cancelBtn.addEventListener("click", function () {
-  mainManager.display("query");
-});
-
-// -- Functions --
+async function copyLink() {
+  let link = `${location.origin}?g=${codecrypt.authenticator}`;
+  await navigator.clipboard.writeText(link);
+  logger.success("Link copied!");
+}
 
 // Utility
 

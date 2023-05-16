@@ -9,7 +9,7 @@
     <script src="https://cdn.ably.com/lib/ably.min-1.js" defer></script>
     <script src="./main.js" defer type="module"></script>
 
-    <title>Battleship</title>
+    <title>Weblships</title>
   </head>
   <body>
     <div id="main">
@@ -55,6 +55,12 @@
               <div class="corners top"></div>
               <div class="corners bottom"></div>
             </button>
+            <button class="bttn in hide" id="inviteBtn">
+              <span>Invite Link</span>
+              <div class="inner"></div>
+              <div class="corners top"></div>
+              <div class="corners bottom"></div>
+            </button>
           </div>
         </div>
       </div>
@@ -72,5 +78,9 @@
         </button>
       </div>
     </div>
+    <dialog>
+      <h1>REQUEST</h1>
+      <p>Incoming Join Request</p>
+    </dialog>
   </body>
 </html>
