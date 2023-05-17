@@ -51,6 +51,16 @@ async function fullscreenHandler() {
   drawBoard();
 }
 
+window.addEventListener("resize", function (e) {
+  if (!document.fullscreenElement) {
+    trueHeight(Math.floor(window.innerHeight * scale));
+    trueWidth(Math.floor(window.innerWidth * scale));
+  }
+  cnv.height = trueHeight();
+  cnv.width = trueWidth();
+  drawBoard();
+});
+
 // Event Listener
 document.addEventListener("click", getMouseCoordinates);
 function getMouseCoordinates(e) {
