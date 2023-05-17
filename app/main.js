@@ -146,7 +146,9 @@ let channel;
 
 const codecrypt = new CodeCrypt();
 
-const servers = tryCatchFetch(`${location.origin}/.netlify/functions/creds`);
+const servers = await tryCatchFetch(
+  `${location.origin}/.netlify/functions/creds`
+);
 
 if (servers instanceof Error) {
   connection.servers = false;
@@ -457,8 +459,6 @@ connection.onoffering = async function () {
     servers[2],
     servers[4],
   ];
-
-  console.log(servers, iceServers);
 
   connection.session = new RTCPeerConnection({
     iceServers: iceServers,
