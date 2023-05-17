@@ -190,6 +190,7 @@ inviteBtn.addEventListener("click", copyLink);
 // -- Connection Manager Functions --
 
 /*
+* Waiting
 ! connection.onwaiting = async function () {
 !   await channel.subscribe("offer", async function (msg) {
 !     const data = msg.data;
@@ -206,6 +207,111 @@ inviteBtn.addEventListener("click", copyLink);
 ! 
 !   codecrypt.generateAuthenticator();
 !   codeOut.innerHTML = codecrypt.authenticator;
+! };
+* Offerin
+! connection.onoffering = async function () {
+!   // TODO: Display connecting screen here
+! 
+!   if (typeof channel.subscriptions.events.offer !== "undefined")
+!     channel.unsubscribe("offer");
+! 
+!   let iceServers = [
+!     { urls: "stun:stun.l.google.com:19302" },
+!     servers[2],
+!     servers[4],
+!   ];
+! 
+!   connection.session = new RTCPeerConnection({
+!     iceServers: iceServers,
+!   });
+! 
+!   connection.session.channel = connection.session.createDataChannel("gameInfo");
+!   connection.session.channel.addEventListener("open", function () {
+!     connection.status = "connected";
+!     console.log("Channel Opened");
+!   });
+!   connection.session.channel.addEventListener("close", function () {
+!     console.log("Channel Closed");
+!   });
+!   connection.session.channel.addEventListener("message", function ({ data }) {
+!     newMessage(data);
+!     console.log(data);
+!   });
+! 
+!   connection.session.onicegatheringstatechange = async function () {
+!     if (connection.session.iceGatheringState !== "complete") return;
+! 
+!     const sdp = JSON.stringify(connection.session.localDescription);
+! 
+!     let encryptedSDP = await codecrypt.encrypt(sdp, "offer");
+! 
+!     await channel.subscribe("answer", async (msg) => {
+!       const data = msg.data;
+! 
+!       try {
+!         decryptedRemoteSDP = await codecrypt.decrypt(data, "answer");
+!         // TODO: Add user request
+!         console.log(decryptedRemoteSDP);
+!         connection.session.setRemoteDescription(JSON.parse(decryptedRemoteSDP));
+!       } catch (error) {
+!         newMessage("Invalid Message Recieved");
+!       }
+!     });
+!     await channel.publish("offer", encryptedSDP);
+!   };
+! 
+!   await connection.session.setLocalDescription(
+!     await connection.session.createOffer()
+!   );
+! };
+* Answering
+! connection.onanswering = async function () {
+!   // TODO: Display connecting screen here
+! 
+!   if (typeof channel.subscriptions.events.answer !== "undefined")
+!     channel.unsubscribe("answer");
+! 
+!   let iceServers = [
+!     { urls: "stun:stun.l.google.com:19302" },
+!     servers[2],
+!     servers[4],
+!   ];
+! 
+!   connection.session = new RTCPeerConnection({
+!     iceServers: iceServers,
+!   });
+! 
+!   connection.session.ondatachannel = function ({ channel }) {
+!     const recieve = channel;
+!     recieve.addEventListener("open", function () {
+!       connection.status = "connected";
+!       console.log("Channel Opened");
+!     });
+!     recieve.addEventListener("close", function () {
+!       console.log("Channel Closed");
+!     });
+!     recieve.addEventListener("message", function ({ data }) {
+!       newMessage(data);
+!       console.log(data);
+!     });
+!     connection.session.channel = recieve;
+!   };
+! 
+!   connection.session.onicegatheringstatechange = async function () {
+!     if (connection.session.iceGatheringState !== "complete") return;
+! 
+!     const sdp = JSON.stringify(connection.session.localDescription);
+! 
+!     let encryptedSDP = await codecrypt.encrypt(sdp, "answer");
+! 
+!     await channel.publish("answer", encryptedSDP);
+!   };
+! 
+!   await connection.session.setRemoteDescription(JSON.parse(decryptedRemoteSDP));
+! 
+!   await connection.session.setLocalDescription(
+!     await connection.session.createAnswer()
+!   );
 ! };
 */
 

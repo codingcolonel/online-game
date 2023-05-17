@@ -20,7 +20,7 @@ function addShipToArray(x, y, rotation, index) {
 
 // Convert an integer into binary
 function intToBin(num) {
-  return ('00000000' + num.toString(2)).slice(-8);
+  return ("00000000" + num.toString(2)).slice(-8);
 }
 
 // Convert binary into an integer
@@ -57,25 +57,39 @@ function processResponse(response) {
 
 // Find the next letter in alphabetical sequence
 function nextLetter(letter) {
-  if (letter === 'A') {
-    return 'B';
-  } else if (letter === 'B') {
-    return 'C';
-  } else if (letter === 'C') {
-    return 'D';
-  } else if (letter === 'D') {
-    return 'E';
-  } else if (letter === 'E') {
-    return 'F';
-  } else if (letter === 'F') {
-    return 'G';
-  } else if (letter === 'G') {
-    return 'H';
-  } else if (letter === 'H') {
-    return 'I';
-  } else if (letter === 'I') {
-    return 'J';
-  } else if (letter === 'J') {
-    return 'END';
+  if (letter === "A") {
+    return "B";
+  } else if (letter === "B") {
+    return "C";
+  } else if (letter === "C") {
+    return "D";
+  } else if (letter === "D") {
+    return "E";
+  } else if (letter === "E") {
+    return "F";
+  } else if (letter === "F") {
+    return "G";
+  } else if (letter === "G") {
+    return "H";
+  } else if (letter === "H") {
+    return "I";
+  } else if (letter === "I") {
+    return "J";
+  } else if (letter === "J") {
+    return "END";
   }
+  /*
+  ! Suggestion for replacement:
+  * let encoded = new TextEncoder().encode(letter);
+  * if (encoded[0] > 73 || encoded [0] < 65) {
+  *   return "END";
+  * } else {
+  *   encoded[0]++;
+  *   let decoded = new TextDecoder("utf-8").decode(encoded);
+  *   return decoded;
+  * }
+  ! This is much more compact than all those else ifs
+  */
 }
+
+export { processResponse, addTileToArray, findTileByCoordinates, nextLetter };
