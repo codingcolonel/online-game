@@ -277,7 +277,8 @@ connectBtn.addEventListener("click", function () {
 
 cancelBtn.addEventListener("click", function () {
   if (connection.status === "disabled") return;
-  connection.status = "disconnected";
+  connection.session.close();
+  connection.session = null;
 });
 
 inviteBtn.addEventListener("click", copyLink);
@@ -582,8 +583,6 @@ connection.onconnected = function () {
 
 connection.ondisconnected = async function () {
   if (connection.status === "disabled") return;
-
-  connection.session = null;
 
   if (ably.connection.state !== "connected") {
     mainManager.display("loader");
