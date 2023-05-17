@@ -437,6 +437,7 @@ acceptBtn.addEventListener("click", function () {
 
 connection.onwaiting = async function () {
   if (connection.status === "disabled") return;
+  mainManager.display("query");
   mainManager.references.query.sub.display("connect");
 
   await channel.subscribe("offer", async function (msg) {
@@ -590,7 +591,7 @@ connection.ondisconnected = async function () {
     await ably.connection.once("connected");
   }
 
-  mainManager.display("query");
+  connection.status = "waiting";
 };
 
 // -- Functions --
