@@ -23,6 +23,7 @@ class ConnectionManager {
     this.#status = "enabled";
   }
   get status() {
+    console.log(this.ably, this.servers, this.#status);
     if (!this.ably || !this.servers) return "disabled";
     return this.#status;
   }
