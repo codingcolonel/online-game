@@ -490,6 +490,7 @@ connection.onoffering = async function () {
     });
 
     await channel.subscribe("answer", async (msg) => {
+      console.log(msg);
       const data = JSON.parse(msg.data);
 
       try {
