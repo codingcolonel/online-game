@@ -493,9 +493,14 @@ connection.onoffering = async function () {
     logger.generic(data);
     console.log(data);
   });
+  connection.session.channel.addEventListener("error", function (error) {
+    console.log(error);
+  });
 
-  connection.session.onicegatheringstatechange = async function () {
+  connection.session.onicegatheringstatechange = async function (event) {
+    console.log(event);
     if (connection.session.iceGatheringState !== "complete") return;
+    console.log("Done gathering!");
 
     const sdp = JSON.stringify(connection.session.localDescription);
 
@@ -520,6 +525,10 @@ connection.onoffering = async function () {
       }
     });
     await channel.publish("offer", message);
+  };
+
+  connection.session.onconnectionstatechange = function (event) {
+    console.log(event);
   };
 
   await connection.session.setLocalDescription(
@@ -559,11 +568,16 @@ connection.onanswering = async function () {
       logger.generic(data);
       console.log(data);
     });
+    recieve.addEventListener("error", function (error) {
+      console.log(error);
+    });
     connection.session.channel = recieve;
   };
 
-  connection.session.onicegatheringstatechange = async function () {
+  connection.session.onicegatheringstatechange = async function (event) {
+    console.log(event);
     if (connection.session.iceGatheringState == "complete") return;
+    console.log("Done gathering!");
 
     const sdp = JSON.stringify(connection.session.localDescription);
 
@@ -576,6 +590,10 @@ connection.onanswering = async function () {
     });
 
     await channel.publish("answer", message);
+  };
+
+  connection.session.onconnectionstatechange = function (event) {
+    console.log(event);
   };
 
   await connection.session.setRemoteDescription(JSON.parse(decryptedRemoteSDP));
