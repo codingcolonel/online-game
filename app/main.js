@@ -543,7 +543,7 @@ connection.onoffering = async function () {
     console.log(error);
   };
 
-  connection.session.signalingState = function (state) {
+  connection.session.onsignalingstatechange = function (state) {
     console.log(state);
   };
 
@@ -624,7 +624,7 @@ connection.onanswering = async function () {
     console.log(error);
   };
 
-  connection.session.signalingState = function (state) {
+  connection.session.onsignalingstatechange = function (state) {
     console.log(state);
   };
 
