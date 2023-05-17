@@ -289,12 +289,20 @@ dialogBox.addEventListener("cancel", function (event) {
 rejectBtn.addEventListener("click", function () {
   if (!dialogBox.open || dialogBox.classList.contains("hide")) return;
   resolvers.reject();
+  resolvers = {
+    resolve: null,
+    reject: null,
+  };
   closeDialog();
 });
 
 acceptBtn.addEventListener("click", function () {
   if (!dialogBox.open || dialogBox.classList.contains("hide")) return;
   resolvers.resolve();
+  resolvers = {
+    resolve: null,
+    reject: null,
+  };
   closeDialog();
 });
 
@@ -428,6 +436,7 @@ acceptBtn.addEventListener("click", function () {
 
 connection.onwaiting = async function () {
   if (connection.status === "disabled") return;
+  if (resolvers !== null) return;
   mainManager.references.query.sub.display("connect");
 
   await channel.subscribe("offer", async function (msg) {
@@ -470,6 +479,7 @@ connection.onoffering = async function () {
     console.log("Channel Opened");
   });
   connection.session.channel.addEventListener("close", function () {
+    connection.status = "disconnected";
     console.log("Channel Closed");
   });
   connection.session.channel.addEventListener("message", function ({ data }) {
@@ -532,6 +542,7 @@ connection.onanswering = async function () {
       console.log("Channel Opened");
     });
     recieve.addEventListener("close", function () {
+      connection.status = "disconnected";
       console.log("Channel Closed");
     });
     recieve.addEventListener("message", function ({ data }) {
@@ -565,6 +576,7 @@ connection.onanswering = async function () {
 
 connection.onconnected = function () {
   if (connection.status === "disabled") return;
+  window.connection = connection;
   ably.close();
 };
 
