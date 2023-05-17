@@ -136,6 +136,7 @@ const ably = new Ably.Realtime.Promise({
       callback(token, null);
     } else {
       connection.ably = true;
+      if (!channel) channel = ably.channels.get("requests");
       callback(null, token);
     }
   },
@@ -254,11 +255,6 @@ mainManager.references.query.sub.add(connectionBox, "connect", null, false);
 mainManager.references.loader.sub.add(cancelBtn, "button", null, false);
 
 mainManager.display("query");
-
-// -- Ably Setup --
-if (connection.status === "enabled") {
-  channel = ably.channels.get("requests");
-}
 
 // -- Event Listeners --
 confirmBtn.addEventListener("click", confirmUser);
