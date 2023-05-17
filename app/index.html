@@ -78,9 +78,24 @@
         </button>
       </div>
     </div>
-    <dialog>
-      <h1>REQUEST</h1>
-      <p>Incoming Join Request</p>
+    <dialog class="hide" id="requestBox">
+      <h1>Incoming Join Request</h1>
+      <br />
+      <p><span id="userOut">USER</span> is trying to connect</p>
+      <div id="btnBox">
+        <button class="bttn in" id="acceptBtn">
+          <span>Accept</span>
+          <div class="inner"></div>
+          <div class="corners top"></div>
+          <div class="corners bottom"></div>
+        </button>
+        <button class="bttn in" id="rejectBtn">
+          <span>Reject</span>
+          <div class="inner"></div>
+          <div class="corners top"></div>
+          <div class="corners bottom"></div>
+        </button>
+      </div>
     </dialog>
   </body>
 </html>

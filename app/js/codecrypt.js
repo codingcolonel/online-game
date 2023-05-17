@@ -57,6 +57,11 @@ class CodeCrypt {
     return this.authenticator;
   }
 
+  /**
+   * @param {string} message
+   * @param {("offer"|"answer")} type
+   * @returns Hex string
+   */
   async encrypt(message, type) {
     if (!this.#key || !this.#iv) throw new Error("No authenticator generated");
     if (type !== "offer" && type !== "answer")
@@ -74,6 +79,11 @@ class CodeCrypt {
     return decodeToHex(new Uint8Array(encrypted));
   }
 
+  /**
+   * @param {string} message
+   * @param {("offer"|"answer")} type
+   * @returns String
+   */
   async decrypt(encrypted, type) {
     if (!this.#key || !this.#iv) throw new Error("No authenticator generated");
     if (type !== "offer" && type !== "answer")
