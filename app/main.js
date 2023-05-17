@@ -18,7 +18,7 @@ class ConnectionManager {
   servers = false;
 
   /** @type {RTCPeerConnection} */
-  session;
+  session = null;
   constructor() {
     this.#status = "enabled";
   }
@@ -277,8 +277,10 @@ connectBtn.addEventListener("click", function () {
 
 cancelBtn.addEventListener("click", function () {
   if (connection.status === "disabled") return;
-  connection.session.close();
-  connection.session = null;
+  if (connection.session !== null) {
+    connection.session.close();
+    connection.session = null;
+  }
 });
 
 inviteBtn.addEventListener("click", copyLink);
@@ -445,6 +447,7 @@ connection.onwaiting = async function () {
     const data = JSON.parse(msg.data);
 
     try {
+      console.log(codecrypt.authenticator);
       decryptedRemoteSDP = await codecrypt.decrypt(data.sdp, "offer");
       try {
         await openDialog(data.user);
@@ -494,6 +497,8 @@ connection.onoffering = async function () {
 
     const sdp = JSON.stringify(connection.session.localDescription);
 
+    console.log(codecrypt.authenticator);
+
     let encryptedSDP = await codecrypt.encrypt(sdp, "offer");
 
     let message = JSON.stringify({
@@ -505,6 +510,7 @@ connection.onoffering = async function () {
       const data = JSON.parse(msg.data);
 
       try {
+        console.log(codecrypt.authenticator);
         decryptedRemoteSDP = await codecrypt.decrypt(data.sdp, "answer");
         connection.session.setRemoteDescription(JSON.parse(decryptedRemoteSDP));
       } catch (error) {
@@ -559,6 +565,7 @@ connection.onanswering = async function () {
 
     const sdp = JSON.stringify(connection.session.localDescription);
 
+    console.log(codecrypt.authenticator);
     let encryptedSDP = await codecrypt.encrypt(sdp, "answer");
 
     let message = JSON.stringify({

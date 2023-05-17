@@ -44,10 +44,11 @@ input[type="text"] {
   border-bottom: #00000000 2px solid;
   font-size: 2.2rem;
   font-family: "Ailerons";
-  letter-spacing: -0.15em;
+  letter-spacing: normal;
   padding: 2px;
   z-index: 2;
   margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 img {
@@ -221,6 +222,11 @@ dialog p span {
   position: fixed;
   top: 0;
   right: 0;
+}
+
+#codeOut {
+  letter-spacing: normal;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Class */
