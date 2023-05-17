@@ -280,6 +280,8 @@ cancelBtn.addEventListener("click", function () {
   if (connection.session !== null) {
     connection.session.close();
     connection.session = null;
+  } else {
+    connection.status = "disconnected";
   }
 });
 
@@ -585,7 +587,6 @@ connection.onanswering = async function () {
 
 connection.onconnected = function () {
   if (connection.status === "disabled") return;
-  window.connection = connection;
   ably.close();
 };
 
@@ -600,6 +601,8 @@ connection.ondisconnected = async function () {
 
   connection.status = "waiting";
 };
+
+window.connection = connection;
 
 // -- Functions --
 
