@@ -436,10 +436,10 @@ acceptBtn.addEventListener("click", function () {
 
 connection.onwaiting = async function () {
   if (connection.status === "disabled") return;
-  if (resolvers !== null) return;
   mainManager.references.query.sub.display("connect");
 
   await channel.subscribe("offer", async function (msg) {
+    if (resolvers.reject !== null) return;
     const data = JSON.parse(msg.data);
 
     try {
