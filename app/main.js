@@ -23,7 +23,6 @@ class ConnectionManager {
     this.#status = "enabled";
   }
   get status() {
-    console.log(this.ably, this.servers, this.#status);
     if (!this.ably || !this.servers) return "disabled";
     return this.#status;
   }
@@ -149,6 +148,8 @@ const codecrypt = new CodeCrypt();
 const servers = tryCatchFetch(`${location.origin}/.netlify/functions/creds`);
 
 if (servers instanceof Error) {
+  connection.servers = false;
+} else {
   connection.servers = true;
 }
 
