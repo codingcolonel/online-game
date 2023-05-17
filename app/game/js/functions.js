@@ -20,7 +20,7 @@ function addShipToArray(x, y, rotation, index) {
 
 // Convert an integer into binary
 function intToBin(num) {
-  return ("00000000" + num.toString(2)).slice(-8);
+  return ('00000000' + num.toString(2)).slice(-8);
 }
 
 // Convert binary into an integer
@@ -57,26 +57,26 @@ function processResponse(response) {
 
 // Find the next letter in alphabetical sequence
 function nextLetter(letter) {
-  if (letter === "A") {
-    return "B";
-  } else if (letter === "B") {
-    return "C";
-  } else if (letter === "C") {
-    return "D";
-  } else if (letter === "D") {
-    return "E";
-  } else if (letter === "E") {
-    return "F";
-  } else if (letter === "F") {
-    return "G";
-  } else if (letter === "G") {
-    return "H";
-  } else if (letter === "H") {
-    return "I";
-  } else if (letter === "I") {
-    return "J";
-  } else if (letter === "J") {
-    return "END";
+  if (letter === 'A') {
+    return 'B';
+  } else if (letter === 'B') {
+    return 'C';
+  } else if (letter === 'C') {
+    return 'D';
+  } else if (letter === 'D') {
+    return 'E';
+  } else if (letter === 'E') {
+    return 'F';
+  } else if (letter === 'F') {
+    return 'G';
+  } else if (letter === 'G') {
+    return 'H';
+  } else if (letter === 'H') {
+    return 'I';
+  } else if (letter === 'I') {
+    return 'J';
+  } else if (letter === 'J') {
+    return 'END';
   }
   /*
   ! Suggestion for replacement:
@@ -92,4 +92,23 @@ function nextLetter(letter) {
   */
 }
 
-export { processResponse, addTileToArray, findTileByCoordinates, nextLetter };
+function checkArrayPosition(index, array) {
+  for (let i = 0; i < array.length; i++) {
+    const element = array[i];
+    for (let j = 0; j < element.position.length; j++) {
+      const position = element.position[j];
+      if (position === index) {
+        return element;
+      }
+    }
+  }
+  return false;
+}
+
+export {
+  processResponse,
+  addTileToArray,
+  findTileByCoordinates,
+  nextLetter,
+  checkArrayPosition,
+};

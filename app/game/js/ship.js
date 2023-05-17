@@ -1,8 +1,29 @@
 // All code for thes ships appearance and functionality
-import { processResponse } from "./functions.js";
+import { processResponse } from './functions.js';
 
 // Ships arrays (off of global scope)
-let playerShips = [];
+let playerShips = [
+  {
+    rotation: 0,
+    position: [0, 1, 2, 3, 4],
+  },
+  {
+    rotation: 0,
+    position: [10, 11, 12, 13],
+  },
+  {
+    rotation: 0,
+    position: [20, 21, 22],
+  },
+  {
+    rotation: 0,
+    position: [30, 31, 32],
+  },
+  {
+    rotation: 1,
+    position: [40, 41],
+  },
+];
 let opponentShips = [];
 
 // When opponents ships are received convert them into useable data
@@ -13,7 +34,7 @@ if (opponentShips.length === 0) {
 function getOpponentShips() {
   // Get opponent ship locations (test values)
   // ! response[2] (00011101) creates a "Split Ship" where it falls off of the bottom, and reappears on top, one column over
-  let response = ["10001110", "00110111", "00011101", "01010010", "11001110"];
+  let response = ['10001110', '00110111', '00011101', '01010010', '11001110'];
   let shipLength = 5;
   let counter = 1;
 
@@ -40,20 +61,6 @@ function getOpponentShips() {
     }
   }
 }
-
-function isAHit(index) {
-  for (let i = 0; i < opponentShips.length; i++) {
-    const element = opponentShips[i];
-    for (let j = 0; j < element.position.length; j++) {
-      const position = element.position[j];
-      if (position === index) {
-        return element;
-      }
-    }
-  }
-  return false;
-}
-
 console.log(opponentShips);
 
-export { getOpponentShips, isAHit };
+export { playerShips, opponentShips, getOpponentShips };
