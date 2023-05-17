@@ -458,6 +458,8 @@ connection.onoffering = async function () {
     servers[4],
   ];
 
+  console.log(servers, iceServers);
+
   connection.session = new RTCPeerConnection({
     iceServers: iceServers,
   });
