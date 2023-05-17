@@ -449,7 +449,6 @@ connection.onwaiting = async function () {
     const data = JSON.parse(msg.data);
 
     try {
-      console.log(codecrypt.authenticator);
       decryptedRemoteSDP = await codecrypt.decrypt(data.sdp, "offer");
       try {
         await openDialog(data.user);
@@ -501,18 +500,11 @@ connection.onoffering = async function () {
     logger.generic(data);
     console.log(data);
   });
-  connection.session.channel.addEventListener("error", function (error) {
-    console.log(error);
-  });
 
   connection.session.onicegatheringstatechange = async function (event) {
-    console.log(event);
     if (connection.session.iceGatheringState !== "complete") return;
-    console.log("Done gathering!");
 
     const sdp = JSON.stringify(connection.session.localDescription);
-
-    console.log(codecrypt.authenticator);
 
     let encryptedSDP = await codecrypt.encrypt(sdp, "offer");
 
@@ -525,7 +517,6 @@ connection.onoffering = async function () {
       const data = JSON.parse(msg.data);
 
       try {
-        console.log(codecrypt.authenticator);
         decryptedRemoteSDP = await codecrypt.decrypt(data.sdp, "answer");
         connection.session.setRemoteDescription(JSON.parse(decryptedRemoteSDP));
       } catch (error) {
@@ -533,18 +524,6 @@ connection.onoffering = async function () {
       }
     });
     await channel.publish("offer", message);
-  };
-
-  connection.session.onconnectionstatechange = function (event) {
-    console.log(event, connection.session.connectionState);
-  };
-
-  connection.session.onicecandidateerror = function (error) {
-    console.log(error);
-  };
-
-  connection.session.onsignalingstatechange = function (state) {
-    console.log(state);
   };
 
   await connection.session.setLocalDescription(
@@ -592,20 +571,14 @@ connection.onanswering = async function () {
       logger.generic(data);
       console.log(data);
     });
-    recieve.addEventListener("error", function (error) {
-      console.log(error);
-    });
     connection.session.channel = recieve;
   };
 
   connection.session.onicegatheringstatechange = async function (event) {
-    console.log(event);
     if (connection.session.iceGatheringState == "complete") return;
-    console.log("Done gathering!");
 
     const sdp = JSON.stringify(connection.session.localDescription);
 
-    console.log(codecrypt.authenticator);
     let encryptedSDP = await codecrypt.encrypt(sdp, "answer");
 
     let message = JSON.stringify({
@@ -614,18 +587,6 @@ connection.onanswering = async function () {
     });
 
     await channel.publish("answer", message);
-  };
-
-  connection.session.onconnectionstatechange = function (event) {
-    console.log(event, connection.session.connectionState);
-  };
-
-  connection.session.onicecandidateerror = function (error) {
-    console.log(error);
-  };
-
-  connection.session.onsignalingstatechange = function (state) {
-    console.log(state);
   };
 
   await connection.session.setRemoteDescription(JSON.parse(decryptedRemoteSDP));
