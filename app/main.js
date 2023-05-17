@@ -490,7 +490,6 @@ connection.onoffering = async function () {
     });
 
     await channel.subscribe("answer", async (msg) => {
-      console.log(msg);
       const data = JSON.parse(msg.data);
 
       try {
@@ -554,7 +553,7 @@ connection.onanswering = async function () {
       sdp: encryptedSDP,
     });
 
-    await channel.publish("answer", encryptedSDP);
+    await channel.publish("answer", message);
   };
 
   await connection.session.setRemoteDescription(JSON.parse(decryptedRemoteSDP));
