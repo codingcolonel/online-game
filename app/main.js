@@ -471,7 +471,15 @@ connection.onoffering = async function () {
     channel.unsubscribe("offer");
 
   let iceServers = [
-    { urls: "stun:stun.l.google.com:19302" },
+    {
+      urls: [
+        "stun:stun1.l.google.com:19302",
+        "stun:stun2.l.google.com:19302",
+        "stun:stun.l.google.com:19302",
+        "stun:stun3.l.google.com:19302",
+        "stun:stun4.l.google.com:19302",
+      ],
+    },
     servers[2],
     servers[4],
   ];
@@ -528,7 +536,15 @@ connection.onoffering = async function () {
   };
 
   connection.session.onconnectionstatechange = function (event) {
-    console.log(event);
+    console.log(event, connection.session.connectionState);
+  };
+
+  connection.session.onicecandidateerror = function (error) {
+    console.log(error);
+  };
+
+  connection.session.signalingState = function (state) {
+    console.log(state);
   };
 
   await connection.session.setLocalDescription(
@@ -545,7 +561,15 @@ connection.onanswering = async function () {
     channel.unsubscribe("answer");
 
   let iceServers = [
-    { urls: "stun:stun.l.google.com:19302" },
+    {
+      urls: [
+        "stun:stun1.l.google.com:19302",
+        "stun:stun2.l.google.com:19302",
+        "stun:stun.l.google.com:19302",
+        "stun:stun3.l.google.com:19302",
+        "stun:stun4.l.google.com:19302",
+      ],
+    },
     servers[2],
     servers[4],
   ];
@@ -593,7 +617,15 @@ connection.onanswering = async function () {
   };
 
   connection.session.onconnectionstatechange = function (event) {
-    console.log(event);
+    console.log(event, connection.session.connectionState);
+  };
+
+  connection.session.onicecandidateerror = function (error) {
+    console.log(error);
+  };
+
+  connection.session.signalingState = function (state) {
+    console.log(state);
   };
 
   await connection.session.setRemoteDescription(JSON.parse(decryptedRemoteSDP));
