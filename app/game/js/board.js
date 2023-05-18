@@ -17,10 +17,8 @@ cnv.height = TrueHeight;
 cnv.width = TrueWidth;
 
 // Tile data arrays
-if(reset === true){
   let defendingTiles = [];
   let attackingTiles = [];
-}
 
 // Board info variables
 let defendingBoard, attackingBoard;
@@ -32,8 +30,10 @@ window.onload = function () {
 
 function drawBoard(reset) {
   // Reset tile array
-  defendingTiles = [];
-  attackingTiles = [];
+  if(reset === true) {
+    defendingTiles = [];
+    attackingTiles = [];
+  }
 
   // Update center values for drawing
   let centerWidth = TrueWidth / 2;
