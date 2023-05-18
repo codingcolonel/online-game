@@ -17,8 +17,10 @@ cnv.height = TrueHeight;
 cnv.width = TrueWidth;
 
 // Tile data arrays
-let defendingTiles = [];
-let attackingTiles = [];
+if(reset === true){
+  let defendingTiles = [];
+  let attackingTiles = [];
+}
 
 // Board info variables
 let defendingBoard, attackingBoard;
@@ -85,6 +87,7 @@ function singleBoard(board, tiles, colour, resetArrays) {
 
   ctx.strokeStyle = 'black';
   ctx.lineWidth = 2;
+  let currentIndex = 0;
   for (
     let i = board.x;
     i < board.sideLength + board.x - 0.00000000001; // fix weird rounding error;
@@ -109,7 +112,6 @@ function singleBoard(board, tiles, colour, resetArrays) {
       ctx.strokeRect(i, j, board.sideLength / 10, board.sideLength / 10);
 
       // Reset arrays if parameter is true
-      let currentIndex = 0;
       if (resetArrays === true) {
         if (tiles.length < 100) {
           tiles.push(addTileToArray(i, j, 'none'));
