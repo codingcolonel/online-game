@@ -10,16 +10,16 @@ let scale;
 let TrueWidth;
 let TrueHeight;
 
-addEventListener("message", receiveMessage);
+addEventListener('message', receiveMessage);
 
 function receiveMessage(msg) {
   let data = msg.data;
 
   switch (data.type) {
-    case "init":
+    case 'init':
       init(data);
       break;
-    case "dim":
+    case 'dim':
       dimensions(data);
       break;
   }
@@ -27,7 +27,7 @@ function receiveMessage(msg) {
 
 function init(data) {
   cnv = data.canvas;
-  ctx = cnv.getContext("2d");
+  ctx = cnv.getContext('2d');
   scale = data.scale;
   requestAnimationFrame(draw);
 }
@@ -45,7 +45,8 @@ function draw() {
   // let deltaTime = currTime - prevTime;
   // prevTime = currTime;
 
-  drawBoard();
+  // Not really sure what this is for but it covers the whole defending board so I've commented it out for now
+  // drawBoard();
 
   // Request next frame
   requestAnimationFrame(draw);
@@ -61,6 +62,6 @@ function drawBoard() {
     y: Math.round((centerHeight - TrueWidth * 0.2) * 10) / 10, // y is offset by 20% of the height from the center upwards
     sideLength: Math.round(TrueWidth * 0.4 * 10) / 10, // length is same as height (40% of screen)
   };
-  ctx.fillStyle = "white";
+  ctx.fillStyle = 'white';
   ctx.fillRect(board.x, board.y, board.sideLength, board.sideLength);
 }

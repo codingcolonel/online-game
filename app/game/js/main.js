@@ -1,7 +1,7 @@
 // Main program for battleship game
 
 // Import features from modules
-import { playerShips, opponentShips } from "./ship.js";
+import { playerShips, opponentShips } from './ship.js';
 import {
   drawBoard,
   updateCanvas,
@@ -13,20 +13,24 @@ import {
   cnv,
   trueWidth,
   trueHeight,
-} from "./board.js";
-import { findTileByCoordinates, checkArrayPosition } from "./functions.js";
+} from './board.js';
+import {
+  findTileByCoordinates,
+  checkArrayPosition,
+  updateShips,
+} from './functions.js';
 
 // Initialize effect canvas
-const effectCnv = document.getElementById("topCanvas");
+const effectCnv = document.getElementById('topCanvas');
 effectCnv.width = screen.width;
 effectCnv.height = screen.height;
 const offCnv = effectCnv.transferControlToOffscreen();
-const Drawing = new Worker("./js/drawWorker.js");
-Drawing.postMessage({ type: "init", canvas: offCnv, scale }, [offCnv]);
+const Drawing = new Worker('./js/drawWorker.js');
+Drawing.postMessage({ type: 'init', canvas: offCnv, scale }, [offCnv]);
 
 function updateDim() {
   Drawing.postMessage({
-    type: "dim",
+    type: 'dim',
     dim: { width: trueWidth(), height: trueHeight() },
   });
 }
@@ -37,9 +41,9 @@ drawBoard(true);
 updateDim();
 
 // Fullscreen event listener
-document.addEventListener("keyup", fullscreenToggle);
+document.addEventListener('keyup', fullscreenToggle);
 async function fullscreenToggle(e) {
-  if (e.key === "f") {
+  if (e.key === 'f') {
     // Change width and height when switching in/out of fullscreen
     if (!document.fullscreenElement) {
       await document.documentElement.requestFullscreen();
@@ -57,7 +61,7 @@ async function fullscreenToggle(e) {
   }
 }
 
-document.addEventListener("fullscreenchange", fullscreenHandler);
+document.addEventListener('fullscreenchange', fullscreenHandler);
 async function fullscreenHandler() {
   // Update changes to the screen once the screen has transitioned in/out fullscreen
   if (!document.fullscreenElement) {
@@ -70,7 +74,7 @@ async function fullscreenHandler() {
   drawBoard(false);
 }
 
-window.addEventListener("resize", function (e) {
+window.addEventListener('resize', function (e) {
   trueHeight(Math.floor(window.innerHeight * scale));
   trueWidth(Math.floor(window.innerWidth * scale));
   cnv.height = trueHeight();
@@ -80,7 +84,7 @@ window.addEventListener("resize", function (e) {
 });
 
 // Event Listener
-document.addEventListener("click", getMouseCoordinates);
+document.addEventListener('click', getMouseCoordinates);
 function getMouseCoordinates(e) {
   // console.log(e);
   // console.log('x' + e.x + ' y' + e.y);
@@ -96,19 +100,15 @@ function getMouseCoordinates(e) {
     mouseY <= defendingBoard.y + defendingBoard.sideLength
   ) {
     // Get index of clicked tile on defending board
-    console.log(
-      defendingTiles[findTileByCoordinates(mouseX, mouseY, defendingTiles)]
-    );
-
-    // Update status of ship tiles
-    for (let i = 0; i < defendingTiles.length; i++) {
-      const shipTile = checkArrayPosition(i, playerShips);
-      if (shipTile !== false) {
-        shipTile.position.forEach((element) => {
-          defendingTiles[element].state = "ship";
-        });
-      }
+    let clickedDefendingTile =
+      defendingTiles[findTileByCoordinates(mouseX, mouseY, defendingTiles)];
+    let shipElement = checkArrayPosition(clickedDefendingTile, playerShips);
+    if (shipElement !== false) {
+      let clickedShip = shipElement;
+    } else {
+      shipElement;
     }
+
     console.log(defendingTiles);
   } else if (
     mouseX >= attackingBoard.x &&
@@ -118,23 +118,27 @@ function getMouseCoordinates(e) {
   ) {
     if (isYourTurn === true) {
       // Get index of clicked tile on attacking board
-      let clickedTile = findTileByCoordinates(mouseX, mouseY, attackingTiles);
-      if (attackingTiles[clickedTile].state === "none") {
-        let hitCheck = checkArrayPosition(clickedTile, opponentShips);
+      let clickedAttackingTile = findTileByCoordinates(
+        mouseX,
+        mouseY,
+        attackingTiles
+      );
+      if (attackingTiles[clickedAttackingTile].state === 'none') {
+        let hitCheck = checkArrayPosition(clickedAttackingTile, opponentShips);
         if (hitCheck !== false) {
-          attackingTiles[clickedTile].state = "hit";
+          attackingTiles[clickedAttackingTile].state = 'hit';
           if (
             hitCheck.position.every(
-              (index) => attackingTiles[index].state === "hit"
+              (index) => attackingTiles[index].state === 'hit'
             ) === true
           ) {
             for (let i = 0; i < hitCheck.position.length; i++) {
               const element = hitCheck.position[i];
-              attackingTiles[element].state = "sunk";
+              attackingTiles[element].state = 'sunk';
             }
           }
         } else {
-          attackingTiles[clickedTile].state = "miss";
+          attackingTiles[clickedAttackingTile].state = 'miss';
         }
         // Send message with tile index here
         // isYourTurn = false;
