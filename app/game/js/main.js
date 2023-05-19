@@ -1,6 +1,6 @@
 // Main program for battleship game
 
-// Import features from ship module
+// Import features from modules
 import { playerShips, opponentShips } from "./ship.js";
 import {
   drawBoard,
@@ -16,9 +16,25 @@ import {
 } from "./board.js";
 import { findTileByCoordinates, checkArrayPosition } from "./functions.js";
 
+// Initialize effect canvas
+const effectCnv = document.getElementById("topCanvas");
+effectCnv.width = screen.width;
+effectCnv.height = screen.height;
+const offCnv = effectCnv.transferControlToOffscreen();
+const Drawing = new Worker("./js/drawWorker.js");
+Drawing.postMessage({ type: "init", canvas: offCnv, scale }, [offCnv]);
+
+function updateDim() {
+  Drawing.postMessage({
+    type: "dim",
+    dim: { width: trueWidth(), height: trueHeight() },
+  });
+}
+
 // When message is received set isYourTurn to true here
 let isYourTurn = true;
 drawBoard(true);
+updateDim();
 
 // Fullscreen event listener
 document.addEventListener("keyup", fullscreenToggle);
@@ -36,6 +52,7 @@ async function fullscreenToggle(e) {
     }
     cnv.height = trueHeight();
     cnv.width = trueWidth();
+    updateDim();
     drawBoard(false);
   }
 }
@@ -49,16 +66,16 @@ async function fullscreenHandler() {
   }
   cnv.height = trueHeight();
   cnv.width = trueWidth();
+  updateDim();
   drawBoard(false);
 }
 
 window.addEventListener("resize", function (e) {
-  if (!document.fullscreenElement) {
-    trueHeight(Math.floor(window.innerHeight * scale));
-    trueWidth(Math.floor(window.innerWidth * scale));
-  }
+  trueHeight(Math.floor(window.innerHeight * scale));
+  trueWidth(Math.floor(window.innerWidth * scale));
   cnv.height = trueHeight();
   cnv.width = trueWidth();
+  updateDim();
   drawBoard(false);
 });
 

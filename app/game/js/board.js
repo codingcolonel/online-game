@@ -4,12 +4,12 @@ import {
   addTileToArray,
   checkArrayPosition,
   findTileByCoordinates,
-} from './functions.js';
-import { playerShips, opponentShips } from './ship.js';
+} from "./functions.js";
+import { playerShips, opponentShips } from "./ship.js";
 
 // Set up canvas and 2d graphics content
-let cnv = document.getElementById('mainCanvas');
-let ctx = cnv.getContext('2d');
+let cnv = document.getElementById("mainCanvas");
+let ctx = cnv.getContext("2d");
 let scale = window.devicePixelRatio;
 let TrueHeight = Math.floor(window.innerHeight * scale);
 let TrueWidth = Math.floor(window.innerWidth * scale);
@@ -17,8 +17,8 @@ cnv.height = TrueHeight;
 cnv.width = TrueWidth;
 
 // Tile data arrays
-  let defendingTiles = [];
-  let attackingTiles = [];
+let defendingTiles = [];
+let attackingTiles = [];
 
 // Board info variables
 let defendingBoard, attackingBoard;
@@ -30,7 +30,7 @@ window.onload = function () {
 
 function drawBoard(reset) {
   // Reset tile array
-  if(reset === true) {
+  if (reset === true) {
     defendingTiles = [];
     attackingTiles = [];
   }
@@ -53,14 +53,14 @@ function drawBoard(reset) {
   };
 
   // Draw Background
-  ctx.fillStyle = 'dodgerblue';
+  ctx.fillStyle = "dodgerblue";
   ctx.fillRect(0, 0, TrueWidth, TrueHeight);
 
   // Draw defending board
-  singleBoard(defendingBoard, defendingTiles, 'Navy', reset);
+  singleBoard(defendingBoard, defendingTiles, "Navy", reset);
 
   // Draw attacking board
-  singleBoard(attackingBoard, attackingTiles, 'Red', reset);
+  singleBoard(attackingBoard, attackingTiles, "Red", reset);
 
   // Update canvas
   updateCanvas();
@@ -78,14 +78,14 @@ function drawBoard(reset) {
  */
 function singleBoard(board, tiles, colour, resetArrays) {
   // Draw defending board
-  ctx.fillStyle = 'white';
+  ctx.fillStyle = "white";
   ctx.fillRect(board.x, board.y, board.sideLength, board.sideLength);
 
   // Variables for drawing letters and numbers
   let counter = 1;
-  let letter = 'A';
+  let letter = "A";
 
-  ctx.strokeStyle = 'black';
+  ctx.strokeStyle = "black";
   ctx.lineWidth = 2;
   let currentIndex = 0;
   for (
@@ -94,9 +94,9 @@ function singleBoard(board, tiles, colour, resetArrays) {
     i += board.sideLength / 10
   ) {
     // Draw numbers
-    ctx.font = '25px Verdana, sans-serif';
-    ctx.fillStyle = 'black';
-    ctx.textAlign = 'center';
+    ctx.font = "25px Verdana, sans-serif";
+    ctx.fillStyle = "black";
+    ctx.textAlign = "center";
     ctx.fillText(
       `${counter}`,
       i + board.sideLength / 20,
@@ -114,7 +114,7 @@ function singleBoard(board, tiles, colour, resetArrays) {
       // Reset arrays if parameter is true
       if (resetArrays === true) {
         if (tiles.length < 100) {
-          tiles.push(addTileToArray(i, j, 'none'));
+          tiles.push(addTileToArray(i, j, "none"));
         }
       } else {
         let state = tiles[currentIndex].state;
@@ -122,10 +122,10 @@ function singleBoard(board, tiles, colour, resetArrays) {
       }
       currentIndex++;
 
-      if (letter !== 'END') {
+      if (letter !== "END") {
         // Draw letters
-        ctx.font = '25px Verdana, sans-serif';
-        ctx.fillStyle = 'black';
+        ctx.font = "25px Verdana, sans-serif";
+        ctx.fillStyle = "black";
         ctx.fillText(
           `${letter}`,
           board.x - board.sideLength / 25,
@@ -140,22 +140,6 @@ function singleBoard(board, tiles, colour, resetArrays) {
   ctx.strokeStyle = colour;
   ctx.lineWidth = 5;
   ctx.strokeRect(board.x, board.y, board.sideLength, board.sideLength);
-
-  // * counter1/2 and letter1/2 can each just be 1 single variable enclosed in this function
-  // * Also, pass reset from drawBoard() into resetArrays.
-  // * If resetArrays is true, then do the whole
-  /*
-    if (tiles.length < 100) {
-      tiles.push(addTileToArray(i, j, "none"));
-    }
-  */
-  // * code
-  // * If resetArrays is false, keep track of the index you're on, and do something along the lines of
-  /*
-    let state = tiles[currentIndex].state;
-    tiles[currentIndex] = addTileToArray(i, j, state);
-  */
-  // * this way, we can reset the board only when we want to.
 }
 
 function updateCanvas() {
@@ -170,18 +154,19 @@ function updateCanvas() {
       centerX: element.x + defendingBoard.sideLength / 20,
       centerY: element.y + defendingBoard.sideLength / 20,
     };
-    if (element.state === 'miss') {
+    if (element.state === "miss") {
       drawMiss(tile);
-    } else if (element.state === 'ship') {
-      console.log('ship');
-      ctx.fillStyle = 'black';
+    } else if (element.state === "ship") {
+      console.log("ship");
+      ctx.fillStyle = "black";
+      // ! This used to be tile.x and tile.y, which don't exist
       ctx.fillRect(
-        tile.x,
-        tile.y,
+        tile.x1,
+        tile.y1,
         defendingBoard.sideLength / 10,
         defendingBoard.sideLength / 10
       );
-    } else if (element.state === 'shiphit') {
+    } else if (element.state === "shiphit") {
       // Will make later
     }
   }
@@ -197,14 +182,14 @@ function updateCanvas() {
       centerX: element.x + attackingBoard.sideLength / 20,
       centerY: element.y + attackingBoard.sideLength / 20,
     };
-    if (element.state === 'miss') {
+    if (element.state === "miss") {
       // Draw dot to mark as a miss
       drawMiss(tile);
-    } else if (element.state === 'hit') {
+    } else if (element.state === "hit") {
       // Draw red x to mark as hit
-      drawX('red', tile);
-    } else if (element.state === 'sunk') {
-      drawX('black', tile);
+      drawX("red", tile);
+    } else if (element.state === "sunk") {
+      drawX("black", tile);
     }
   }
 }
@@ -233,7 +218,7 @@ function drawX(color, tile) {
 }
 
 function drawMiss(tile) {
-  ctx.fillStyle = 'black';
+  ctx.fillStyle = "black";
   ctx.beginPath();
   ctx.arc(tile.centerX, tile.centerY, 5, 0, 2 * Math.PI);
   ctx.fill();

@@ -1,5 +1,5 @@
 // All code for thes ships appearance and functionality
-import { processResponse } from './functions.js';
+import { processResponse } from "./functions.js";
 
 // Ships arrays (off of global scope)
 let playerShips = [
@@ -34,7 +34,7 @@ if (opponentShips.length === 0) {
 function getOpponentShips() {
   // Get opponent ship locations (test values)
   // ! response[2] (00011101) creates a "Split Ship" where it falls off of the bottom, and reappears on top, one column over
-  let response = ['10001110', '00110111', '00011101', '01010010', '11001110'];
+  let response = ["10001110", "00110111", "00011101", "01010010", "11001110"];
   let shipLength = 5;
   let counter = 1;
 

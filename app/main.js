@@ -84,21 +84,27 @@ class AudioManager {
     params.forEach(async (parameter) => {
       if (typeof parameter !== "object") return;
       if (!parameter.hasOwnProperty("soundName")) return;
-      if (parameter.hasOwnProperty("uris")) {
-      } else if (parameter.hasOwnProperty("uri")) {
-      }
+      if (!parameter.hasOwnProperty("uris")) return;
+      let bufferList = new Array();
+      parameter.uris.forEach(async (uri) => {
+        let response = await this.#getAudio(uri);
+        if (!(response instanceof Error)) {
+          bufferList.push(response);
+        }
+      });
+      this.#soundBuffers[parameter.soundName] = bufferList;
     });
   }
 
   async #getAudio(uri) {
     try {
-      const request = await fetch(parameter.uri);
-      if (!request.ok) throw new TypeError("Cannot fetch " + parameter.uri);
+      const request = await fetch(uri);
+      if (!request.ok) throw new TypeError("Cannot fetch " + uri);
       const result = await request.arrayBuffer();
 
       let buffer = await this.#context.decodeAudioData(result);
 
-      this.#soundBuffers[parameter.soundName] = buffer;
+      return buffer;
     } catch (error) {
       logger.warn(error);
       console.warn(error);
@@ -112,7 +118,11 @@ class AudioManager {
 
     let source = this.#context.createBufferSource();
     source.connect(this.#context.destination);
-    source.buffer = this.#soundBuffers[soundName];
+
+    const bufferObj = this.#soundBuffers[soundName];
+    const randomIndex = randomInt(0, bufferObj.length);
+    console.log(bufferObj[randomIndex]);
+    source.buffer = bufferObj[randomIndex];
 
     source.addEventListener("ended", function () {
       source = null;
@@ -165,30 +175,30 @@ let mainManager = new DisplayManager();
 
 const audio = new AudioManager(
   {
-    uri: "./audio/WeblshipsCannonsFireClose.mp3",
+    uris: ["./audio/WeblshipsCannonsFireClose.mp3"],
     soundName: "fireClose",
   },
   {
-    uri: "./audio/WeblshipsCannonsFireFar.mp3",
+    uris: ["./audio/WeblshipsCannonsFireFar.mp3"],
     soundName: "fireFar",
   },
   {
-    uri: "./audio/WeblshipsCannonsHit1.mp3",
-    soundName: "hit1",
+    uris: [
+      "./audio/WeblshipsCannonsHit1.mp3",
+      "./audio/WeblshipsCannonsHit2.mp3",
+    ],
+    soundName: "hit",
   },
   {
-    uri: "./audio/WeblshipsCannonsHit2.mp3",
-    soundName: "hit2",
-  },
-  {
-    uri: "./audio/WeblshipsCannonsMiss1.mp3",
-    soundName: "miss1",
-  },
-  {
-    uri: "./audio/WeblshipsCannonsMiss2.mp3",
-    soundName: "miss2",
+    uris: [
+      "./audio/WeblshipsCannonsMiss1.mp3",
+      "./audio/WeblshipsCannonsMiss2.mp3",
+    ],
+    soundName: "miss",
   }
 );
+
+window.audio = audio;
 
 const user = { name: undefined };
 
@@ -492,8 +502,6 @@ connection.ondisconnected = async function () {
   connection.status = "waiting";
 };
 
-window.connection = connection;
-
 // -- Functions --
 
 // Dialog box
@@ -576,4 +584,9 @@ function validateCode(code) {
   if (code.match(/([^0-9A-Fa-f])+/gm)) return false;
   if (code.length === 6) return true;
   return false;
+}
+
+function randomInt(min, max) {
+  let rand = Math.random() * (max - min) + min;
+  return Math.floor(rand);
 }
