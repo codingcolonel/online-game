@@ -114,22 +114,23 @@ function getMouseCoordinates(e) {
       playerShips,
       true
     );
-    console.log(playerShips[shipElement]);
     if (shipElement !== false) {
       if (e.detail === 1) {
         clickedShip = shipElement;
       } else {
-        console.log(playerShips[shipElement]);
-        if (playerShips[shipElement].rotation === 0) {
-          playerShips[shipElement].rotation = 1;
-        } else {
-          playerShips[shipElement].rotation = 0;
-        }
-        moveShip(
+        // Switch rotation from 1 to 0 and vice versa
+        playerShips[shipElement].rotation =
+          1 - playerShips[shipElement].rotation;
+        let isValid = moveShip(
           shipElement,
           playerShips,
           playerShips[shipElement].position[0]
         );
+        if (isValid === false) {
+          // Switch rotation back on failed attempt
+          playerShips[shipElement].rotation =
+            1 - playerShips[shipElement].rotation;
+        }
 
         console.log(playerShips[shipElement]);
       }

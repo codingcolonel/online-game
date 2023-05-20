@@ -44,12 +44,12 @@ function draw() {
   // let currTime = +new Date();
   // let deltaTime = currTime - prevTime;
   // prevTime = currTime;
-
+  //
   // Not really sure what this is for but it covers the whole defending board so I've commented it out for now
   // drawBoard();
-
+  //
   // Request next frame
-  requestAnimationFrame(draw);
+  // requestAnimationFrame(draw);
 }
 
 function drawBoard() {

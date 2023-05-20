@@ -114,14 +114,31 @@ function createShip(index, shipLength, rotation) {
 
 function moveShip(shipIndex, array, newPosition) {
   let oldShip = array[shipIndex];
-  array.splice(shipIndex, 1, {
+  let newShip = {
     rotation: oldShip.rotation,
     position: createShip(
       newPosition,
       oldShip.position.length,
       oldShip.rotation
     ),
-  });
+  };
+
+  let modifiedArray = array.slice();
+  modifiedArray.splice(shipIndex, 1);
+  let nextMultipleOf10 = Math.ceil((newShip.position[0] + 1) / 10) * 10;
+
+  if (
+    newShip.position.some(
+      (element) =>
+        element > 99 ||
+        checkArrayPosition(element, modifiedArray) !== false ||
+        (newShip.rotation === 0 &&
+          newShip.position[0] + newShip.position.length > nextMultipleOf10)
+    )
+  ) {
+    return false;
+  }
+  array.splice(shipIndex, 1, newShip);
 }
 
 export {
