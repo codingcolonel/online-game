@@ -1,5 +1,5 @@
 // All code for thes ships appearance and functionality
-import { processResponse } from './functions.js';
+import { processResponse, createShip } from './functions.js';
 
 // Ships arrays (off of global scope)
 let playerShips = [
@@ -20,7 +20,7 @@ let playerShips = [
     position: [30, 31, 32],
   },
   {
-    rotation: 1,
+    rotation: 0,
     position: [40, 41],
   },
 ];
@@ -47,17 +47,12 @@ function getOpponentShips(response) {
     const element = response[i];
     // Add new ship object to array
     opponentShips.push(processResponse(element));
-    if (opponentShips[i].rotation === 1) {
-      for (let j = 1; j < shipLength; j++) {
-        // Add the rest of the ship blocks to array depending on length of ship in left-right direction
-        opponentShips[i].position[j] = opponentShips[i].position[j - 1] + 10;
-      }
-    } else {
-      for (let j = 1; j < shipLength; j++) {
-        // Add the rest of the ship blocks to array depending on length of ship in up-down direction
-        opponentShips[i].position[j] = opponentShips[i].position[j - 1] + 1;
-      }
-    }
+    // Take the index and rotation and make the rest of the ship
+    opponentShips[i].position = createShip(
+      opponentShips[i].position[0],
+      shipLength,
+      opponentShips[i].rotation
+    );
     // If the ship length is 3 and is the first of the two, run again with same length
     if (shipLength === 3 && counter === 1) {
       counter--;
@@ -66,6 +61,7 @@ function getOpponentShips(response) {
     }
   }
 }
+
 console.log(opponentShips);
 
 export { playerShips, opponentShips, getOpponentShips };

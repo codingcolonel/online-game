@@ -158,7 +158,9 @@ function updateCanvas() {
       centerX: element.x + defendingBoard.sideLength / 20,
       centerY: element.y + defendingBoard.sideLength / 20,
     };
-    if (element.state === 'miss') {
+    if (element.state === 'none') {
+      drawBlank(tile);
+    } else if (element.state === 'miss') {
       drawMiss(tile);
     } else if (element.state === 'ship') {
       drawShip(tile);
@@ -189,6 +191,24 @@ function updateCanvas() {
       drawX('black', tile);
     }
   }
+}
+
+function drawBlank(tile) {
+  ctx.fillStyle = 'white';
+  ctx.fillRect(
+    tile.x1,
+    tile.y1,
+    attackingBoard.sideLength / 10,
+    attackingBoard.sideLength / 10
+  );
+  ctx.strokeStyle = 'black';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(
+    tile.x1,
+    tile.y1,
+    attackingBoard.sideLength / 10,
+    attackingBoard.sideLength / 10
+  );
 }
 
 function drawX(color, tile) {

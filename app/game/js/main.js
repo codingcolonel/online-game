@@ -18,6 +18,8 @@ import {
   findTileByCoordinates,
   checkArrayPosition,
   updateShips,
+  createShip,
+  moveShip,
 } from './functions.js';
 
 // Initialize effect canvas
@@ -83,6 +85,8 @@ window.addEventListener('resize', function (e) {
   drawBoard(false);
 });
 
+// Variable for function below
+let clickedShip;
 // Event Listener
 document.addEventListener('click', getMouseCoordinates);
 function getMouseCoordinates(e) {
@@ -100,16 +104,38 @@ function getMouseCoordinates(e) {
     mouseY <= defendingBoard.y + defendingBoard.sideLength
   ) {
     // Get index of clicked tile on defending board
-    let clickedDefendingTile =
-      defendingTiles[findTileByCoordinates(mouseX, mouseY, defendingTiles)];
-    let shipElement = checkArrayPosition(clickedDefendingTile, playerShips);
+    let clickedDefendingTile = findTileByCoordinates(
+      mouseX,
+      mouseY,
+      defendingTiles
+    );
+    let shipElement = checkArrayPosition(
+      clickedDefendingTile,
+      playerShips,
+      true
+    );
+    console.log(playerShips[shipElement]);
     if (shipElement !== false) {
-      let clickedShip = shipElement;
-    } else {
-      shipElement;
-    }
+      if (e.detail === 1) {
+        clickedShip = shipElement;
+      } else {
+        console.log(playerShips[shipElement]);
+        if (playerShips[shipElement].rotation === 0) {
+          playerShips[shipElement].rotation = 1;
+        } else {
+          playerShips[shipElement].rotation = 0;
+        }
+        moveShip(
+          shipElement,
+          playerShips,
+          playerShips[shipElement].position[0]
+        );
 
-    console.log(defendingTiles);
+        console.log(playerShips[shipElement]);
+      }
+    } else {
+      moveShip(clickedShip, playerShips, clickedDefendingTile);
+    }
   } else if (
     mouseX >= attackingBoard.x &&
     mouseX <= attackingBoard.x + attackingBoard.sideLength &&
@@ -125,6 +151,7 @@ function getMouseCoordinates(e) {
       );
       if (attackingTiles[clickedAttackingTile].state === 'none') {
         let hitCheck = checkArrayPosition(clickedAttackingTile, opponentShips);
+        console.log(hitCheck);
         if (hitCheck !== false) {
           attackingTiles[clickedAttackingTile].state = 'hit';
           if (
