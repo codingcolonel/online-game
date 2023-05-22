@@ -126,16 +126,13 @@ function moveShip(shipIndex, array, newPosition) {
   let modifiedArray = array.slice();
   modifiedArray.splice(shipIndex, 1);
   let nextMultipleOf10 = Math.ceil((newShip.position[0] + 1) / 10) * 10;
+  let invalidPosition = (element) =>
+    element > 99 ||
+    checkArrayPosition(element, modifiedArray) !== false ||
+    (newShip.rotation === 0 &&
+      newShip.position[0] + newShip.position.length > nextMultipleOf10);
 
-  if (
-    newShip.position.some(
-      (element) =>
-        element > 99 ||
-        checkArrayPosition(element, modifiedArray) !== false ||
-        (newShip.rotation === 0 &&
-          newShip.position[0] + newShip.position.length > nextMultipleOf10)
-    )
-  ) {
+  if (newShip.position.some(invalidPosition)) {
     return false;
   }
   array.splice(shipIndex, 1, newShip);
