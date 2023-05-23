@@ -5,7 +5,6 @@ import { registerErrorLogger } from "./js/errorLog.js";
 import { CodeCrypt } from "./js/codecrypt.js";
 
 // -- Classes --
-
 class ConnectionManager {
   #status;
   onwaiting;
@@ -379,16 +378,11 @@ connection.onoffering = async function () {
   connection.session.channel = connection.session.createDataChannel("gameInfo");
   connection.session.channel.addEventListener("open", function () {
     connection.status = "connected";
-    console.log("Channel Opened");
   });
   connection.session.channel.addEventListener("close", function () {
     connection.status = "disconnected";
-    console.log("Channel Closed");
   });
-  connection.session.channel.addEventListener("message", function ({ data }) {
-    logger.generic(data);
-    console.log(data);
-  });
+  connection.session.channel.addEventListener("message", messageRecieved);
 
   connection.session.onicegatheringstatechange = async function (event) {
     if (connection.session.iceGatheringState !== "complete") return;
@@ -450,16 +444,11 @@ connection.onanswering = async function () {
     const recieve = channel;
     recieve.addEventListener("open", function () {
       connection.status = "connected";
-      console.log("Channel Opened");
     });
     recieve.addEventListener("close", function () {
       connection.status = "disconnected";
-      console.log("Channel Closed");
     });
-    recieve.addEventListener("message", function ({ data }) {
-      logger.generic(data);
-      console.log(data);
-    });
+    recieve.addEventListener("message", messageRecieved);
     connection.session.channel = recieve;
   };
 
@@ -488,6 +477,7 @@ connection.onanswering = async function () {
 connection.onconnected = function () {
   if (connection.status === "disabled") return;
   ably.close();
+  mainManager.hideAll();
 };
 
 connection.ondisconnected = async function () {
@@ -552,14 +542,28 @@ async function copyLink() {
   logger.success("Link copied!");
 }
 
+function messageRecieved() {}
+
 // Utility
 
+/**
+ * Use with await to wait a certain number of milliseconds
+ *
+ * @param {Number} ms Number of milliseconds to wait
+ * @returns A promise, which will resolve after inputted time
+ */
 function timer(ms) {
   return new Promise((resolve, reject) => {
     setTimeout(resolve, ms);
   });
 }
 
+/**
+ * Fetches and returns a resources; Returns the error object in event of an error
+ *
+ * @param {string} uri URI to try fetching
+ * @returns {Object|Error} Either the fetched json object, or the error recieved
+ */
 async function tryCatchFetch(uri) {
   try {
     const request = await fetch(uri);
@@ -586,6 +590,13 @@ function validateCode(code) {
   return false;
 }
 
+/**
+ * Returns a random value between min and max
+ *
+ * @param {Number} min Minimum value (Inclusive)
+ * @param {Number} max Maximum value (Exclusive)
+ * @returns {Number} A random value
+ */
 function randomInt(min, max) {
   let rand = Math.random() * (max - min) + min;
   return Math.floor(rand);
