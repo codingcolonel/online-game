@@ -547,10 +547,11 @@ async function copyLink() {
   logger.success("Link copied!");
 }
 
-function messageRecieved(event) {
+async function messageRecieved(event) {
   console.log(event);
   let blob = event.data;
-  let text = await(new Response(blob)).json();
+  let response = new Response(blob);
+  let text = await response.json();
   console.log(text);
 }
 
