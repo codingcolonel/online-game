@@ -383,7 +383,7 @@ connection.onoffering = async function () {
   connection.session.channel.addEventListener("close", function () {
     connection.status = "disconnected";
   });
-  connection.session.channel.addEventListener("message", messageRecieved);
+  connection.session.channel.addEventListener("message", gameManager.recieve);
 
   connection.session.onicegatheringstatechange = async function (event) {
     if (connection.session.iceGatheringState !== "complete") return;
@@ -450,7 +450,7 @@ connection.onanswering = async function () {
     recieve.addEventListener("close", function () {
       connection.status = "disconnected";
     });
-    recieve.addEventListener("message", messageRecieved);
+    recieve.addEventListener("message", gameManager.recieve);
     connection.session.channel = recieve;
   };
 
@@ -481,7 +481,6 @@ connection.onconnected = function () {
   ably.close();
   mainManager.hideAll();
   gameManager = new Manager(connection);
-  window.gm = gameManager;
 };
 
 connection.ondisconnected = async function () {
@@ -546,12 +545,6 @@ async function copyLink() {
   let link = `${location.origin}?g=${codecrypt.authenticator}`;
   await navigator.clipboard.writeText(link);
   logger.success("Link copied!");
-}
-
-async function messageRecieved(event) {
-  console.log(event);
-  let view = new Uint8Array(event.data);
-  console.log(view);
 }
 
 // Utility

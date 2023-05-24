@@ -1,5 +1,5 @@
 // All code for thes ships appearance and functionality
-import { processResponse, createShip } from './functions.js';
+import { processResponse, createShip } from "./functions.js";
 
 // Ships arrays (off of global scope)
 let playerShips = [
@@ -28,20 +28,11 @@ let opponentShips = [];
 
 // When opponents ships are received convert them into useable data
 if (opponentShips.length === 0) {
-  getOpponentShips([
-    // Get opponent ship locations (test values)
-    // ! response[2] (00011101) creates a "Split Ship" where it falls off of the bottom, and reappears on top, one column over
-    '10001110',
-    '00110111',
-    '00011101',
-    '01010010',
-    '11001110',
-  ]);
+  getOpponentShips([142, 55, 29, 82, 206]);
 }
 
 function getOpponentShips(response) {
-  let shipLength = 5;
-  let counter = 1;
+  let shipLength = [5, 4, 3, 3, 2];
 
   for (let i = 0; i < response.length; i++) {
     const element = response[i];
@@ -50,15 +41,9 @@ function getOpponentShips(response) {
     // Take the index and rotation and make the rest of the ship
     opponentShips[i].position = createShip(
       opponentShips[i].position[0],
-      shipLength,
+      shipLength[i],
       opponentShips[i].rotation
     );
-    // If the ship length is 3 and is the first of the two, run again with same length
-    if (shipLength === 3 && counter === 1) {
-      counter--;
-    } else {
-      shipLength--;
-    }
   }
 }
 

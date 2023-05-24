@@ -1,7 +1,7 @@
 // Main program for battleship game
 
 // Import features from modules
-import { playerShips, opponentShips } from './ship.js';
+import { playerShips, opponentShips } from "./ship.js";
 import {
   drawBoard,
   updateCanvas,
@@ -13,7 +13,7 @@ import {
   cnv,
   trueWidth,
   trueHeight,
-} from './board.js';
+} from "./board.js";
 import {
   findTileByCoordinates,
   checkArrayPosition,
@@ -21,19 +21,19 @@ import {
   createShip,
   moveShip,
   updateTiles,
-} from './functions.js';
+} from "./functions.js";
 
 // Initialize effect canvas
-const effectCnv = document.getElementById('topCanvas');
+const effectCnv = document.getElementById("topCanvas");
 effectCnv.width = screen.width;
 effectCnv.height = screen.height;
 const offCnv = effectCnv.transferControlToOffscreen();
-const Drawing = new Worker('./js/drawWorker.js');
-Drawing.postMessage({ type: 'init', canvas: offCnv, scale }, [offCnv]);
+const Drawing = new Worker("./js/drawWorker.js");
+Drawing.postMessage({ type: "init", canvas: offCnv, scale }, [offCnv]);
 
 function updateDim() {
   Drawing.postMessage({
-    type: 'dim',
+    type: "dim",
     dim: { width: trueWidth(), height: trueHeight() },
   });
 }
@@ -44,9 +44,9 @@ drawBoard(true);
 updateDim();
 
 // Fullscreen event listener
-document.addEventListener('keyup', fullscreenToggle);
+document.addEventListener("keyup", fullscreenToggle);
 async function fullscreenToggle(e) {
-  if (e.key === 'f') {
+  if (e.key === "f") {
     // Change width and height when switching in/out of fullscreen
     if (!document.fullscreenElement) {
       await document.documentElement.requestFullscreen();
@@ -64,7 +64,7 @@ async function fullscreenToggle(e) {
   }
 }
 
-document.addEventListener('fullscreenchange', fullscreenHandler);
+document.addEventListener("fullscreenchange", fullscreenHandler);
 async function fullscreenHandler() {
   // Update changes to the screen once the screen has transitioned in/out fullscreen
   if (!document.fullscreenElement) {
@@ -77,7 +77,7 @@ async function fullscreenHandler() {
   drawBoard(false);
 }
 
-window.addEventListener('resize', function (e) {
+window.addEventListener("resize", function (e) {
   trueHeight(Math.floor(window.innerHeight * scale));
   trueWidth(Math.floor(window.innerWidth * scale));
   cnv.height = trueHeight();
@@ -89,7 +89,7 @@ window.addEventListener('resize', function (e) {
 // Variable for function below
 let clickedShip;
 // Event Listener
-document.addEventListener('click', getMouseCoordinates);
+document.addEventListener("click", getMouseCoordinates);
 function getMouseCoordinates(e) {
   // console.log(e);
   // console.log('x' + e.x + ' y' + e.y);
@@ -159,23 +159,23 @@ function getMouseCoordinates(e) {
         attackingTiles
       );
       // Change tile state based on outcome
-      if (attackingTiles[clickedAttackingTile].state === 'none') {
+      if (attackingTiles[clickedAttackingTile].state === "none") {
         let hitCheck = checkArrayPosition(clickedAttackingTile, opponentShips);
         console.log(hitCheck);
         if (hitCheck !== false) {
-          attackingTiles[clickedAttackingTile].state = 'hit';
+          attackingTiles[clickedAttackingTile].state = "hit";
           if (
             hitCheck.position.every(
-              (index) => attackingTiles[index].state === 'hit'
+              (index) => attackingTiles[index].state === "hit"
             ) === true
           ) {
             for (let i = 0; i < hitCheck.position.length; i++) {
               const element = hitCheck.position[i];
-              attackingTiles[element].state = 'sunk';
+              attackingTiles[element].state = "sunk";
             }
           }
         } else {
-          attackingTiles[clickedAttackingTile].state = 'miss';
+          attackingTiles[clickedAttackingTile].state = "miss";
         }
         // Send message with tile index here
         // isYourTurn = false;
