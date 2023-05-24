@@ -6,15 +6,7 @@ function addTileToArray(x, y, state) {
     x: x,
     y: y,
     state: state,
-  };
-}
-
-// Return object of a ship
-function addShipToArray(x, y, rotation, index) {
-  return {
-    x: x,
-    y: y,
-    data: rotation + intToBin(index),
+    isValid: true,
   };
 }
 
@@ -67,6 +59,7 @@ function nextLetter(letter) {
   }
 }
 
+// Check if provided index matches a ship tile position
 function checkArrayPosition(index, array, getIndex) {
   for (let i = 0; i < array.length; i++) {
     const element = array[i];
@@ -83,6 +76,7 @@ function checkArrayPosition(index, array, getIndex) {
   return false;
 }
 
+// Update tile state after ship position changes
 function updateShips(tiles, ships) {
   for (let i = 0; i < tiles.length; i++) {
     const shipTile = checkArrayPosition(i, ships);
@@ -96,6 +90,7 @@ function updateShips(tiles, ships) {
   }
 }
 
+// Create an array representing all the ship positions based on the index and rotation
 function createShip(index, shipLength, rotation) {
   let ship = [index];
   if (rotation === 1) {
@@ -112,30 +107,69 @@ function createShip(index, shipLength, rotation) {
   return ship;
 }
 
-function moveShip(shipIndex, array, newPosition) {
-  let oldShip = array[shipIndex];
+// Update the validity of all the tiles after a ship is selected
+function updateTiles(shipIndex, shipArray, tileArray) {
+  let oldShip = shipArray[shipIndex];
+  // Remove selected ship from checking process
+  let modifiedArray = shipArray.slice();
+  modifiedArray.splice(shipIndex, 1);
+
+  for (let i = 0; i < tileArray.length; i++) {
+    const newShip = {
+      rotation: oldShip.rotation,
+      position: createShip(i, oldShip.position.length, oldShip.rotation),
+    };
+    let nextMultipleOf10 = Math.ceil((newShip.position[0] + 1) / 10) * 10;
+    let invalidPosition = (element) =>
+      element > 99 ||
+      checkArrayPosition(element, modifiedArray) !== false ||
+      (newShip.rotation === 0 &&
+        newShip.position[0] + newShip.position.length > nextMultipleOf10);
+
+    if (newShip.position.some(invalidPosition)) {
+      tileArray[i].isValid = false;
+    } else {
+      tileArray[i].isValid = true;
+    }
+  }
+}
+
+// Move ship to the closest valid position and replace it in the array
+function moveShip(shipIndex, shipArray, tileArray, newPosition) {
+  // Get the closest valid position to place the ship
+  let validPosition = closestCoordinateInArray(
+    tileArray[newPosition].x,
+    tileArray[newPosition].y,
+    tileArray
+  );
+  console.log(validPosition);
+
+  let oldShip = shipArray[shipIndex];
   let newShip = {
     rotation: oldShip.rotation,
     position: createShip(
-      newPosition,
+      validPosition,
       oldShip.position.length,
       oldShip.rotation
     ),
   };
+  shipArray.splice(shipIndex, 1, newShip);
+}
 
-  let modifiedArray = array.slice();
-  modifiedArray.splice(shipIndex, 1);
-  let nextMultipleOf10 = Math.ceil((newShip.position[0] + 1) / 10) * 10;
-  let invalidPosition = (element) =>
-    element > 99 ||
-    checkArrayPosition(element, modifiedArray) !== false ||
-    (newShip.rotation === 0 &&
-      newShip.position[0] + newShip.position.length > nextMultipleOf10);
-
-  if (newShip.position.some(invalidPosition)) {
-    return false;
+// Return closest coordinate in an array
+function closestCoordinateInArray(x, y, arr) {
+  let minDistance = 10000;
+  let closestPoint;
+  for (let i = 0; i < arr.length; i++) {
+    let distance = Math.sqrt(
+      (x - arr[i].x) * (x - arr[i].x) + (y - arr[i].y) * (y - arr[i].y)
+    );
+    if (distance < minDistance && arr[i].isValid === true) {
+      minDistance = distance;
+      closestPoint = i;
+    }
   }
-  array.splice(shipIndex, 1, newShip);
+  return closestPoint;
 }
 
 export {
@@ -147,4 +181,5 @@ export {
   updateShips,
   createShip,
   moveShip,
+  updateTiles,
 };

@@ -20,6 +20,7 @@ import {
   updateShips,
   createShip,
   moveShip,
+  updateTiles,
 } from './functions.js';
 
 // Initialize effect canvas
@@ -109,33 +110,40 @@ function getMouseCoordinates(e) {
       mouseY,
       defendingTiles
     );
+    // Get the index of the selected ship
     let shipElement = checkArrayPosition(
       clickedDefendingTile,
       playerShips,
       true
     );
-    if (shipElement !== false) {
+    // If a ship is clicked for the first time or is being rotated act accordingly
+    if (
+      shipElement !== false &&
+      (clickedShip !== shipElement || e.detail >= 2)
+    ) {
+      // If ship is clicked for the first time update clickedShip to current ship and update tiles
       if (e.detail === 1) {
         clickedShip = shipElement;
+        updateTiles(shipElement, playerShips, defendingTiles);
+        console.log(defendingTiles);
       } else {
         // Switch rotation from 1 to 0 and vice versa
         playerShips[shipElement].rotation =
           1 - playerShips[shipElement].rotation;
-        let isValid = moveShip(
+
+        // Update tiles after ship is rotated
+        updateTiles(shipElement, playerShips, defendingTiles);
+        console.log(defendingTiles);
+        moveShip(
           shipElement,
           playerShips,
+          defendingTiles,
           playerShips[shipElement].position[0]
         );
-        if (isValid === false) {
-          // Switch rotation back on failed attempt
-          playerShips[shipElement].rotation =
-            1 - playerShips[shipElement].rotation;
-        }
-
-        console.log(playerShips[shipElement]);
       }
+      // Else move the selected ship to new position
     } else {
-      moveShip(clickedShip, playerShips, clickedDefendingTile);
+      moveShip(clickedShip, playerShips, defendingTiles, clickedDefendingTile);
     }
   } else if (
     mouseX >= attackingBoard.x &&
@@ -150,6 +158,7 @@ function getMouseCoordinates(e) {
         mouseY,
         attackingTiles
       );
+      // Change tile state based on outcome
       if (attackingTiles[clickedAttackingTile].state === 'none') {
         let hitCheck = checkArrayPosition(clickedAttackingTile, opponentShips);
         console.log(hitCheck);
