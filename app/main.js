@@ -5,11 +5,6 @@ import { registerErrorLogger } from "./js/errorLog.js";
 import { CodeCrypt } from "./js/codecrypt.js";
 import { Manager } from "./js/gameManager.js";
 
-// -- Iframe check --
-// if (window.top !== window.self) {
-//   throw Error("Cannot be used in an Iframe");
-// }
-
 // -- Classes --
 class ConnectionManager {
   #status;
@@ -202,8 +197,6 @@ const audio = new AudioManager(
     soundName: "miss",
   }
 );
-
-window.audio = audio;
 
 const user = { name: undefined };
 
@@ -487,6 +480,7 @@ connection.onconnected = function () {
   ably.close();
   mainManager.hideAll();
   gameManager = new Manager(connection);
+  window.gm = gameManager;
 };
 
 connection.ondisconnected = async function () {
@@ -553,7 +547,12 @@ async function copyLink() {
   logger.success("Link copied!");
 }
 
-function messageRecieved() {}
+function messageRecieved(event) {
+  console.log(event);
+  let blob = event.data;
+  let text = await(new Response(blob)).json();
+  console.log(text);
+}
 
 // Utility
 
