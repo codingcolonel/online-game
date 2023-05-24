@@ -1,9 +1,9 @@
 /*
-  type: "placement"|"guess"
+  type: "place"|"guess"
 
   if it is already your turn, or the object is missing/contains excess entries, or any entries are invalid, terminate the match
   
-  if type == "placement":
+  if type == "place":
     Placement must not have already occurred
     The only entries must be type and ships
     ships must be an ArrayBuffer, and must be exactly 5 bytes long
@@ -21,6 +21,32 @@
   else
     Terminate the match
 */
+
+function creatreByte(position, leading) {
+  return (leading << 7) | position;
+}
+
+function parse(json) {
+  if (!json.hasOwnProperty("type"))
+    throw new Error("json object does not contain a type");
+  switch (json.type) {
+    case "place":
+      let placeBuffer = new ArrayBuffer(5);
+      let placeView = new Uint8Array(placeBuffer);
+      for (let index = 0; index < 5; index++) {
+        const ship = json.ships[index];
+        placeView[index] = creatreByte(ship.position, ship.rotation);
+      }
+      return placeView;
+    case "guess":
+      let guessBuffer = new ArrayBuffer(1);
+      let guessView = new Uint8Array(guessBuffer);
+      placeView[index] = creatreByte(json.guess.hit, json.guess.index);
+      return guessView;
+    default:
+      throw new Error("type is not valid");
+  }
+}
 
 /**
  * Manages turn order and verifies incoming turn messages
@@ -40,10 +66,12 @@ class Manager {
   }
 
   send(json) {
-    let blob = new Blob([JSON.stringify(json, null, 2)], {
-      type: "application/json",
-    });
-    this.#channelReference.send(blob);
+    try {
+      let arrayBuffer = parse(json);
+      this.#channelReference.send(arrayBuffer);
+    } catch (error) {
+      throw error;
+    }
   }
 
   terminate() {
