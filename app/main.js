@@ -550,10 +550,8 @@ async function copyLink() {
 
 async function messageRecieved(event) {
   console.log(event);
-  let blob = event.data;
-  let response = new Response(blob);
-  let text = await response.json();
-  console.log(text);
+  let view = new Uint8Array(event.data);
+  console.log(view);
 }
 
 // Utility
