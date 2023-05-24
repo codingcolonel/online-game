@@ -3,6 +3,12 @@
 // -- Imports --
 import { registerErrorLogger } from "./js/errorLog.js";
 import { CodeCrypt } from "./js/codecrypt.js";
+import { Manager } from "./js/gameManager.js";
+
+// -- Iframe check --
+// if (window.top !== window.self) {
+//   throw Error("Cannot be used in an Iframe");
+// }
 
 // -- Classes --
 class ConnectionManager {
@@ -205,6 +211,8 @@ let resolvers = {
   resolve: null,
   reject: null,
 };
+
+let gameManager;
 
 // HTML References
 
@@ -478,10 +486,13 @@ connection.onconnected = function () {
   if (connection.status === "disabled") return;
   ably.close();
   mainManager.hideAll();
+  gameManager = new Manager(connection);
 };
 
 connection.ondisconnected = async function () {
   if (connection.status === "disabled") return;
+
+  gameManager = null;
 
   if (ably.connection.state !== "connected") {
     mainManager.display("loader");
