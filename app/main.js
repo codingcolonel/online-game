@@ -375,8 +375,8 @@ connection.onoffering = async function () {
   connection.session = new RTCPeerConnection({
     iceServers: iceServers,
   });
-  connection.session.channel.binaryType = "arraybuffer";
   connection.session.channel = connection.session.createDataChannel("gameInfo");
+  connection.session.channel.binaryType = "arraybuffer";
   connection.session.channel.addEventListener("open", function () {
     connection.status = "connected";
   });
