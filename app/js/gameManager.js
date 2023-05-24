@@ -41,7 +41,7 @@ function parse(json) {
     case "guess":
       let guessBuffer = new ArrayBuffer(1);
       let guessView = new Uint8Array(guessBuffer);
-      guessView = createByte(json.guess.index, json.guess.hit);
+      guessView[0] = createByte(json.guess.index, json.guess.hit);
       return guessView;
     default:
       throw new Error("type is not valid");
