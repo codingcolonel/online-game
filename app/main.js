@@ -5,11 +5,6 @@ import { registerErrorLogger } from "./js/errorLog.js";
 import { CodeCrypt } from "./js/codecrypt.js";
 import { Manager } from "./js/gameManager.js";
 
-// -- Iframe check --
-// if (window.top !== window.self) {
-//   throw Error("Cannot be used in an Iframe");
-// }
-
 // -- Classes --
 class ConnectionManager {
   #status;
@@ -203,8 +198,6 @@ const audio = new AudioManager(
   }
 );
 
-window.audio = audio;
-
 const user = { name: undefined };
 
 let resolvers = {
@@ -382,8 +375,8 @@ connection.onoffering = async function () {
   connection.session = new RTCPeerConnection({
     iceServers: iceServers,
   });
-
   connection.session.channel = connection.session.createDataChannel("gameInfo");
+  connection.session.channel.binaryType = "arraybuffer";
   connection.session.channel.addEventListener("open", function () {
     connection.status = "connected";
   });
@@ -450,6 +443,7 @@ connection.onanswering = async function () {
 
   connection.session.ondatachannel = function ({ channel }) {
     const recieve = channel;
+    recieve.binaryType = "arraybuffer";
     recieve.addEventListener("open", function () {
       connection.status = "connected";
     });
@@ -487,6 +481,7 @@ connection.onconnected = function () {
   ably.close();
   mainManager.hideAll();
   gameManager = new Manager(connection);
+  window.gm = gameManager;
 };
 
 connection.ondisconnected = async function () {
@@ -553,7 +548,11 @@ async function copyLink() {
   logger.success("Link copied!");
 }
 
-function messageRecieved() {}
+async function messageRecieved(event) {
+  console.log(event);
+  let view = new Uint8Array(event.data);
+  console.log(view);
+}
 
 // Utility
 
