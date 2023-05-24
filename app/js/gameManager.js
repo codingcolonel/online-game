@@ -26,51 +26,81 @@ function createByte(position, leading) {
   return (leading << 7) | position;
 }
 
-function parse(json) {
+function parseObject(json) {
   if (!json.hasOwnProperty("type"))
     throw new Error("json object does not contain a type");
   switch (json.type) {
     case "place":
-      let placeBuffer = new ArrayBuffer(5);
-      let placeView = new Uint8Array(placeBuffer);
-      for (let index = 0; index < 5; index++) {
-        const ship = json.ships[index];
-        placeView[index] = createByte(ship.position[0], ship.rotation);
-      }
-      return placeView;
+      return encodeShips(json);
     case "guess":
-      let guessBuffer = new ArrayBuffer(1);
-      let guessView = new Uint8Array(guessBuffer);
-      guessView[0] = createByte(json.guess.index, json.guess.hit);
-      return guessView;
+      return encodeGuess(json);
     default:
       throw new Error("type is not valid");
   }
 }
 
+function encodeGuess(json) {
+  let guessBuffer = new ArrayBuffer(1);
+  let guessView = new Uint8Array(guessBuffer);
+  guessView[0] = createByte(json.guess.index, json.guess.hit);
+  return guessView;
+}
+
+function encodeShips(json) {
+  let placeBuffer = new ArrayBuffer(5);
+  let placeView = new Uint8Array(placeBuffer);
+  for (let index = 0; index < 5; index++) {
+    const ship = json.ships[index];
+    placeView[index] = createByte(ship.position[0], ship.rotation);
+  }
+  return placeView;
+}
+
+function decodeShips(response) {}
+
+function decodeGuess(reponse) {}
+
 /**
  * Manages turn order and verifies incoming turn messages
  */
 class Manager {
-  /** @type {boolean} */
-  #isYourTurn;
+  #phase;
   #connectionReference;
   /** @type {RTCDataChannel} */
   #channelReference;
-  #defendingShips;
-  #attackingShips;
+  #playerShips;
+  #opponentShips;
 
   constructor(connection) {
     this.#connectionReference = connection;
     this.#channelReference = connection.session.channel;
+    this.#phase = "placing";
   }
 
   send(json) {
     try {
-      let arrayBuffer = parse(json);
+      let arrayBuffer = parseObject(json);
       this.#channelReference.send(arrayBuffer);
     } catch (error) {
       throw error;
+    }
+  }
+
+  recieve(event) {
+    const data = event.data;
+    if (!(data instanceof ArrayBuffer))
+      throw new Error("Invalid message recieved");
+
+    const view = new Uint8Array(data);
+    switch (view.length) {
+      case 1:
+        decodeGuess(view);
+        break;
+      case 6:
+        decodeShips(view);
+        break;
+      default:
+        throw new Error("Invalid message recieved");
     }
   }
 
@@ -84,8 +114,8 @@ class Manager {
     }
   }
 
-  get isYourTurn() {
-    return this.#isYourTurn;
+  get phase() {
+    return this.#phase;
   }
 }
 

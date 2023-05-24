@@ -38,8 +38,8 @@ function findTileByCoordinates(x, y, array) {
 
 // Process response into an object including rotation and position values
 function processResponse(response) {
-  let rotation = JSON.parse(response[0]);
-  let position = binToInt(response.substring(1));
+  let rotation = response >> 7;
+  let position = response & 127;
 
   return {
     rotation: rotation,
@@ -86,6 +86,8 @@ function updateShips(tiles, ships) {
       });
     } else if (tiles[i].state !== 'hover') {
       tiles[i].state = 'none';
+    } else {
+      tiles[i].state = 'none';
     }
   }
 }
@@ -93,17 +95,11 @@ function updateShips(tiles, ships) {
 // Create an array representing all the ship positions based on the index and rotation
 function createShip(index, shipLength, rotation) {
   let ship = [index];
-  if (rotation === 1) {
-    for (let j = 1; j < shipLength; j++) {
-      // Add the rest of the ship blocks to array depending on length of ship in left-right direction
-      ship[j] = ship[j - 1] + 10;
-    }
-  } else {
-    for (let j = 1; j < shipLength; j++) {
-      // Add the rest of the ship blocks to array depending on length of ship in up-down direction
-      ship[j] = ship[j - 1] + 1;
-    }
+  for (let j = 1; j < shipLength; j++) {
+    // Add the rest of the ship blocks to array depending on length of ship in left-right direction
+    ship[j] = ship[j - 1] + 10 ** rotation;
   }
+
   return ship;
 }
 
