@@ -138,12 +138,19 @@ function getMouseCoordinates(e) {
           shipElement,
           playerShips,
           defendingTiles,
-          playerShips[shipElement].position[0]
+          playerShips[shipElement].position[0],
+          true
         );
       }
       // Else move the selected ship to new position
     } else {
-      moveShip(clickedShip, playerShips, defendingTiles, clickedDefendingTile);
+      moveShip(
+        clickedShip,
+        playerShips,
+        defendingTiles,
+        clickedDefendingTile,
+        true
+      );
     }
   } else if (
     mouseX >= attackingBoard.x &&
@@ -183,4 +190,36 @@ function getMouseCoordinates(e) {
     }
   }
   updateCanvas();
+}
+
+document.addEventListener('mousemove', hoverHandler);
+function hoverHandler(e) {
+  // Adjust mouse x and y to pixel ratio
+  let mouseX = e.x * scale;
+  let mouseY = e.y * scale;
+
+  if (
+    mouseX >= defendingBoard.x &&
+    mouseX <= defendingBoard.x + defendingBoard.sideLength &&
+    mouseY >= defendingBoard.y &&
+    mouseY <= defendingBoard.y + defendingBoard.sideLength &&
+    clickedShip !== undefined
+  ) {
+    // Get index of tile on defending board being hovered on
+    let hoverDefendingTile = findTileByCoordinates(
+      mouseX,
+      mouseY,
+      defendingTiles
+    );
+    moveShip(
+      clickedShip,
+      playerShips,
+      defendingTiles,
+      hoverDefendingTile,
+      false
+    );
+    // console.log(defendingTiles);
+
+    updateCanvas();
+  }
 }

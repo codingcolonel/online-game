@@ -84,7 +84,7 @@ function updateShips(tiles, ships) {
       shipTile.position.forEach((element) => {
         tiles[element].state = 'ship';
       });
-    } else {
+    } else if (tiles[i].state !== 'hover') {
       tiles[i].state = 'none';
     }
   }
@@ -135,14 +135,14 @@ function updateTiles(shipIndex, shipArray, tileArray) {
 }
 
 // Move ship to the closest valid position and replace it in the array
-function moveShip(shipIndex, shipArray, tileArray, newPosition) {
+function moveShip(shipIndex, shipArray, tileArray, newPosition, moveTheShip) {
   // Get the closest valid position to place the ship
   let validPosition = closestCoordinateInArray(
     tileArray[newPosition].x,
     tileArray[newPosition].y,
     tileArray
   );
-  console.log(validPosition);
+  // console.log(validPosition);
 
   let oldShip = shipArray[shipIndex];
   let newShip = {
@@ -153,7 +153,22 @@ function moveShip(shipIndex, shipArray, tileArray, newPosition) {
       oldShip.rotation
     ),
   };
-  shipArray.splice(shipIndex, 1, newShip);
+  if (moveTheShip === true) {
+    shipArray.splice(shipIndex, 1, newShip);
+  } else if (moveTheShip === false) {
+    for (let i = 0; i < tileArray.length; i++) {
+      const element = tileArray[i];
+      if (element.state === 'hover') {
+        element.state = 'none';
+      }
+    }
+
+    for (let j = 0; j < newShip.position.length; j++) {
+      const element = newShip.position[j];
+      tileArray[element].state = 'hover';
+      console.log(tileArray[element]);
+    }
+  }
 }
 
 // Return closest coordinate in an array

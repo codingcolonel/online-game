@@ -164,6 +164,8 @@ function updateCanvas() {
       drawMiss(tile);
     } else if (element.state === 'ship') {
       drawShip(tile);
+    } else if (element.state === 'hover') {
+      drawHover(tile);
     } else if (element.state === 'shiphit') {
       // drawShip(tile)
       // drawX('red', tile)
@@ -250,6 +252,24 @@ function drawShip(tile) {
     defendingBoard.sideLength / 10
   );
   // Add an outline to the blue squares to tell them apart (later)
+}
+
+function drawHover(tile) {
+  ctx.fillStyle = 'white';
+  ctx.fillRect(
+    tile.x1,
+    tile.y1,
+    defendingBoard.sideLength / 10,
+    defendingBoard.sideLength / 10
+  );
+
+  ctx.fillStyle = 'rgba(0, 0, 255, 0.3)';
+  ctx.fillRect(
+    tile.x1,
+    tile.y1,
+    defendingBoard.sideLength / 10,
+    defendingBoard.sideLength / 10
+  );
 }
 
 function trueWidth(input) {
