@@ -22,7 +22,7 @@
     Terminate the match
 */
 
-function creatreByte(position, leading) {
+function createByte(position, leading) {
   return (leading << 7) | position;
 }
 
@@ -35,13 +35,13 @@ function parse(json) {
       let placeView = new Uint8Array(placeBuffer);
       for (let index = 0; index < 5; index++) {
         const ship = json.ships[index];
-        placeView[index] = creatreByte(ship.position, ship.rotation);
+        placeView[index] = createByte(ship.position[0], ship.rotation);
       }
       return placeView;
     case "guess":
       let guessBuffer = new ArrayBuffer(1);
       let guessView = new Uint8Array(guessBuffer);
-      guessView[index] = creatreByte(json.guess.hit, json.guess.index);
+      guessView = createByte(json.guess.index, json.guess.hit);
       return guessView;
     default:
       throw new Error("type is not valid");
