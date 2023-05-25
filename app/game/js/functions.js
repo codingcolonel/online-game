@@ -78,16 +78,21 @@ function checkArrayPosition(index, array, getIndex) {
 
 // Update tile state after ship position changes
 function updateShips(tiles, ships) {
+  // Reset all past instances of ship state
+  for (let i = 0; i < tiles.length; i++) {
+    const element = tiles[i];
+    if (element.state === "ship") {
+      element.state = "none";
+    }
+  }
+
+  // Update tile state to ship on all ship tiles
   for (let i = 0; i < tiles.length; i++) {
     const shipTile = checkArrayPosition(i, ships);
     if (shipTile !== false) {
       shipTile.position.forEach((element) => {
         tiles[element].state = "ship";
       });
-    } else if (tiles[i].state !== "hover") {
-      tiles[i].state = "none";
-    } else {
-      tiles[i].state = "none";
     }
   }
 }
@@ -152,6 +157,7 @@ function moveShip(shipIndex, shipArray, tileArray, newPosition, moveTheShip) {
   if (moveTheShip === true) {
     shipArray.splice(shipIndex, 1, newShip);
   } else if (moveTheShip === false) {
+    // Reset all past instances of hover state
     for (let i = 0; i < tileArray.length; i++) {
       const element = tileArray[i];
       if (element.state === "hover") {
@@ -159,6 +165,7 @@ function moveShip(shipIndex, shipArray, tileArray, newPosition, moveTheShip) {
       }
     }
 
+    // Update tile state to hover on newShip
     for (let j = 0; j < newShip.position.length; j++) {
       const element = newShip.position[j];
       tileArray[element].state = "hover";
