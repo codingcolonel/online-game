@@ -2,8 +2,11 @@
 
 // -- Imports --
 import { registerErrorLogger } from "./js/errorLog.js";
+const logger = registerErrorLogger();
+
 import { CodeCrypt } from "./js/codecrypt.js";
 import { Manager } from "./js/gameManager.js";
+import { playerShips, opponentShips } from "./js/ship.js";
 import {
   drawBoard,
   updateCanvas,
@@ -15,7 +18,7 @@ import {
   cnv,
   trueWidth,
   trueHeight,
-} from "./board.js";
+} from "./js/board.js";
 import {
   findTileByCoordinates,
   checkArrayPosition,
@@ -23,7 +26,7 @@ import {
   createShip,
   moveShip,
   updateTiles,
-} from "./functions.js";
+} from "./js/functions.js";
 
 // -- Classes --
 class ConnectionManager {
@@ -158,7 +161,6 @@ let decryptedRemoteSDP;
 
 let connection = new ConnectionManager();
 
-const logger = registerErrorLogger();
 window.addEventListener("error", (err) => logger.error(err.message));
 
 const ably = new Ably.Realtime.Promise({
@@ -227,6 +229,7 @@ let resolvers = {
 
 let gameManager;
 
+// Canvas shenanigans
 const effectCnv = document.getElementById("topCanvas");
 effectCnv.width = screen.width;
 effectCnv.height = screen.height;
@@ -234,7 +237,16 @@ const offCnv = effectCnv.transferControlToOffscreen();
 const Drawing = new Worker("./js/drawWorker.js");
 Drawing.postMessage({ type: "init", canvas: offCnv, scale }, [offCnv]);
 
+let isYourTurn = true;
+drawBoard(true);
+updateDim();
+
+let clickedShip;
+
 // HTML References
+
+const favicons =
+  document.documentElement.children[0].querySelectorAll("link#icon");
 
 const queryBoxContain = document.getElementById("queryBoxContain");
 const loaderContain = document.getElementById("loaderContain");
@@ -261,8 +273,6 @@ const rejectBtn = document.getElementById("rejectBtn");
 const canvasContain = document.getElementById("canvasContain");
 const mainCnv = document.getElementById("mainCanvas");
 const topCnv = document.getElementById("topCanvas");
-
-window.mainManager = mainManager;
 
 mainManager.add(
   queryBoxContain,
@@ -305,7 +315,7 @@ mainManager.references.query.sub.add(connectionBox, "connect", null, false);
 
 mainManager.references.loader.sub.add(cancelBtn, "button", null, false);
 
-mainManager.display("query");
+mainManager.display("canvas");
 
 // -- Event Listeners --
 confirmBtn.addEventListener("click", confirmUser);
@@ -360,27 +370,15 @@ acceptBtn.addEventListener("click", function () {
   closeDialog();
 });
 
-document.addEventListener("fullscreenchange", fullscreenHandler);
-async function fullscreenHandler() {
-  // Update changes to the screen once the screen has transitioned in/out fullscreen
-  if (!document.fullscreenElement) {
-    trueHeight(Math.floor(window.innerHeight * scale));
-    trueWidth(Math.floor(window.innerWidth * scale));
-  }
-  cnv.height = trueHeight();
-  cnv.width = trueWidth();
-  updateDim();
-  drawBoard(false);
-}
+document.addEventListener("keyup", fullscreenToggle);
 
-window.addEventListener("resize", function (e) {
-  trueHeight(Math.floor(window.innerHeight * scale));
-  trueWidth(Math.floor(window.innerWidth * scale));
-  cnv.height = trueHeight();
-  cnv.width = trueWidth();
-  updateDim();
-  drawBoard(false);
-});
+document.addEventListener("fullscreenchange", fullscreenHandler);
+
+window.addEventListener("resize", windowResize);
+
+document.addEventListener("click", getMouseCoordinates);
+
+document.addEventListener("mousemove", hoverHandler);
 
 // -- Connection Manager Functions --
 
@@ -603,6 +601,176 @@ async function copyLink() {
   logger.success("Link copied!");
 }
 
+function windowResize() {
+  trueHeight(Math.floor(window.innerHeight * scale));
+  trueWidth(Math.floor(window.innerWidth * scale));
+  cnv.height = trueHeight();
+  cnv.width = trueWidth();
+  updateDim();
+  drawBoard(false);
+}
+
+async function fullscreenToggle(e) {
+  if (e.key === "f") {
+    // Change width and height when switching in/out of fullscreen
+    if (!document.fullscreenElement) {
+      await document.documentElement.requestFullscreen();
+      trueHeight(Math.floor(screen.height * scale));
+      trueWidth(Math.floor(screen.width * scale));
+    } else if (document.exitFullscreen) {
+      await document.exitFullscreen();
+      trueHeight(Math.floor(window.innerHeight * scale));
+      trueWidth(Math.floor(window.innerWidth * scale));
+    }
+    cnv.height = trueHeight();
+    cnv.width = trueWidth();
+    updateDim();
+    drawBoard(false);
+  }
+}
+async function fullscreenHandler() {
+  // Update changes to the screen once the screen has transitioned in/out fullscreen
+  if (!document.fullscreenElement) {
+    trueHeight(Math.floor(window.innerHeight * scale));
+    trueWidth(Math.floor(window.innerWidth * scale));
+  }
+  cnv.height = trueHeight();
+  cnv.width = trueWidth();
+  updateDim();
+  drawBoard(false);
+}
+
+function getMouseCoordinates(e) {
+  // console.log(e);
+  // console.log('x' + e.x + ' y' + e.y);
+
+  // Adjust mouse x and y to pixel ratio
+  let mouseX = e.x * scale;
+  let mouseY = e.y * scale;
+
+  if (
+    mouseX >= defendingBoard.x &&
+    mouseX <= defendingBoard.x + defendingBoard.sideLength &&
+    mouseY >= defendingBoard.y &&
+    mouseY <= defendingBoard.y + defendingBoard.sideLength
+  ) {
+    // Get index of clicked tile on defending board
+    let clickedDefendingTile = findTileByCoordinates(
+      mouseX,
+      mouseY,
+      defendingTiles
+    );
+    // Get the index of the selected ship
+    let shipElement = checkArrayPosition(
+      clickedDefendingTile,
+      playerShips,
+      true
+    );
+    // If a ship is clicked for the first time or is being rotated act accordingly
+    if (
+      shipElement !== false &&
+      (clickedShip !== shipElement || e.detail >= 2)
+    ) {
+      // If ship is clicked for the first time update clickedShip to current ship and update tiles
+      if (e.detail === 1) {
+        clickedShip = shipElement;
+        updateTiles(shipElement, playerShips, defendingTiles);
+      } else {
+        // Switch rotation from 1 to 0 and vice versa
+        playerShips[shipElement].rotation =
+          1 - playerShips[shipElement].rotation;
+
+        // Update tiles after ship is rotated
+        updateTiles(shipElement, playerShips, defendingTiles);
+        moveShip(
+          shipElement,
+          playerShips,
+          defendingTiles,
+          playerShips[shipElement].position[0],
+          true
+        );
+      }
+      // Else move the selected ship to new position
+    } else {
+      if (clickedShip === undefined) return;
+      moveShip(
+        clickedShip,
+        playerShips,
+        defendingTiles,
+        clickedDefendingTile,
+        true
+      );
+    }
+  } else if (
+    mouseX >= attackingBoard.x &&
+    mouseX <= attackingBoard.x + attackingBoard.sideLength &&
+    mouseY >= attackingBoard.y &&
+    mouseY <= attackingBoard.y + attackingBoard.sideLength
+  ) {
+    if (isYourTurn === true) {
+      // Get index of clicked tile on attacking board
+      let clickedAttackingTile = findTileByCoordinates(
+        mouseX,
+        mouseY,
+        attackingTiles
+      );
+      // Change tile state based on outcome
+      if (attackingTiles[clickedAttackingTile].state === "none") {
+        let hitCheck = checkArrayPosition(clickedAttackingTile, opponentShips);
+        if (hitCheck !== false) {
+          attackingTiles[clickedAttackingTile].state = "hit";
+          if (
+            hitCheck.position.every(
+              (index) => attackingTiles[index].state === "hit"
+            ) === true
+          ) {
+            for (let i = 0; i < hitCheck.position.length; i++) {
+              const element = hitCheck.position[i];
+              attackingTiles[element].state = "sunk";
+            }
+          }
+        } else {
+          attackingTiles[clickedAttackingTile].state = "miss";
+        }
+        // Send message with tile index here
+        // isYourTurn = false;
+      }
+    }
+  }
+  updateCanvas();
+}
+
+function hoverHandler(e) {
+  // Adjust mouse x and y to pixel ratio
+  let mouseX = e.x * scale;
+  let mouseY = e.y * scale;
+
+  if (
+    mouseX >= defendingBoard.x &&
+    mouseX <= defendingBoard.x + defendingBoard.sideLength &&
+    mouseY >= defendingBoard.y &&
+    mouseY <= defendingBoard.y + defendingBoard.sideLength &&
+    clickedShip !== undefined
+  ) {
+    // Get index of tile on defending board being hovered on
+    let hoverDefendingTile = findTileByCoordinates(
+      mouseX,
+      mouseY,
+      defendingTiles
+    );
+    moveShip(
+      clickedShip,
+      playerShips,
+      defendingTiles,
+      hoverDefendingTile,
+      false
+    );
+    // console.log(defendingTiles);
+
+    updateCanvas();
+  }
+}
+
 // Utility
 
 /**
@@ -665,5 +833,13 @@ function updateDim() {
   Drawing.postMessage({
     type: "dim",
     dim: { width: trueWidth(), height: trueHeight() },
+  });
+}
+
+function setFavicon(version) {
+  favicons.forEach((link) => {
+    link.href = `${location.origin}/img/faviconsV${version}/${
+      link.href.split(/(^.*(V[1-3]\/))/gm)[3]
+    }`;
   });
 }

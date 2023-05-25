@@ -123,6 +123,9 @@ canvas {
 
   position: relative;
   z-index: 400;
+  letter-spacing: normal;
+
+  user-select: none;
 }
 
 @keyframes dialogPulse {
@@ -261,7 +264,7 @@ canvas {
 
 #mainCanvas {
   pointer-events: all;
-  background-color: #001122;
+  background-color: #002040;
 }
 
 #topCanvas {

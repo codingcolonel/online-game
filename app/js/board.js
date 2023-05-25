@@ -9,7 +9,9 @@ import {
 import { playerShips, opponentShips } from "./ship.js";
 
 // Set up canvas and 2d graphics content
+/** @type {HTMLCanvasElement} */
 let cnv = document.getElementById("mainCanvas");
+/** @type {CanvasRenderingContext2D} */
 let ctx = cnv.getContext("2d");
 let scale = window.devicePixelRatio;
 let TrueHeight = Math.floor(window.innerHeight * scale);
@@ -54,8 +56,7 @@ function drawBoard(reset) {
   };
 
   // Draw Background
-  ctx.fillStyle = "dodgerblue";
-  ctx.fillRect(0, 0, TrueWidth, TrueHeight);
+  ctx.clearRect(0, 0, TrueWidth, TrueHeight);
 
   // Draw defending board
   singleBoard(defendingBoard, defendingTiles, "Navy", reset);
@@ -96,7 +97,7 @@ function singleBoard(board, tiles, colour, resetArrays) {
   ) {
     // Draw numbers
     ctx.font = "25px Verdana, sans-serif";
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "#ffffff";
     ctx.textAlign = "center";
     ctx.fillText(
       `${counter}`,
@@ -126,7 +127,7 @@ function singleBoard(board, tiles, colour, resetArrays) {
       if (letter !== "END") {
         // Draw letters
         ctx.font = "25px Verdana, sans-serif";
-        ctx.fillStyle = "black";
+        ctx.fillStyle = "#ffffff";
         ctx.fillText(
           `${letter}`,
           board.x - board.sideLength / 25,
@@ -158,17 +159,23 @@ function updateCanvas() {
       centerX: element.x + defendingBoard.sideLength / 20,
       centerY: element.y + defendingBoard.sideLength / 20,
     };
-    if (element.state === "none") {
-      drawBlank(tile);
-    } else if (element.state === "miss") {
-      drawMiss(tile);
-    } else if (element.state === "ship") {
-      drawShip(tile);
-    } else if (element.state === "hover") {
-      drawHover(tile);
-    } else if (element.state === "shiphit") {
-      // drawShip(tile)
-      // drawX('red', tile)
+    switch (element.state) {
+      case "none":
+        drawBlank(tile);
+        break;
+      case "miss":
+        drawMiss(tile);
+        break;
+      case "ship":
+        drawShip(tile);
+        break;
+      case "hover":
+        drawHover(tile);
+        break;
+      case "shiphit":
+        // drawShip(tile)
+        // drawX('red', tile)
+        break;
     }
   }
 
