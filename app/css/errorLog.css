@@ -27,6 +27,7 @@
   letter-spacing: -0.2em;
   border-radius: 0.5vh;
   overflow: hidden;
+  z-index: 500;
 }
 
 .erL_messageMain::after {

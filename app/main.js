@@ -4,6 +4,26 @@
 import { registerErrorLogger } from "./js/errorLog.js";
 import { CodeCrypt } from "./js/codecrypt.js";
 import { Manager } from "./js/gameManager.js";
+import {
+  drawBoard,
+  updateCanvas,
+  scale,
+  defendingBoard,
+  attackingBoard,
+  defendingTiles,
+  attackingTiles,
+  cnv,
+  trueWidth,
+  trueHeight,
+} from "./board.js";
+import {
+  findTileByCoordinates,
+  checkArrayPosition,
+  updateShips,
+  createShip,
+  moveShip,
+  updateTiles,
+} from "./functions.js";
 
 // -- Classes --
 class ConnectionManager {
@@ -207,6 +227,13 @@ let resolvers = {
 
 let gameManager;
 
+const effectCnv = document.getElementById("topCanvas");
+effectCnv.width = screen.width;
+effectCnv.height = screen.height;
+const offCnv = effectCnv.transferControlToOffscreen();
+const Drawing = new Worker("./js/drawWorker.js");
+Drawing.postMessage({ type: "init", canvas: offCnv, scale }, [offCnv]);
+
 // HTML References
 
 const queryBoxContain = document.getElementById("queryBoxContain");
@@ -231,6 +258,12 @@ const nameOut = document.getElementById("userOut");
 const acceptBtn = document.getElementById("acceptBtn");
 const rejectBtn = document.getElementById("rejectBtn");
 
+const canvasContain = document.getElementById("canvasContain");
+const mainCnv = document.getElementById("mainCanvas");
+const topCnv = document.getElementById("topCanvas");
+
+window.mainManager = mainManager;
+
 mainManager.add(
   queryBoxContain,
   "query",
@@ -254,6 +287,7 @@ mainManager.add(
   },
   true
 );
+mainManager.add(canvasContain, "canvas", null, false);
 
 mainManager.references.query.sub.add(
   userBox,
@@ -324,6 +358,28 @@ acceptBtn.addEventListener("click", function () {
     reject: null,
   };
   closeDialog();
+});
+
+document.addEventListener("fullscreenchange", fullscreenHandler);
+async function fullscreenHandler() {
+  // Update changes to the screen once the screen has transitioned in/out fullscreen
+  if (!document.fullscreenElement) {
+    trueHeight(Math.floor(window.innerHeight * scale));
+    trueWidth(Math.floor(window.innerWidth * scale));
+  }
+  cnv.height = trueHeight();
+  cnv.width = trueWidth();
+  updateDim();
+  drawBoard(false);
+}
+
+window.addEventListener("resize", function (e) {
+  trueHeight(Math.floor(window.innerHeight * scale));
+  trueWidth(Math.floor(window.innerWidth * scale));
+  cnv.height = trueHeight();
+  cnv.width = trueWidth();
+  updateDim();
+  drawBoard(false);
 });
 
 // -- Connection Manager Functions --
@@ -489,7 +545,7 @@ connection.ondisconnected = async function () {
   gameManager = null;
 
   if (ably.connection.state !== "connected") {
-    mainManager.display("loader");
+    mainManager.hideAll();
     ably.connect();
     await ably.connection.once("connected");
   }
@@ -603,4 +659,11 @@ function validateCode(code) {
 function randomInt(min, max) {
   let rand = Math.random() * (max - min) + min;
   return Math.floor(rand);
+}
+
+function updateDim() {
+  Drawing.postMessage({
+    type: "dim",
+    dim: { width: trueWidth(), height: trueHeight() },
+  });
 }

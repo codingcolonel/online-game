@@ -4,6 +4,12 @@
 }
 
 /* HTML elements */
+html,
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 html {
   line-height: 1;
   font-family: "Ailerons", sans-serif;
@@ -12,6 +18,7 @@ html {
 
 body {
   background-color: #001122;
+  overflow: hidden;
 }
 
 h1 {
@@ -107,6 +114,15 @@ dialog #btnBox {
 
 dialog p span {
   color: #ff3d00;
+}
+
+canvas {
+  width: 100vw;
+  height: 100vh;
+  grid-area: 1/1;
+
+  position: relative;
+  z-index: 400;
 }
 
 @keyframes dialogPulse {
@@ -227,6 +243,29 @@ dialog p span {
 #codeOut {
   letter-spacing: normal;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#canvasContain {
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+#canvasStack {
+  display: grid;
+}
+
+#mainCanvas {
+  pointer-events: all;
+  background-color: #001122;
+}
+
+#topCanvas {
+  pointer-events: none;
 }
 
 /* Class */
