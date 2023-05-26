@@ -5,8 +5,8 @@ import {
   randomInt,
   moveShip,
   updateTiles,
-} from "./functions.js";
-import { defendingTiles } from "./board.js";
+} from './functions.js';
+import { defendingTiles } from './board.js';
 
 let playerShips = [];
 let opponentShips = [];
@@ -60,7 +60,15 @@ function randomPosition() {
     );
 
     let isValidPosition = (element) => {
-      if (element >= 100) return true; // ! Fixed the randomizer by adding this one line, basically some parts of the ships were ending up outside the possible region, causing errors
+      // if (element >= 100) return true; // ! Fixed the randomizer by adding this one line, basically some parts of the ships were ending up outside the possible region, causing errors
+      // return defendingTiles[element].isValid === false;
+      let nextMultipleOf10 = Math.ceil((element + 1) / 10) * 10;
+      if (
+        element >= 100 ||
+        (playerShips[i].rotation === 0 &&
+          element + shipLength[i] > nextMultipleOf10)
+      )
+        return true;
       return defendingTiles[element].isValid === false;
     };
 
@@ -82,8 +90,8 @@ function randomPosition() {
       );
     }
 
-    console.log(playerShips);
-    console.log(defendingTiles);
+    // console.log(playerShips);
+    // console.log(defendingTiles);
   }
 }
 
