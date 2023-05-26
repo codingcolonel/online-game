@@ -12,7 +12,7 @@ function addTileToArray(x, y, state) {
 
 // Convert an integer into binary
 function intToBin(num) {
-  return ("00000000" + num.toString(2)).slice(-8);
+  return ('00000000' + num.toString(2)).slice(-8);
 }
 
 // Convert binary into an integer
@@ -51,10 +51,10 @@ function processResponse(response) {
 function nextLetter(letter) {
   let encoded = new TextEncoder().encode(letter);
   if (encoded[0] > 73 || encoded[0] < 65) {
-    return "END";
+    return 'END';
   } else {
     encoded[0]++;
-    let decoded = new TextDecoder("utf-8").decode(encoded);
+    let decoded = new TextDecoder('utf-8').decode(encoded);
     return decoded;
   }
 }
@@ -63,6 +63,9 @@ function nextLetter(letter) {
 function checkArrayPosition(index, array, getIndex) {
   for (let i = 0; i < array.length; i++) {
     const element = array[i];
+    if (element === -1) {
+      break;
+    }
     for (let j = 0; j < element.position.length; j++) {
       const position = element.position[j];
       if (position === index) {
@@ -81,8 +84,8 @@ function updateShips(tiles, ships) {
   // Reset all past instances of ship state
   for (let i = 0; i < tiles.length; i++) {
     const element = tiles[i];
-    if (element.state === "ship") {
-      element.state = "none";
+    if (element.state === 'ship') {
+      element.state = 'none';
     }
   }
 
@@ -91,7 +94,7 @@ function updateShips(tiles, ships) {
     const shipTile = checkArrayPosition(i, ships);
     if (shipTile !== false) {
       shipTile.position.forEach((element) => {
-        tiles[element].state = "ship";
+        tiles[element].state = 'ship';
       });
     }
   }
@@ -114,6 +117,10 @@ function updateTiles(shipIndex, shipArray, tileArray) {
   // Remove selected ship from checking process
   let modifiedArray = shipArray.slice();
   modifiedArray.splice(shipIndex, 1);
+
+  if (modifiedArray.length === 0) {
+    modifiedArray.push(-1);
+  }
 
   for (let i = 0; i < tileArray.length; i++) {
     const newShip = {
@@ -160,15 +167,15 @@ function moveShip(shipIndex, shipArray, tileArray, newPosition, moveTheShip) {
     // Reset all past instances of hover state
     for (let i = 0; i < tileArray.length; i++) {
       const element = tileArray[i];
-      if (element.state === "hover") {
-        element.state = "none";
+      if (element.state === 'hover') {
+        element.state = 'none';
       }
     }
 
     // Update tile state to hover on newShip
     for (let j = 0; j < newShip.position.length; j++) {
       const element = newShip.position[j];
-      tileArray[element].state = "hover";
+      tileArray[element].state = 'hover';
     }
   }
 }
@@ -189,6 +196,18 @@ function closestCoordinateInArray(x, y, arr) {
   return closestPoint;
 }
 
+/**
+ * Returns a random value between min and max
+ *
+ * @param {Number} min Minimum value (Inclusive)
+ * @param {Number} max Maximum value (Exclusive)
+ * @returns {Number} A random value
+ */
+function randomInt(min, max) {
+  let rand = Math.random() * (max - min) + min;
+  return Math.floor(rand);
+}
+
 export {
   processResponse,
   addTileToArray,
@@ -199,4 +218,5 @@ export {
   createShip,
   moveShip,
   updateTiles,
+  randomInt,
 };

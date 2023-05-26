@@ -1,30 +1,89 @@
 // All code for thes ships appearance and functionality
-import { processResponse, createShip } from "./functions.js";
+import {
+  processResponse,
+  createShip,
+  randomInt,
+  moveShip,
+  updateTiles,
+} from './functions.js';
+import { defendingTiles } from './board.js';
+
+let playerShips = [];
+let opponentShips = [];
+defaultPosition();
 
 // Ships arrays (off of global scope)
-let playerShips = [
-  {
-    rotation: 0,
-    position: [0, 1, 2, 3, 4],
-  },
-  {
-    rotation: 0,
-    position: [10, 11, 12, 13],
-  },
-  {
-    rotation: 0,
-    position: [20, 21, 22],
-  },
-  {
-    rotation: 0,
-    position: [30, 31, 32],
-  },
-  {
-    rotation: 0,
-    position: [40, 41],
-  },
-];
-let opponentShips = [];
+function defaultPosition() {
+  playerShips = [
+    {
+      rotation: 0,
+      position: [0, 1, 2, 3, 4],
+    },
+    {
+      rotation: 0,
+      position: [10, 11, 12, 13],
+    },
+    {
+      rotation: 0,
+      position: [20, 21, 22],
+    },
+    {
+      rotation: 0,
+      position: [30, 31, 32],
+    },
+    {
+      rotation: 0,
+      position: [40, 41],
+    },
+  ];
+}
+
+function randomPosition() {
+  playerShips = [];
+  let shipLength = [5, 4, 3, 3, 2];
+
+  for (let i = 0; i < 5; i++) {
+    let ranPos = randomInt(0, 100);
+    let ranRot = randomInt(0, 2);
+    // Add new ship object to array
+    playerShips.push({
+      rotation: ranRot,
+      position: [ranPos],
+    });
+    updateTiles(i, playerShips, defendingTiles);
+
+    // Take the index and rotation and make the rest of the ship
+    playerShips[i].position = createShip(
+      playerShips[i].position[0],
+      shipLength[i],
+      playerShips[i].rotation
+    );
+
+    let isValidPosition = (element) =>
+      defendingTiles[element].isValid === false;
+
+    while (playerShips[i].position.some(isValidPosition) === true) {
+      ranPos = randomInt(0, 100);
+      ranRot = randomInt(0, 2);
+
+      playerShips.splice(i, 1, {
+        rotation: ranRot,
+        position: [ranPos],
+      });
+
+      updateTiles(i, playerShips, defendingTiles);
+
+      playerShips[i].position = createShip(
+        playerShips[i].position[0],
+        shipLength[i],
+        playerShips[i].rotation
+      );
+    }
+
+    console.log(playerShips);
+    console.log(defendingTiles);
+  }
+}
 
 // When opponents ships are received convert them into useable data
 if (opponentShips.length === 0) {
@@ -47,4 +106,10 @@ function getOpponentShips(response) {
   }
 }
 
-export { playerShips, opponentShips, getOpponentShips };
+export {
+  playerShips,
+  opponentShips,
+  getOpponentShips,
+  defaultPosition,
+  randomPosition,
+};

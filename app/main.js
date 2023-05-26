@@ -6,7 +6,12 @@ const logger = registerErrorLogger();
 
 import { CodeCrypt } from './js/codecrypt.js';
 import { Manager } from './js/gameManager.js';
-import { playerShips, opponentShips } from './js/ship.js';
+import {
+  playerShips,
+  opponentShips,
+  defaultPosition,
+  randomPosition,
+} from './js/ship.js';
 import {
   drawBoard,
   updateCanvas,
@@ -30,6 +35,7 @@ import {
   createShip,
   moveShip,
   updateTiles,
+  randomInt,
 } from './js/functions.js';
 
 // -- Classes --
@@ -748,7 +754,21 @@ function getMouseCoordinates(e) {
     mouseY >= resetButton.y &&
     mouseY <= resetButton.y + buttons.height
   ) {
-    console.log('reset');
+    defaultPosition();
+  } else if (
+    mouseX >= randomizeButton.x &&
+    mouseX <= randomizeButton.x + buttons.length &&
+    mouseY >= randomizeButton.y &&
+    mouseY <= randomizeButton.y + buttons.height
+  ) {
+    randomPosition();
+  } else if (
+    mouseX >= confirmationButton.x &&
+    mouseX <= confirmationButton.x + buttons.length &&
+    mouseY >= confirmationButton.y &&
+    mouseY <= confirmationButton.y + buttons.height
+  ) {
+    console.log('confirmation');
   }
   updateCanvas();
 }
@@ -828,18 +848,6 @@ function validateCode(code) {
   if (code.match(/([^0-9A-Fa-f])+/gm)) return false;
   if (code.length === 6) return true;
   return false;
-}
-
-/**
- * Returns a random value between min and max
- *
- * @param {Number} min Minimum value (Inclusive)
- * @param {Number} max Maximum value (Exclusive)
- * @returns {Number} A random value
- */
-function randomInt(min, max) {
-  let rand = Math.random() * (max - min) + min;
-  return Math.floor(rand);
 }
 
 function updateDim() {
