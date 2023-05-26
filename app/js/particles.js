@@ -12,22 +12,8 @@ function randomInt(min, max) {
   return Math.floor(randomFloat(min, max));
 }
 
-// Return a random RGB code
-function randomRGB() {
-  return `rgb(${randomInt(0, 256)}, ${randomInt(0, 256)}, ${randomInt(
-    0,
-    256
-  )})`;
-}
-
-// Return a random Hex code
-function randomHex() {
-  return (
-    "#" +
-    randomInt(0, 256).toString(16).padStart(2, "0") +
-    randomInt(0, 256).toString(16).padStart(2, "0") +
-    randomInt(0, 256).toString(16).padStart(2, "0")
-  );
+function clamp(num, min, max) {
+  return Math.max(min, Math.min(num, max));
 }
 
 // ! Do not modify this class, it is the basis from which all other particles are created
@@ -47,14 +33,29 @@ class Particle {
   /** @type {CanvasRenderingContext2D} */
   contextReference;
 
-  constructor(pos, vel, acc, ctx) {
+  lifespan;
+
+  /** @type {Array} */
+  arrayReference;
+
+  life;
+
+  constructor(pos, vel, acc, ctx, life = 0, arr) {
     this.position = pos;
     this.velocity = vel;
     this.acceleration = acc;
     this.contextReference = ctx;
+    this.lifespan = life;
+    this.arrayReference = arr;
   }
 
   update(deltaTime) {
+    this.life = this.lifespan - +new Date();
+    if (this.life <= 0) {
+      this.arrayReference.splice(this.arrayReference.indexOf(this), 1);
+      return;
+    }
+
     let finalVelocity = {
       x: this.velocity.x + this.acceleration.x * deltaTime,
       y: this.velocity.y + this.acceleration.y * deltaTime,
@@ -73,22 +74,27 @@ class Particle {
 
 // * This is an example of how to create your own particle
 class Example extends Particle {
-  constructor(position, context) {
+  constructor(position, context, array) {
     // The super calls the parent's constructor with the passed in parameters
     super(
       {
-        x: position.x + randomInt(-10, 10),
-        y: position.y + randomInt(-10, 10),
+        x: position.x + randomFloat(-10, 10),
+        y: position.y + randomFloat(-10, 10),
       },
-      { x: 50, y: 50 },
-      { x: 0, y: 0 },
-      context
+      { x: randomFloat(-1.5, 1.5), y: randomFloat(-1.5, 1.5) },
+      { x: 0, y: 0.003 },
+      context,
+      +new Date() + 1000,
+      array
     );
   }
 
   draw() {
     this.contextReference.fillStyle = "red";
+    this.contextReference.save();
+    this.contextReference.globalAlpha = this.life / 1000;
     this.contextReference.fillRect(this.position.x, this.position.y, 10, 10);
+    this.contextReference.restore();
   }
 }
 
@@ -102,7 +108,8 @@ class ParticleEmitter {
   particles = new Array();
 
   time;
-  frequency;
+  #prevTime;
+  #leftoverTime;
   position;
   max;
 
@@ -111,44 +118,65 @@ class ParticleEmitter {
 
   startTime;
 
+  arrayReference;
+
+  interval;
+
   /**
    *
    * @param {String} name Name of the particle to spawn
    * @param {Number} time How long the particle should spawn for (in seconds)
-   * @param {Number} frequency How many particles to spawn over the amount of time (0 to spawn the max number)
+   * @param {Number} frequency Frequency of particle spawns
    * @param {Number} max The max number of particles to spawn total
    * @param {Object} position Origin point of the particles
+   * @param {CanvasRenderingContext2D} context Context to render with
+   * @param {Array} array activeEmitter array
    */
-  constructor(name, time, frequency, max, position, context) {
+  constructor(name, time, frequency, max, position, context, array) {
     if (typeof max !== "number") throw new Error("Possible overflow");
 
+    this.startTime = +new Date();
+
     this.particleClass = particleRegistry[name];
-    this.time = time;
-    this.frequency = frequency;
+    this.time = this.startTime + time * 1000;
     this.max = max;
     this.position = position;
 
     this.context = context;
 
-    this.startTime = +new Date();
+    this.arrayReference = array;
+
+    this.interval = (this.time - this.startTime) / frequency;
+
+    this.#prevTime = this.startTime;
+    this.#leftoverTime = 0;
   }
 
   update(deltaTime) {
-    if ((+new Date() - this.startTime) / 1000 < this.time) {
-      let particlesToSpawn = Math.min(
-        Math.max(this.max - this.particles.length, 0),
-        deltaTime / this.frequency
-      );
-      for (let i = 0; i < particlesToSpawn; i++) {
+    const currTime = +new Date();
+    if (currTime < this.time) {
+      for (
+        let i = this.#prevTime + this.#leftoverTime;
+        i < currTime;
+        i += this.interval
+      ) {
+        if (this.particles.length >= this.max) continue;
         this.particles.push(
-          new this.particleClass(this.position, this.context)
+          new this.particleClass(this.position, this.context, this.particles)
         );
+        this.#leftoverTime = this.interval - (currTime - i);
+      }
+    } else {
+      if (this.particles.length === 0) {
+        this.arrayReference.splice(this.arrayReference.indexOf(this), 1);
+        return;
       }
     }
 
     this.particles.forEach((particle) => {
       particle.update(deltaTime);
     });
+    this.#prevTime = currTime;
   }
 
   draw() {

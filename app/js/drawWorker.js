@@ -30,12 +30,13 @@ function receiveMessage(msg) {
       // Example, don't do just this, get it from data
       activeEmitters.push(
         new ParticleEmitter(
-          "example",
-          1,
-          0.2,
-          10,
-          { x: cnv.width / 2, y: cnv.width / 2 },
-          ctx
+          data.name,
+          data.time,
+          data.frequency,
+          data.max,
+          data.position,
+          ctx,
+          activeEmitters
         )
       );
       break;
@@ -65,7 +66,7 @@ function draw() {
   ctx.clearRect(0, 0, cnv.width, cnv.height);
 
   activeEmitters.forEach((emitter) => {
-    emitter.update(deltaTime / 1000);
+    emitter.update(deltaTime);
     emitter.draw();
   });
   requestAnimationFrame(draw);
