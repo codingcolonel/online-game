@@ -1,3 +1,5 @@
+import { ParticleEmitter } from "./particles.js";
+
 /** @type {OffscreenCanvas} */
 let cnv;
 /** @type {OffscreenCanvasRenderingContext2D} */
@@ -10,6 +12,8 @@ let scale;
 let TrueWidth;
 let TrueHeight;
 
+let activeEmitters = new Array();
+
 addEventListener("message", receiveMessage);
 
 function receiveMessage(msg) {
@@ -21,6 +25,19 @@ function receiveMessage(msg) {
       break;
     case "dim":
       dimensions(data);
+      break;
+    case "particle":
+      // Example, don't do just this, get it from data
+      activeEmitters.push(
+        new ParticleEmitter(
+          "example",
+          1,
+          0.2,
+          10,
+          { x: cnv.width / 2, y: cnv.width / 2 },
+          ctx
+        )
+      );
       break;
   }
 }
@@ -41,17 +58,21 @@ function dimensions(data) {
 
 function draw() {
   // Calculate DeltaTime
-  // let currTime = +new Date();
-  // let deltaTime = currTime - prevTime;
-  // prevTime = currTime;
-  //
-  // Not really sure what this is for but it covers the whole defending board so I've commented it out for now
-  // drawBoard();
-  //
-  // Request next frame
-  // requestAnimationFrame(draw);
+  let currTime = +new Date();
+  let deltaTime = currTime - prevTime;
+  prevTime = currTime;
+
+  ctx.clearRect(0, 0, cnv.width, cnv.height);
+
+  activeEmitters.forEach((emitter) => {
+    emitter.update(deltaTime / 1000);
+    emitter.draw();
+  });
+  requestAnimationFrame(draw);
 }
 
+// ! Example function using the board
+/*
 function drawBoard() {
   let centerWidth = TrueWidth / 2;
   let centerHeight = TrueHeight / 2;
@@ -65,3 +86,4 @@ function drawBoard() {
   ctx.fillStyle = "white";
   ctx.fillRect(board.x, board.y, board.sideLength, board.sideLength);
 }
+*/

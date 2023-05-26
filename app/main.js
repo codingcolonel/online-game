@@ -244,8 +244,9 @@ const effectCnv = document.getElementById("topCanvas");
 effectCnv.width = screen.width;
 effectCnv.height = screen.height;
 const offCnv = effectCnv.transferControlToOffscreen();
-const Drawing = new Worker("./js/drawWorker.js");
+const Drawing = new Worker("./js/drawWorker.js", { type: "module" });
 Drawing.postMessage({ type: "init", canvas: offCnv, scale }, [offCnv]);
+window.Drawing = Drawing;
 
 let isYourTurn = true;
 drawBoard(true);
