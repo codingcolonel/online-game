@@ -1,17 +1,17 @@
 // Weblships - Code by Timothy V & Ethan V
 
 // -- Imports --
-import { registerErrorLogger } from './js/errorLog.js';
+import { registerErrorLogger } from "./js/errorLog.js";
 const logger = registerErrorLogger();
 
-import { CodeCrypt } from './js/codecrypt.js';
-import { Manager } from './js/gameManager.js';
+import { CodeCrypt } from "./js/codecrypt.js";
+import { Manager } from "./js/gameManager.js";
 import {
   playerShips,
   opponentShips,
   defaultPosition,
   randomPosition,
-} from './js/ship.js';
+} from "./js/ship.js";
 import {
   drawBoard,
   updateCanvas,
@@ -27,7 +27,7 @@ import {
   randomizeButton,
   confirmationButton,
   buttons,
-} from './js/board.js';
+} from "./js/board.js";
 import {
   findTileByCoordinates,
   checkArrayPosition,
@@ -36,7 +36,7 @@ import {
   moveShip,
   updateTiles,
   randomInt,
-} from './js/functions.js';
+} from "./js/functions.js";
 
 // -- Classes --
 class ConnectionManager {
@@ -53,15 +53,15 @@ class ConnectionManager {
   /** @type {RTCPeerConnection} */
   session = null;
   constructor() {
-    this.#status = 'enabled';
+    this.#status = "enabled";
   }
   get status() {
-    if (!this.ably || !this.servers) return 'disabled';
+    if (!this.ably || !this.servers) return "disabled";
     return this.#status;
   }
 
   set status(newStatus) {
-    if (this['on' + newStatus]) this['on' + newStatus]();
+    if (this["on" + newStatus]) this["on" + newStatus]();
     this.#status = newStatus;
   }
 }
@@ -78,18 +78,18 @@ class DisplayManager {
   display(name) {
     for (const [key, value] of Object.entries(this.references)) {
       if (key === name) {
-        if (value.root.classList.contains('reveal')) continue;
-        value.root.classList.add('reveal');
-        value.root.classList.remove('hide');
+        if (value.root.classList.contains("reveal")) continue;
+        value.root.classList.add("reveal");
+        value.root.classList.remove("hide");
 
-        if (typeof value.callback !== 'function') continue;
+        if (typeof value.callback !== "function") continue;
         value.callback.bind(value.sub, true)();
       } else {
-        if (value.root.classList.contains('hide')) continue;
-        value.root.classList.add('hide');
-        value.root.classList.remove('reveal');
+        if (value.root.classList.contains("hide")) continue;
+        value.root.classList.add("hide");
+        value.root.classList.remove("reveal");
 
-        if (typeof value.callback !== 'function') continue;
+        if (typeof value.callback !== "function") continue;
         value.callback.bind(value.sub, false)();
       }
     }
@@ -97,11 +97,11 @@ class DisplayManager {
 
   hideAll() {
     for (const [key, value] of Object.entries(this.references)) {
-      if (value.root.classList.contains('hide')) continue;
-      value.root.classList.add('hide');
-      value.root.classList.remove('reveal');
+      if (value.root.classList.contains("hide")) continue;
+      value.root.classList.add("hide");
+      value.root.classList.remove("reveal");
 
-      if (typeof value.callback !== 'function') continue;
+      if (typeof value.callback !== "function") continue;
       value.callback.bind(value.sub, false)();
     }
   }
@@ -112,12 +112,12 @@ class AudioManager {
   #context;
 
   constructor(...params) {
-    this.#context = new AudioContext({ latencyHint: 'interactive' });
+    this.#context = new AudioContext({ latencyHint: "interactive" });
 
     params.forEach(async (parameter) => {
-      if (typeof parameter !== 'object') return;
-      if (!parameter.hasOwnProperty('soundName')) return;
-      if (!parameter.hasOwnProperty('uris')) return;
+      if (typeof parameter !== "object") return;
+      if (!parameter.hasOwnProperty("soundName")) return;
+      if (!parameter.hasOwnProperty("uris")) return;
       let bufferList = new Array();
       parameter.uris.forEach(async (uri) => {
         let response = await this.#getAudio(uri);
@@ -132,7 +132,7 @@ class AudioManager {
   async #getAudio(uri) {
     try {
       const request = await fetch(uri);
-      if (!request.ok) throw new TypeError('Cannot fetch ' + uri);
+      if (!request.ok) throw new TypeError("Cannot fetch " + uri);
       const result = await request.arrayBuffer();
 
       let buffer = await this.#context.decodeAudioData(result);
@@ -146,7 +146,7 @@ class AudioManager {
   }
 
   play(soundName) {
-    if (this.#context.state === 'suspended') this.#context.resume();
+    if (this.#context.state === "suspended") this.#context.resume();
     if (!this.#soundBuffers.hasOwnProperty(soundName)) return;
 
     let source = this.#context.createBufferSource();
@@ -157,7 +157,7 @@ class AudioManager {
     console.log(bufferObj[randomIndex]);
     source.buffer = bufferObj[randomIndex];
 
-    source.addEventListener('ended', function () {
+    source.addEventListener("ended", function () {
       source = null;
     });
     source.start(0);
@@ -171,7 +171,7 @@ let decryptedRemoteSDP;
 
 let connection = new ConnectionManager();
 
-window.addEventListener('error', (err) => logger.error(err.message));
+window.addEventListener("error", (err) => logger.error(err.message));
 
 const ably = new Ably.Realtime.Promise({
   authCallback: async (_, callback) => {
@@ -183,7 +183,7 @@ const ably = new Ably.Realtime.Promise({
       callback(token, null);
     } else {
       connection.ably = true;
-      if (!channel) channel = ably.channels.get('requests');
+      if (!channel) channel = ably.channels.get("requests");
       callback(null, token);
     }
   },
@@ -207,26 +207,26 @@ let mainManager = new DisplayManager();
 
 const audio = new AudioManager(
   {
-    uris: ['./audio/WeblshipsCannonsFireClose.mp3'],
-    soundName: 'fireClose',
+    uris: ["./audio/WeblshipsCannonsFireClose.mp3"],
+    soundName: "fireClose",
   },
   {
-    uris: ['./audio/WeblshipsCannonsFireFar.mp3'],
-    soundName: 'fireFar',
-  },
-  {
-    uris: [
-      './audio/WeblshipsCannonsHit1.mp3',
-      './audio/WeblshipsCannonsHit2.mp3',
-    ],
-    soundName: 'hit',
+    uris: ["./audio/WeblshipsCannonsFireFar.mp3"],
+    soundName: "fireFar",
   },
   {
     uris: [
-      './audio/WeblshipsCannonsMiss1.mp3',
-      './audio/WeblshipsCannonsMiss2.mp3',
+      "./audio/WeblshipsCannonsHit1.mp3",
+      "./audio/WeblshipsCannonsHit2.mp3",
     ],
-    soundName: 'miss',
+    soundName: "hit",
+  },
+  {
+    uris: [
+      "./audio/WeblshipsCannonsMiss1.mp3",
+      "./audio/WeblshipsCannonsMiss2.mp3",
+    ],
+    soundName: "miss",
   }
 );
 
@@ -240,12 +240,12 @@ let resolvers = {
 let gameManager;
 
 // Canvas shenanigans
-const effectCnv = document.getElementById('topCanvas');
+const effectCnv = document.getElementById("topCanvas");
 effectCnv.width = screen.width;
 effectCnv.height = screen.height;
 const offCnv = effectCnv.transferControlToOffscreen();
-const Drawing = new Worker('./js/drawWorker.js');
-Drawing.postMessage({ type: 'init', canvas: offCnv, scale }, [offCnv]);
+const Drawing = new Worker("./js/drawWorker.js");
+Drawing.postMessage({ type: "init", canvas: offCnv, scale }, [offCnv]);
 
 let isYourTurn = true;
 drawBoard(true);
@@ -256,37 +256,37 @@ let clickedShip;
 // HTML References
 
 const favicons =
-  document.documentElement.children[0].querySelectorAll('link#icon');
+  document.documentElement.children[0].querySelectorAll("link#icon");
 
-const queryBoxContain = document.getElementById('queryBoxContain');
-const loaderContain = document.getElementById('loaderContain');
+const queryBoxContain = document.getElementById("queryBoxContain");
+const loaderContain = document.getElementById("loaderContain");
 
-const userBox = document.getElementById('userBox');
-const connectionBox = document.getElementById('connectionBox');
+const userBox = document.getElementById("userBox");
+const connectionBox = document.getElementById("connectionBox");
 
-const nameIn = document.getElementById('userIn');
-const confirmBtn = document.getElementById('confirmBtn');
+const nameIn = document.getElementById("userIn");
+const confirmBtn = document.getElementById("confirmBtn");
 
-const codeIn = document.getElementById('codeIn');
-const codeOut = document.getElementById('codeOut');
-const connectBtn = document.getElementById('connectBtn');
-const inviteBtn = document.getElementById('inviteBtn');
+const codeIn = document.getElementById("codeIn");
+const codeOut = document.getElementById("codeOut");
+const connectBtn = document.getElementById("connectBtn");
+const inviteBtn = document.getElementById("inviteBtn");
 
-const cancelBtn = document.getElementById('cancelBtn');
+const cancelBtn = document.getElementById("cancelBtn");
 
 /** @type {HTMLDialogElement} */
-const dialogBox = document.getElementById('requestBox');
-const nameOut = document.getElementById('userOut');
-const acceptBtn = document.getElementById('acceptBtn');
-const rejectBtn = document.getElementById('rejectBtn');
+const dialogBox = document.getElementById("requestBox");
+const nameOut = document.getElementById("userOut");
+const acceptBtn = document.getElementById("acceptBtn");
+const rejectBtn = document.getElementById("rejectBtn");
 
-const canvasContain = document.getElementById('canvasContain');
-const mainCnv = document.getElementById('mainCanvas');
-const topCnv = document.getElementById('topCanvas');
+const canvasContain = document.getElementById("canvasContain");
+const mainCnv = document.getElementById("mainCanvas");
+const topCnv = document.getElementById("topCanvas");
 
 mainManager.add(
   queryBoxContain,
-  'query',
+  "query",
   async function (state) {
     if (!state) return;
     await codecrypt.generateAuthenticator();
@@ -296,72 +296,72 @@ mainManager.add(
 );
 mainManager.add(
   loaderContain,
-  'loader',
+  "loader",
   async function (state) {
     if (!state) {
       this.hideAll();
       return;
     }
     await timer(5000);
-    this.display('button');
+    this.display("button");
   },
   true
 );
-mainManager.add(canvasContain, 'canvas', null, false);
+mainManager.add(canvasContain, "canvas", null, false);
 
 mainManager.references.query.sub.add(
   userBox,
-  'user',
+  "user",
   async function (state) {
     if (!state) {
       await timer(1000);
-      inviteBtn.classList.add('reveal');
-      inviteBtn.classList.remove('hide');
+      inviteBtn.classList.add("reveal");
+      inviteBtn.classList.remove("hide");
     }
   },
   false
 );
-mainManager.references.query.sub.add(connectionBox, 'connect', null, false);
+mainManager.references.query.sub.add(connectionBox, "connect", null, false);
 
-mainManager.references.loader.sub.add(cancelBtn, 'button', null, false);
+mainManager.references.loader.sub.add(cancelBtn, "button", null, false);
 
-mainManager.display('canvas');
+mainManager.display("canvas");
 
 // -- Event Listeners --
-confirmBtn.addEventListener('click', confirmUser);
+confirmBtn.addEventListener("click", confirmUser);
 
-connectBtn.addEventListener('click', function () {
-  if (connection.status !== 'waiting') return;
+connectBtn.addEventListener("click", function () {
+  if (connection.status !== "waiting") return;
   const value = codeIn.value;
   if (!validateCode(value)) {
-    logger.generic('Code must be a 6 character hexadecimal string');
+    logger.generic("Code must be a 6 character hexadecimal string");
     return;
   }
 
   codecrypt.setAuthenticator(value);
-  codeIn.value = '';
+  codeIn.value = "";
 
-  connection.status = 'offering';
+  connection.status = "offering";
 });
 
-cancelBtn.addEventListener('click', function () {
-  if (connection.status === 'disabled') return;
+cancelBtn.addEventListener("click", function () {
+  if (connection.status === "disabled") return;
   if (connection.session !== null) {
     connection.session.close();
     connection.session = null;
   } else {
-    connection.status = 'disconnected';
+    connection.status = "disconnected";
   }
 });
 
-inviteBtn.addEventListener('click', copyLink);
+inviteBtn.addEventListener("click", copyLink);
 
-dialogBox.addEventListener('cancel', function (event) {
+dialogBox.addEventListener("cancel", function (event) {
   event.preventDefault();
 });
 
-rejectBtn.addEventListener('click', function () {
-  if (!dialogBox.open || dialogBox.classList.contains('hide')) return;
+rejectBtn.addEventListener("click", function () {
+  if (!dialogBox.open || dialogBox.classList.contains("hide")) return;
   resolvers.reject();
   resolvers = {
     resolve: null,
@@ -370,8 +370,8 @@ rejectBtn.addEventListener('click', function () {
   closeDialog();
 });
 
-acceptBtn.addEventListener('click', function () {
-  if (!dialogBox.open || dialogBox.classList.contains('hide')) return;
+acceptBtn.addEventListener("click", function () {
+  if (!dialogBox.open || dialogBox.classList.contains("hide")) return;
   resolvers.resolve();
   resolvers = {
     resolve: null,
@@ -380,56 +380,56 @@ acceptBtn.addEventListener('click', function () {
   closeDialog();
 });
 
-document.addEventListener('keyup', fullscreenToggle);
+document.addEventListener("keyup", fullscreenToggle);
 
-document.addEventListener('fullscreenchange', fullscreenHandler);
+document.addEventListener("fullscreenchange", fullscreenHandler);
 
-window.addEventListener('resize', windowResize);
+window.addEventListener("resize", windowResize);
 
-document.addEventListener('click', getMouseCoordinates);
+cnv.addEventListener("click", getMouseCoordinates);
 
-document.addEventListener('mousemove', hoverHandler);
+cnv.addEventListener("mousemove", hoverHandler);
 
 // -- Connection Manager Functions --
 
 connection.onwaiting = async function () {
-  if (connection.status === 'disabled') return;
-  mainManager.display('query');
-  mainManager.references.query.sub.display('connect');
+  if (connection.status === "disabled") return;
+  mainManager.display("query");
+  mainManager.references.query.sub.display("connect");
 
-  await channel.subscribe('offer', async function (msg) {
+  await channel.subscribe("offer", async function (msg) {
     if (resolvers.reject !== null) return;
     const data = JSON.parse(msg.data);
 
     try {
-      decryptedRemoteSDP = await codecrypt.decrypt(data.sdp, 'offer');
+      decryptedRemoteSDP = await codecrypt.decrypt(data.sdp, "offer");
       try {
         await openDialog(data.user);
-        connection.status = 'answering';
+        connection.status = "answering";
       } catch {
-        console.log('Rejected incoming request');
+        console.log("Rejected incoming request");
       }
     } catch (error) {
-      console.warn('Could not decrypt incoming request');
+      console.warn("Could not decrypt incoming request");
     }
   });
 };
 
 connection.onoffering = async function () {
-  if (connection.status === 'disabled') return;
-  mainManager.display('loader');
+  if (connection.status === "disabled") return;
+  mainManager.display("loader");
 
-  if (typeof channel.subscriptions.events.offer !== 'undefined')
-    channel.unsubscribe('offer');
+  if (typeof channel.subscriptions.events.offer !== "undefined")
+    channel.unsubscribe("offer");
 
   let iceServers = [
     {
       urls: [
-        'stun:stun1.l.google.com:19302',
-        'stun:stun2.l.google.com:19302',
-        'stun:stun.l.google.com:19302',
-        'stun:stun3.l.google.com:19302',
-        'stun:stun4.l.google.com:19302',
+        "stun:stun1.l.google.com:19302",
+        "stun:stun2.l.google.com:19302",
+        "stun:stun.l.google.com:19302",
+        "stun:stun3.l.google.com:19302",
+        "stun:stun4.l.google.com:19302",
       ],
     },
     servers[2],
@@ -439,39 +439,39 @@ connection.onoffering = async function () {
   connection.session = new RTCPeerConnection({
     iceServers: iceServers,
   });
-  connection.session.channel = connection.session.createDataChannel('gameInfo');
-  connection.session.channel.binaryType = 'arraybuffer';
-  connection.session.channel.addEventListener('open', function () {
-    connection.status = 'connected';
+  connection.session.channel = connection.session.createDataChannel("gameInfo");
+  connection.session.channel.binaryType = "arraybuffer";
+  connection.session.channel.addEventListener("open", function () {
+    connection.status = "connected";
   });
-  connection.session.channel.addEventListener('close', function () {
-    connection.status = 'disconnected';
+  connection.session.channel.addEventListener("close", function () {
+    connection.status = "disconnected";
   });
-  connection.session.channel.addEventListener('message', gameManager.recieve);
+  connection.session.channel.addEventListener("message", gameManager.recieve);
 
   connection.session.onicegatheringstatechange = async function (event) {
-    if (connection.session.iceGatheringState !== 'complete') return;
+    if (connection.session.iceGatheringState !== "complete") return;
 
     const sdp = JSON.stringify(connection.session.localDescription);
 
-    let encryptedSDP = await codecrypt.encrypt(sdp, 'offer');
+    let encryptedSDP = await codecrypt.encrypt(sdp, "offer");
 
     let message = JSON.stringify({
       user: user.name,
       sdp: encryptedSDP,
     });
 
-    await channel.subscribe('answer', async (msg) => {
+    await channel.subscribe("answer", async (msg) => {
       const data = JSON.parse(msg.data);
 
       try {
-        decryptedRemoteSDP = await codecrypt.decrypt(data.sdp, 'answer');
+        decryptedRemoteSDP = await codecrypt.decrypt(data.sdp, "answer");
         connection.session.setRemoteDescription(JSON.parse(decryptedRemoteSDP));
       } catch (error) {
-        console.warn('Could not decrypt incoming answer');
+        console.warn("Could not decrypt incoming answer");
       }
     });
-    await channel.publish('offer', message);
+    await channel.publish("offer", message);
   };
 
   await connection.session.setLocalDescription(
@@ -480,21 +480,21 @@ connection.onoffering = async function () {
 };
 
 connection.onanswering = async function () {
-  if (connection.status === 'disabled') return;
+  if (connection.status === "disabled") return;
 
-  mainManager.display('loader');
+  mainManager.display("loader");
 
-  if (typeof channel.subscriptions.events.answer !== 'undefined')
-    channel.unsubscribe('answer');
+  if (typeof channel.subscriptions.events.answer !== "undefined")
+    channel.unsubscribe("answer");
 
   let iceServers = [
     {
       urls: [
-        'stun:stun1.l.google.com:19302',
-        'stun:stun2.l.google.com:19302',
-        'stun:stun.l.google.com:19302',
-        'stun:stun3.l.google.com:19302',
-        'stun:stun4.l.google.com:19302',
+        "stun:stun1.l.google.com:19302",
+        "stun:stun2.l.google.com:19302",
+        "stun:stun.l.google.com:19302",
+        "stun:stun3.l.google.com:19302",
+        "stun:stun4.l.google.com:19302",
       ],
     },
     servers[2],
@@ -507,30 +507,30 @@ connection.onanswering = async function () {
 
   connection.session.ondatachannel = function ({ channel }) {
     const recieve = channel;
-    recieve.binaryType = 'arraybuffer';
-    recieve.addEventListener('open', function () {
-      connection.status = 'connected';
+    recieve.binaryType = "arraybuffer";
+    recieve.addEventListener("open", function () {
+      connection.status = "connected";
     });
-    recieve.addEventListener('close', function () {
-      connection.status = 'disconnected';
+    recieve.addEventListener("close", function () {
+      connection.status = "disconnected";
     });
-    recieve.addEventListener('message', gameManager.recieve);
+    recieve.addEventListener("message", gameManager.recieve);
     connection.session.channel = recieve;
   };
 
   connection.session.onicegatheringstatechange = async function (event) {
-    if (connection.session.iceGatheringState == 'complete') return;
+    if (connection.session.iceGatheringState == "complete") return;
 
     const sdp = JSON.stringify(connection.session.localDescription);
 
-    let encryptedSDP = await codecrypt.encrypt(sdp, 'answer');
+    let encryptedSDP = await codecrypt.encrypt(sdp, "answer");
 
     let message = JSON.stringify({
       user: user.name,
       sdp: encryptedSDP,
     });
 
-    await channel.publish('answer', message);
+    await channel.publish("answer", message);
   };
 
   await connection.session.setRemoteDescription(JSON.parse(decryptedRemoteSDP));
@@ -541,24 +541,24 @@ connection.onanswering = async function () {
 };
 
 connection.onconnected = function () {
-  if (connection.status === 'disabled') return;
+  if (connection.status === "disabled") return;
   ably.close();
   mainManager.hideAll();
   gameManager = new Manager(connection);
 };
 
 connection.ondisconnected = async function () {
-  if (connection.status === 'disabled') return;
+  if (connection.status === "disabled") return;
 
   gameManager = null;
 
-  if (ably.connection.state !== 'connected') {
+  if (ably.connection.state !== "connected") {
     mainManager.hideAll();
     ably.connect();
-    await ably.connection.once('connected');
+    await ably.connection.once("connected");
   }
 
-  connection.status = 'waiting';
+  connection.status = "waiting";
 };
 
 // -- Functions --
@@ -568,16 +568,16 @@ function openDialog(name) {
   return new Promise((resolve, reject) => {
     nameOut.innerText = name;
     dialogBox.showModal();
-    dialogBox.classList.add('reveal');
-    dialogBox.classList.remove('hide');
+    dialogBox.classList.add("reveal");
+    dialogBox.classList.remove("hide");
     resolvers.resolve = resolve;
     resolvers.reject = reject;
   });
 }
 
 async function closeDialog() {
-  dialogBox.classList.add('hide');
-  dialogBox.classList.remove('reveal');
+  dialogBox.classList.add("hide");
+  dialogBox.classList.remove("reveal");
   await timer(800);
   dialogBox.close();
 }
@@ -586,29 +586,29 @@ async function closeDialog() {
 
 function confirmUser() {
   if (Object.isFrozen(user)) return;
-  if (connection.status !== 'enabled') throw new Error('Not connected');
+  if (connection.status !== "enabled") throw new Error("Not connected");
   const input = nameIn.value;
 
   if (input.length > 1 && input.length <= 20) {
     user.name = input;
     Object.freeze(user);
 
-    let query = new URLSearchParams(location.search).get('g');
+    let query = new URLSearchParams(location.search).get("g");
     if (validateCode(query)) {
       codecrypt.setAuthenticator(query);
-      connection.status = 'offering';
+      connection.status = "offering";
     } else {
-      connection.status = 'waiting';
+      connection.status = "waiting";
     }
   } else {
-    logger.generic('Username must be from 2 to 20 characters long.');
+    logger.generic("Username must be from 2 to 20 characters long.");
   }
 }
 
 async function copyLink() {
   let link = `${location.origin}?g=${codecrypt.authenticator}`;
   await navigator.clipboard.writeText(link);
-  logger.success('Link copied!');
+  logger.success("Link copied!");
 }
 
 function windowResize() {
@@ -621,7 +621,7 @@ function windowResize() {
 }
 
 async function fullscreenToggle(e) {
-  if (e.key === 'f') {
+  if (e.key === "f") {
     // Change width and height when switching in/out of fullscreen
     if (!document.fullscreenElement) {
       await document.documentElement.requestFullscreen();
@@ -727,22 +727,22 @@ function getMouseCoordinates(e) {
         attackingTiles
       );
       // Change tile state based on outcome
-      if (attackingTiles[clickedAttackingTile].state === 'none') {
+      if (attackingTiles[clickedAttackingTile].state === "none") {
         let hitCheck = checkArrayPosition(clickedAttackingTile, opponentShips);
         if (hitCheck !== false) {
-          attackingTiles[clickedAttackingTile].state = 'hit';
+          attackingTiles[clickedAttackingTile].state = "hit";
           if (
             hitCheck.position.every(
-              (index) => attackingTiles[index].state === 'hit'
+              (index) => attackingTiles[index].state === "hit"
             ) === true
           ) {
             for (let i = 0; i < hitCheck.position.length; i++) {
               const element = hitCheck.position[i];
-              attackingTiles[element].state = 'sunk';
+              attackingTiles[element].state = "sunk";
             }
           }
         } else {
-          attackingTiles[clickedAttackingTile].state = 'miss';
+          attackingTiles[clickedAttackingTile].state = "miss";
         }
         // Send message with tile index here
         // isYourTurn = false;
@@ -768,7 +768,7 @@ function getMouseCoordinates(e) {
     mouseY >= confirmationButton.y &&
     mouseY <= confirmationButton.y + buttons.height
   ) {
-    console.log('confirmation');
+    console.log("confirmation");
   }
   updateCanvas();
 }
@@ -827,7 +827,7 @@ function timer(ms) {
 async function tryCatchFetch(uri) {
   try {
     const request = await fetch(uri);
-    if (!request.ok) throw new TypeError('Cannot fetch ' + uri);
+    if (!request.ok) throw new TypeError("Cannot fetch " + uri);
     const result = await request.json();
     return result;
   } catch (error) {
@@ -844,7 +844,7 @@ async function tryCatchFetch(uri) {
  * @returns True if code is hex & six digits long, else returns false
  */
 function validateCode(code) {
-  if (typeof code !== 'string') return false;
+  if (typeof code !== "string") return false;
   if (code.match(/([^0-9A-Fa-f])+/gm)) return false;
   if (code.length === 6) return true;
   return false;
@@ -852,7 +852,7 @@ function validateCode(code) {
 
 function updateDim() {
   Drawing.postMessage({
-    type: 'dim',
+    type: "dim",
     dim: { width: trueWidth(), height: trueHeight() },
   });
 }
