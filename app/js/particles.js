@@ -122,6 +122,8 @@ class ParticleEmitter {
 
   interval;
 
+  spawn;
+
   /**
    *
    * @param {String} name Name of the particle to spawn
@@ -146,27 +148,38 @@ class ParticleEmitter {
 
     this.arrayReference = array;
 
-    this.interval = (this.time - this.startTime) / frequency;
+    this.interval = 1000 / frequency;
 
     this.#prevTime = this.startTime;
     this.#leftoverTime = 0;
+
+    this.spawn = true;
+
+    console.log(this.interval);
   }
 
   update(deltaTime) {
     const currTime = +new Date();
-    if (currTime < this.time) {
+
+    if (this.spawn) {
       for (
         let i = this.#prevTime + this.#leftoverTime;
         i < currTime;
         i += this.interval
       ) {
+        this.#leftoverTime = this.interval - (currTime - i);
         if (this.particles.length >= this.max) continue;
+
+        console.log("new");
         this.particles.push(
           new this.particleClass(this.position, this.context, this.particles)
         );
-        this.#leftoverTime = this.interval - (currTime - i);
+        this.#prevTime = currTime;
       }
-    } else {
+    }
+
+    if (currTime > this.time) {
+      this.spawn = false;
       if (this.particles.length === 0) {
         this.arrayReference.splice(this.arrayReference.indexOf(this), 1);
         return;
@@ -176,7 +189,6 @@ class ParticleEmitter {
     this.particles.forEach((particle) => {
       particle.update(deltaTime);
     });
-    this.#prevTime = currTime;
   }
 
   draw() {
@@ -185,5 +197,3 @@ class ParticleEmitter {
     });
   }
 }
-
-export { ParticleEmitter };

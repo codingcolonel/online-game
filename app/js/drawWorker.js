@@ -1,4 +1,5 @@
-import { ParticleEmitter } from "./particles.js";
+// Need to use importScripts instead of import, for Firefox compatability
+importScripts("./particles.js");
 
 /** @type {OffscreenCanvas} */
 let cnv;
