@@ -29,6 +29,7 @@ import {
   buttons,
   shipPlacingPhase,
   nextPhase,
+  ctx,
 } from "./js/board.js";
 import {
   findTileByCoordinates,
@@ -156,7 +157,6 @@ class AudioManager {
 
     const bufferObj = this.#soundBuffers[soundName];
     const randomIndex = randomInt(0, bufferObj.length);
-    console.log(bufferObj[randomIndex]);
     source.buffer = bufferObj[randomIndex];
 
     source.addEventListener("ended", function () {
@@ -783,6 +783,14 @@ function getMouseCoordinates(e) {
     // document.addEventListener('message', startGame)
     startGame();
   }
+
+  ctx.fillStyle = "white";
+  ctx.fillRect(
+    defendingBoard.x,
+    defendingBoard.y,
+    defendingBoard.sideLength,
+    defendingBoard.sideLength
+  );
   updateCanvas();
 }
 
