@@ -22,28 +22,18 @@
     Terminate the match
 */
 
+import { defendingTiles, updateCanvas } from "./board.js";
+import { getOpponentShips, opponentShips } from "./ship.js";
+
 function createByte(position, leading) {
   return (leading << 7) | position;
-}
-
-function parseObject(json) {
-  if (!json.hasOwnProperty("type"))
-    throw new Error("json object does not contain a type");
-  switch (json.type) {
-    case "place":
-      return encodeShips(json);
-    case "guess":
-      return encodeGuess(json);
-    default:
-      throw new Error("type is not valid");
-  }
 }
 
 function encodeGuess(json) {
   let guessBuffer = new ArrayBuffer(1);
   let guessView = new Uint8Array(guessBuffer);
   guessView[0] = createByte(json.guess.index, json.guess.hit);
-  return guessView;
+  return guessBuffer;
 }
 
 function encodeShips(json) {
@@ -53,33 +43,76 @@ function encodeShips(json) {
     const ship = json.ships[index];
     placeView[index] = createByte(ship.position[0], ship.rotation);
   }
-  return placeView;
+  return placeBuffer;
 }
 
-function decodeShips(response) {}
+function decodeGuess(response) {
+  let hit = response >> 7;
+  let position = response & 127;
 
-function decodeGuess(reponse) {}
+  if ((defendingTiles[position].state === "ship") == hit) {
+    defendingTiles[position].state = "shiphit";
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function validateShips() {
+  const positionArray = opponentShips.reduce((prev, curr) => {
+    prev.push(...curr.position);
+    return prev;
+  }, []);
+  if (positionArray.length !== new Set(positionArray).size) return false;
+
+  for (let index = 0; index < 5; index++) {
+    const ship = opponentShips[index];
+
+    let isValidPosition = (element) => {
+      let nextMultipleOf10 = Math.ceil((element + 1) / 10) * 10;
+      if (
+        element >= 100 ||
+        (opponentShips[index].rotation === 0 &&
+          element + ship.length > nextMultipleOf10)
+      )
+        return false;
+      return defendingTiles[element].isValid;
+    };
+
+    if (!ship.position.every(isValidPosition)) return false;
+  }
+  return true;
+}
 
 /**
  * Manages turn order and verifies incoming turn messages
  */
 class Manager {
-  #phase;
+  #yourTurn;
+  #shipPlacing;
   #connectionReference;
   /** @type {RTCDataChannel} */
   #channelReference;
-  #playerShips;
-  #opponentShips;
+  #haveOpponenentShips;
 
   constructor(connection) {
     this.#connectionReference = connection;
-    this.#channelReference = connection.session.channel;
-    this.#phase = "placing";
+    this.#channelReference =
+      this.#connectionReference.session !== null
+        ? connection.session.channel
+        : {
+            send: function (val) {
+              console.log(val);
+            },
+          };
+    this.#yourTurn = true;
+    this.#shipPlacing = true;
+    this.#haveOpponenentShips = false;
   }
 
   send(json) {
     try {
-      let arrayBuffer = parseObject(json);
+      let arrayBuffer = this.parseObject(json);
       this.#channelReference.send(arrayBuffer);
     } catch (error) {
       throw error;
@@ -87,25 +120,19 @@ class Manager {
   }
 
   recieve(event) {
-    const data = event.data;
-    if (!(data instanceof ArrayBuffer))
-      throw new Error("Invalid message recieved");
-
-    const view = new Uint8Array(data);
-    switch (view.length) {
-      case 1:
-        decodeGuess(view);
-        break;
-      case 6:
-        decodeShips(view);
-        break;
-      default:
-        throw new Error("Invalid message recieved");
+    try {
+      const data = event.data;
+      this.parseBuffer(data);
+    } catch (error) {
+      throw error;
     }
   }
 
   terminate() {
     logger.error("The match was terminated");
+    this.#yourTurn = false;
+    this.#shipPlacing = false;
+    this.#haveOpponenentShips = false;
     if (this.#connectionReference.session !== null) {
       this.#connectionReference.session.close();
       this.#connectionReference.session = null;
@@ -114,8 +141,61 @@ class Manager {
     }
   }
 
-  get phase() {
-    return this.#phase;
+  parseObject(json) {
+    if (!json.hasOwnProperty("type"))
+      throw new Error("json object does not contain a type");
+    switch (json.type) {
+      case "place":
+        if (!this.#shipPlacing) this.terminate();
+        this.#shipPlacing = false;
+        return encodeShips(json);
+      case "guess":
+        if (!this.#yourTurn) this.terminate();
+        // this.#yourTurn = false;
+        return encodeGuess(json);
+      default:
+        throw new Error("type is not valid");
+    }
+  }
+
+  parseBuffer(data) {
+    if (!(data instanceof ArrayBuffer))
+      throw new Error("Invalid message recieved");
+    const view = new Uint8Array(data);
+    switch (view.length) {
+      case 1:
+        if (
+          this.#shipPlacing ||
+          !this.#haveOpponenentShips /*|| this.#yourTurn*/
+        )
+          this.terminate();
+
+        let validGuess = decodeGuess(view);
+
+        if (!validGuess) this.terminate();
+
+        updateCanvas();
+        break;
+      case 5:
+        if (this.#haveOpponenentShips) this.terminate();
+
+        getOpponentShips(view);
+        this.#haveOpponenentShips = true;
+
+        let validShip = validateShips();
+        if (!validShip) this.terminate();
+        break;
+      default:
+        throw new Error("Invalid message recieved");
+    }
+  }
+
+  get yourTurn() {
+    return this.#yourTurn;
+  }
+
+  get shipPlacing() {
+    return this.#shipPlacing;
   }
 }
 

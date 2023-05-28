@@ -5,8 +5,8 @@ import {
   randomInt,
   moveShip,
   updateTiles,
-} from './functions.js';
-import { defendingTiles } from './board.js';
+} from "./functions.js";
+import { defendingTiles } from "./board.js";
 
 let playerShips = [];
 let opponentShips = [];
@@ -103,6 +103,7 @@ if (opponentShips.length === 0) {
 function getOpponentShips(response) {
   let shipLength = [5, 4, 3, 3, 2];
 
+  opponentShips = [];
   for (let i = 0; i < response.length; i++) {
     const element = response[i];
     // Add new ship object to array

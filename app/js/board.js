@@ -7,6 +7,7 @@ import {
   updateShips,
 } from "./functions.js";
 import { playerShips, opponentShips } from "./ship.js";
+import { gameManager } from "../main.js";
 
 // Set up canvas and 2d graphics content
 /** @type {HTMLCanvasElement} */
@@ -18,6 +19,7 @@ let TrueHeight = Math.floor(window.innerHeight * scale);
 let TrueWidth = Math.floor(window.innerWidth * scale);
 cnv.height = TrueHeight;
 cnv.width = TrueWidth;
+ctx.translate(0.5, 0.5);
 
 // Tile data arrays
 let defendingTiles = [];
@@ -31,9 +33,6 @@ let defendingBoard,
   randomizeButton,
   confirmationButton,
   tileLength;
-
-// Variable used for determining on the phase of the game
-let shipPlacingPhase = true;
 
 // Create ship images
 let imageList = new Array(5);
@@ -82,7 +81,7 @@ function drawBoard(reset) {
   tileLength = defendingBoard.sideLength / 10;
 
   // Update button objects
-  if (shipPlacingPhase === true) {
+  if (gameManager.shipPlacing === true) {
     // For all three buttons
     buttons = {
       length: Math.round(tileLength * 3 * 10) / 10, // length is 3 tiles wide
@@ -195,7 +194,7 @@ function singleBoard(board, tiles, colour, resetArrays) {
   ctx.lineWidth = 5;
   ctx.strokeRect(board.x, board.y, board.sideLength, board.sideLength);
 
-  if (shipPlacingPhase === true) {
+  if (gameManager.shipPlacing === true) {
     // Draw reset button
     ctx.fillStyle = resetButton.colour;
     ctx.fillRect(resetButton.x, resetButton.y, buttons.length, buttons.height);
@@ -276,8 +275,7 @@ function updateCanvas() {
         drawHover(tile);
         break;
       case "shiphit":
-        // drawShip(tile)
-        // drawX('red', tile)
+        drawHit(tile);
         break;
     }
   }
@@ -406,8 +404,27 @@ function drawHover(tile) {
   );
 }
 
+function drawHit(tile) {
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(
+    tile.x1,
+    tile.y1,
+    attackingBoard.sideLength / 10,
+    attackingBoard.sideLength / 10
+  );
+  ctx.fillStyle = "rgba(255, 0, 0, 0.6)";
+  ctx.fillRect(
+    tile.x1,
+    tile.y1,
+    defendingBoard.sideLength / 10,
+    defendingBoard.sideLength / 10
+  );
+  // Add an outline to the blue squares to tell them apart (later)
+}
+
 function nextPhase() {
-  shipPlacingPhase = false;
+  gameManager.send({ type: "place", ships: playerShips });
 }
 
 function trueWidth(input) {
@@ -435,7 +452,6 @@ export {
   randomizeButton,
   confirmationButton,
   buttons,
-  shipPlacingPhase,
   nextPhase,
   ctx,
 };

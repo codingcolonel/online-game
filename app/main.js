@@ -27,7 +27,6 @@ import {
   randomizeButton,
   confirmationButton,
   buttons,
-  shipPlacingPhase,
   nextPhase,
   ctx,
 } from "./js/board.js";
@@ -173,6 +172,9 @@ let decryptedRemoteSDP;
 
 let connection = new ConnectionManager();
 
+let gameManager = new Manager(connection);
+window.gm = gameManager;
+
 window.addEventListener("error", (err) => logger.error(err.message));
 
 const ably = new Ably.Realtime.Promise({
@@ -239,7 +241,7 @@ let resolvers = {
   reject: null,
 };
 
-let gameManager;
+/** @type {Manager} */
 
 // Canvas shenanigans
 
@@ -252,7 +254,6 @@ Drawing.postMessage({ type: "init", canvas: offCnv, scale }, [offCnv]);
 // ! Temporary
 window.Drawing = Drawing;
 
-let isYourTurn = true;
 drawBoard(true);
 updateDim();
 
@@ -668,7 +669,7 @@ function getMouseCoordinates(e) {
     mouseX <= defendingBoard.x + defendingBoard.sideLength &&
     mouseY >= defendingBoard.y &&
     mouseY <= defendingBoard.y + defendingBoard.sideLength &&
-    shipPlacingPhase === true
+    gameManager.shipPlacing === true
   ) {
     // Get index of clicked tile on defending board
     let clickedDefendingTile = findTileByCoordinates(
@@ -724,9 +725,9 @@ function getMouseCoordinates(e) {
     mouseX <= attackingBoard.x + attackingBoard.sideLength &&
     mouseY >= attackingBoard.y &&
     mouseY <= attackingBoard.y + attackingBoard.sideLength &&
-    shipPlacingPhase === false
+    gameManager.shipPlacing === false
   ) {
-    if (isYourTurn === true) {
+    if (gameManager.yourTurn === true) {
       // Get index of clicked tile on attacking board
       let clickedAttackingTile = findTileByCoordinates(
         mouseX,
@@ -752,8 +753,13 @@ function getMouseCoordinates(e) {
           attackingTiles[clickedAttackingTile].state = "miss";
         }
         // Send message with tile index here
-        // document.addEventListener('message', )
-        // isYourTurn = false;
+        gameManager.send({
+          type: "guess",
+          guess: {
+            index: clickedAttackingTile,
+            hit: hitCheck === false ? false : true,
+          },
+        });
       }
     }
   } else if (
@@ -761,7 +767,7 @@ function getMouseCoordinates(e) {
     mouseX <= resetButton.x + buttons.length &&
     mouseY >= resetButton.y &&
     mouseY <= resetButton.y + buttons.height &&
-    shipPlacingPhase === true
+    gameManager.shipPlacing === true
   ) {
     defaultPosition();
   } else if (
@@ -769,7 +775,7 @@ function getMouseCoordinates(e) {
     mouseX <= randomizeButton.x + buttons.length &&
     mouseY >= randomizeButton.y &&
     mouseY <= randomizeButton.y + buttons.height &&
-    shipPlacingPhase === true
+    gameManager.shipPlacing === true
   ) {
     randomPosition();
   } else if (
@@ -777,7 +783,7 @@ function getMouseCoordinates(e) {
     mouseX <= confirmationButton.x + buttons.length &&
     mouseY >= confirmationButton.y &&
     mouseY <= confirmationButton.y + buttons.height &&
-    shipPlacingPhase === true
+    gameManager.shipPlacing === true
   ) {
     // send off message containing confirmation here
     // document.addEventListener('message', startGame)
@@ -896,3 +902,5 @@ function setFavicon(version) {
     }`;
   });
 }
+
+export { gameManager };
