@@ -105,8 +105,34 @@ class Example extends Particle {
   }
 }
 
+class DefendingTest extends Particle {
+  constructor(position, context, array) {
+    super(
+      position,
+      { x: 0, y: 0 },
+      { x: 0, y: 0 },
+      context,
+      +new Date() + 5000,
+      array
+    );
+  }
+
+  draw() {
+    let w = this.contextReference.canvas.width / 100;
+    let h = this.contextReference.canvas.height / 100;
+    this.contextReference.fillStyle = "red";
+    this.contextReference.fillRect(
+      w * this.position.x,
+      h * this.position.y,
+      10,
+      10
+    );
+  }
+}
+
 const particleRegistry = {
   example: Example,
+  dTest: DefendingTest,
 };
 
 class ParticleEmitter {
