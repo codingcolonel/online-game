@@ -146,7 +146,6 @@ class Manager {
     this.#haveOpponentShips = false;
     if (this.#connectionReference.session !== null) {
       this.#connectionReference.session.close();
-      this.#connectionReference.session = null;
     } else {
       this.#connectionReference.status = "disconnected";
     }

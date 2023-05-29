@@ -261,6 +261,7 @@ const Drawing = new Worker("./js/drawWorker.js");
 Drawing.postMessage({ type: "init", canvas: offCnv, scale }, [offCnv]);
 // ! Temporary
 window.Drawing = Drawing;
+window.connection = connection;
 
 drawBoard(true);
 updateDim();
@@ -363,7 +364,6 @@ cancelBtn.addEventListener("click", function () {
   if (connection.status === "disabled") return;
   if (connection.session !== null) {
     connection.session.close();
-    connection.session = null;
   } else {
     connection.status = "disconnected";
   }
@@ -422,7 +422,6 @@ connection.onwaiting = async function () {
       try {
         await openDialog(data.user);
         connection.status = "answering";
-        console.log("answering");
       } catch {
         console.log("Rejected incoming request");
       }
@@ -571,7 +570,9 @@ connection.onconnected = function () {
 };
 
 connection.ondisconnected = async function () {
+  console.trace();
   if (connection.status === "disabled") return;
+  connection.session = null;
 
   console.log(ably.connection.state);
   if (ably.connection.state !== "connected") {
