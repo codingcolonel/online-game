@@ -923,4 +923,4 @@ function setFavicon(version) {
   });
 }
 
-export { gameManager, setFavicon, audio };
+export { gameManager, setFavicon, audio, timer };

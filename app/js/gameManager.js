@@ -22,7 +22,7 @@
     Terminate the match
 */
 
-import { audio } from "../main.js";
+import { audio, timer } from "../main.js";
 import {
   attackingTiles,
   defendingTiles,
@@ -58,6 +58,7 @@ async function decodeGuess(response) {
 
   if ((defendingTiles[position].state === "ship") == hit) {
     defendingTiles[position].state = hit ? "shiphit" : "miss";
+    await timer(850);
     await audio.playWait("fireFar", 2000);
     await audio.playWait(hit ? "hit" : "miss", 666);
     return true;
