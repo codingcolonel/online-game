@@ -463,10 +463,7 @@ connection.onoffering = async function () {
   connection.session.channel.addEventListener("close", function () {
     connection.status = "disconnected";
   });
-  connection.session.channel.addEventListener(
-    "message",
-    gameManager.recieve.bind(gameManager)
-  );
+  connection.session.channel.addEventListener("message", gameManager.recieve);
 
   connection.session.onicegatheringstatechange = async function (event) {
     if (connection.session.iceGatheringState !== "complete") return;
@@ -536,7 +533,7 @@ connection.onanswering = async function () {
     recieve.addEventListener("close", function () {
       connection.status = "disconnected";
     });
-    recieve.addEventListener("message", gameManager.recieve.bind(gameManager));
+    recieve.addEventListener("message", gameManager.recieve);
     connection.session.channel = recieve;
   };
 
