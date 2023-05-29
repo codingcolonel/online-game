@@ -422,6 +422,7 @@ connection.onwaiting = async function () {
       try {
         await openDialog(data.user);
         connection.status = "answering";
+        console.log("answering");
       } catch {
         console.log("Rejected incoming request");
       }
