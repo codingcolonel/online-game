@@ -231,7 +231,7 @@ class Manager {
   }
 
   set shipPlacing(value) {
-    console.log("CHANGED");
+    console.log("CHANGED to " + value);
     this.#shipPlacing = value;
   }
 }
