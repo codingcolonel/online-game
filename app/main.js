@@ -917,3 +917,7 @@ function setFavicon(version) {
 }
 
 export { gameManager, setFavicon, audio };
+
+setInterval(() => {
+  console.log("Placing?", gameManager.shipPlacing);
+}, 100);
