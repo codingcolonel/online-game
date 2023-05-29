@@ -574,10 +574,12 @@ connection.ondisconnected = async function () {
 
   console.log(ably.connection.state);
   if (ably.connection.state !== "connected") {
+    console.log("connecting");
     mainManager.hideAll();
     ably.connect();
     await ably.connection.once("connected");
   }
+  console.log("done");
 
   connection.status = "waiting";
 };

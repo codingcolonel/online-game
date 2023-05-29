@@ -78,11 +78,11 @@ class Example extends Particle {
     // The super calls the parent's constructor with the passed in parameters
     super(
       {
-        x: position.x + randomFloat(-10, 10),
-        y: position.y + randomFloat(-10, 10),
+        x: position.x + randomFloat(-2, 2),
+        y: position.y + randomFloat(-2, 2),
       },
-      { x: randomFloat(-1.5, 1.5), y: randomFloat(-1.5, 1.5) },
-      { x: 0, y: 0.003 },
+      { x: randomFloat(-0.3, 0.3), y: randomFloat(-0.3, 0.3) },
+      { x: 0, y: 0.0015 },
       context,
       +new Date() + 1000,
       array
@@ -90,10 +90,17 @@ class Example extends Particle {
   }
 
   draw() {
+    let w = this.contextReference.canvas.width / 100;
+    let h = this.contextReference.canvas.height / 100;
     this.contextReference.fillStyle = "red";
     this.contextReference.save();
     this.contextReference.globalAlpha = this.life / 1000;
-    this.contextReference.fillRect(this.position.x, this.position.y, 10, 10);
+    this.contextReference.fillRect(
+      w * this.position.x,
+      h * this.position.y,
+      10,
+      10
+    );
     this.contextReference.restore();
   }
 }
