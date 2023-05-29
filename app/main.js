@@ -66,8 +66,8 @@ class ConnectionManager {
   }
 
   set status(newStatus) {
-    if (this["on" + newStatus]) this["on" + newStatus]();
     this.#status = newStatus;
+    if (this["on" + newStatus]) this["on" + newStatus]();
     console.log(this.#status);
   }
 }
@@ -410,7 +410,10 @@ cnv.addEventListener("mousemove", hoverHandler);
 
 connection.onwaiting = async function () {
   console.log("now waiting", connection.status);
+
   if (connection.status === "disabled") return;
+  if (typeof channel.subscriptions.events.answer !== "undefined")
+    channel.unsubscribe("answer");
   isHost = false;
   mainManager.display("query");
   mainManager.references.query.sub.display("connect");
@@ -431,8 +434,6 @@ connection.onwaiting = async function () {
       console.warn("Could not decrypt incoming request");
     }
   });
-  await timer(1000);
-  console.log(connection.status);
 };
 
 connection.onoffering = async function () {
