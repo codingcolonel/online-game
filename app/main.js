@@ -557,7 +557,7 @@ connection.onanswering = async function () {
 connection.onconnected = function () {
   if (connection.status === "disabled") return;
   ably.close();
-  mainManager.hideAll();
+  mainManager.display("canvas");
   gameManager = new Manager(connection);
 };
 

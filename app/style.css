@@ -259,12 +259,17 @@ canvas {
 }
 
 #canvasStack {
+  pointer-events: none;
   display: grid;
 }
 
 #mainCanvas {
   pointer-events: all;
   background-color: #002040;
+}
+
+.hide #mainCanvas {
+  pointer-events: none;
 }
 
 #topCanvas {
