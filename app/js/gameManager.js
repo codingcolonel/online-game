@@ -121,7 +121,7 @@ class Manager {
   }
 
   send(json) {
-    if (this.#terminated) return;
+    if (this.terminated) return;
     try {
       let arrayBuffer = this.parseObject(json);
       this.#channelReference.send(arrayBuffer);
@@ -131,14 +131,14 @@ class Manager {
   }
 
   recieve(event) {
-    if (this.#terminated) return;
+    if (this.terminated) return;
 
     const data = event.data;
     this.parseBuffer(data);
   }
 
   terminate() {
-    if (this.#terminated) return;
+    if (this.terminated) return;
     this.#terminated = true;
     this.#yourTurn = false;
     this.#shipPlacing = false;
@@ -158,13 +158,14 @@ class Manager {
   }
 
   parseObject(json) {
-    if (this.#terminated) return;
+    if (this.terminated) return;
     if (!json.hasOwnProperty("type"))
       throw new Error("json object does not contain a type");
     switch (json.type) {
       case "place":
         if (!this.#shipPlacing) this.terminate();
         this.#shipPlacing = false;
+        logger.success("Locked in, and ready to go!");
         return encodeShips(json);
       case "guess":
         if (!this.#yourTurn || !this.#haveOpponenentShips) this.terminate();
@@ -176,7 +177,7 @@ class Manager {
   }
 
   async parseBuffer(data) {
-    if (this.#terminated) return;
+    if (this.terminated) return;
     if (!(data instanceof ArrayBuffer))
       throw new Error("Invalid message recieved");
     const view = new Uint8Array(data);
@@ -218,6 +219,10 @@ class Manager {
 
   get haveOpponentShips() {
     return this.#haveOpponenentShips;
+  }
+
+  get terminated() {
+    return this.#terminated;
   }
 }
 
