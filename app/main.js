@@ -183,7 +183,7 @@ let decryptedRemoteSDP;
 
 let connection = new ConnectionManager();
 
-let gameManager = new Manager(connection);
+let gameManager = new Manager(connection, true);
 
 const ably = new Ably.Realtime.Promise({
   authCallback: async (_, callback) => {
@@ -267,6 +267,8 @@ updateDim();
 
 let clickedShip;
 
+let isHost;
+
 // HTML References
 
 const favicons =
@@ -295,8 +297,6 @@ const acceptBtn = document.getElementById("acceptBtn");
 const rejectBtn = document.getElementById("rejectBtn");
 
 const canvasContain = document.getElementById("canvasContain");
-const mainCnv = document.getElementById("mainCanvas");
-const topCnv = document.getElementById("topCanvas");
 
 mainManager.add(
   queryBoxContain,
@@ -408,6 +408,7 @@ cnv.addEventListener("mousemove", hoverHandler);
 
 connection.onwaiting = async function () {
   if (connection.status === "disabled") return;
+  isHost = false;
   mainManager.display("query");
   mainManager.references.query.sub.display("connect");
 
@@ -456,6 +457,7 @@ connection.onoffering = async function () {
   connection.session.channel = connection.session.createDataChannel("gameInfo");
   connection.session.channel.binaryType = "arraybuffer";
   connection.session.channel.addEventListener("open", function () {
+    isHost = false;
     connection.status = "connected";
   });
   connection.session.channel.addEventListener("close", function () {
@@ -484,6 +486,8 @@ connection.onoffering = async function () {
       try {
         decryptedRemoteSDP = await codecrypt.decrypt(data.sdp, "answer");
         connection.session.setRemoteDescription(JSON.parse(decryptedRemoteSDP));
+        if (typeof channel.subscriptions.events.answer !== "undefined")
+          channel.unsubscribe("answer");
       } catch (error) {
         console.warn("Could not decrypt incoming answer");
       }
@@ -526,6 +530,7 @@ connection.onanswering = async function () {
     const recieve = channel;
     recieve.binaryType = "arraybuffer";
     recieve.addEventListener("open", function () {
+      isHost = true;
       connection.status = "connected";
     });
     recieve.addEventListener("close", function () {
@@ -562,7 +567,8 @@ connection.onconnected = function () {
   ably.close();
   mainManager.display("canvas");
   drawBoard(true);
-  gameManager = new Manager(connection);
+
+  gameManager = new Manager(connection, isHost);
 };
 
 connection.ondisconnected = async function () {
@@ -917,7 +923,3 @@ function setFavicon(version) {
 }
 
 export { gameManager, setFavicon, audio };
-
-setInterval(() => {
-  console.log("Placing?", gameManager.shipPlacing);
-}, 100);

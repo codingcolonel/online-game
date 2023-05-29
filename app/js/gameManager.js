@@ -104,7 +104,7 @@ class Manager {
   #haveOpponentShips;
   #terminated;
 
-  constructor(connection) {
+  constructor(connection, isHost) {
     this.#connectionReference = connection;
     this.#channelReference =
       this.#connectionReference.session !== null
@@ -115,7 +115,7 @@ class Manager {
             },
           };
     this.#yourTurn = true;
-    this.shipPlacing = true;
+    this.shipPlacing = isHost;
     this.#haveOpponentShips = false;
     this.#terminated = false;
   }
@@ -203,6 +203,7 @@ class Manager {
 
         let validShip = validateShips();
         if (!validShip) this.terminate();
+
         console.log(this.shipPlacing);
         if (this.shipPlacing) {
           console.log("Set yt to false");
