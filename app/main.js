@@ -408,6 +408,7 @@ cnv.addEventListener("mousemove", hoverHandler);
 // -- Connection Manager Functions --
 
 connection.onwaiting = async function () {
+  console.log("now waiting");
   if (connection.status === "disabled") return;
   isHost = false;
   mainManager.display("query");
@@ -432,6 +433,7 @@ connection.onwaiting = async function () {
 };
 
 connection.onoffering = async function () {
+  console.log("now offering");
   if (connection.status === "disabled") return;
   mainManager.display("loader");
 
@@ -499,6 +501,7 @@ connection.onoffering = async function () {
 };
 
 connection.onanswering = async function () {
+  console.log("now answering");
   if (connection.status === "disabled") return;
 
   mainManager.display("loader");
@@ -561,6 +564,7 @@ connection.onanswering = async function () {
 };
 
 connection.onconnected = function () {
+  console.log("now connected");
   if (connection.status === "disabled") return;
   ably.close();
   mainManager.display("canvas");
@@ -570,6 +574,7 @@ connection.onconnected = function () {
 };
 
 connection.ondisconnected = async function () {
+  console.log("now disconnected");
   console.trace();
   if (connection.status === "disabled") return;
   connection.session = null;
