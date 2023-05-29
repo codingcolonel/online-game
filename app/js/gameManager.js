@@ -204,11 +204,6 @@ class Manager {
         let validShip = validateShips();
         if (!validShip) this.terminate();
 
-        console.log(this.shipPlacing);
-        if (this.shipPlacing) {
-          console.log("Set yt to false");
-          this.#yourTurn = false;
-        }
         break;
       default:
         throw new Error("Invalid message recieved");
