@@ -219,7 +219,7 @@ class Manager {
   }
 
   get shipPlacing() {
-    return this.shipPlacing;
+    return this.#shipPlacing;
   }
 
   get haveOpponentShips() {
