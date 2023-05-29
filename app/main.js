@@ -572,6 +572,7 @@ connection.onconnected = function () {
 connection.ondisconnected = async function () {
   if (connection.status === "disabled") return;
 
+  console.log(ably.connection.state);
   if (ably.connection.state !== "connected") {
     mainManager.hideAll();
     ably.connect();
