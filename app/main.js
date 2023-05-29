@@ -347,7 +347,6 @@ mainManager.display("query");
 confirmBtn.addEventListener("click", confirmUser);
 
 connectBtn.addEventListener("click", function () {
-  console.log(connection.status);
   if (connection.status !== "waiting") return;
   const value = codeIn.value;
   if (!validateCode(value)) {
@@ -409,8 +408,6 @@ cnv.addEventListener("mousemove", hoverHandler);
 // -- Connection Manager Functions --
 
 connection.onwaiting = async function () {
-  console.log("now waiting", connection.status);
-
   if (connection.status === "disabled") return;
   if (typeof channel.subscriptions.events.answer !== "undefined")
     channel.unsubscribe("answer");
@@ -437,7 +434,6 @@ connection.onwaiting = async function () {
 };
 
 connection.onoffering = async function () {
-  console.log("now offering");
   if (connection.status === "disabled") return;
   mainManager.display("loader");
 
@@ -505,7 +501,6 @@ connection.onoffering = async function () {
 };
 
 connection.onanswering = async function () {
-  console.log("now answering");
   if (connection.status === "disabled") return;
 
   mainManager.display("loader");
@@ -568,7 +563,6 @@ connection.onanswering = async function () {
 };
 
 connection.onconnected = function () {
-  console.log("now connected");
   if (connection.status === "disabled") return;
   ably.close();
   mainManager.display("canvas");
@@ -578,19 +572,14 @@ connection.onconnected = function () {
 };
 
 connection.ondisconnected = async function () {
-  console.log("now disconnected");
-  console.trace();
   if (connection.status === "disabled") return;
   connection.session = null;
 
-  console.log(ably.connection.state);
   if (ably.connection.state !== "connected") {
-    console.log("connecting");
     mainManager.hideAll();
     ably.connect();
     await ably.connection.once("connected");
   }
-  console.log("done");
 
   connection.status = "waiting";
 };
