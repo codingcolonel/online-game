@@ -115,13 +115,13 @@ class Manager {
             },
           };
     this.#yourTurn = true;
-    this.#shipPlacing = true;
+    this.shipPlacing = true;
     this.#haveOpponentShips = false;
     this.#terminated = false;
   }
 
   send(json) {
-    console.log(this.#yourTurn, this.#haveOpponentShips, this.#shipPlacing);
+    console.log(this.#yourTurn, this.#haveOpponentShips, this.shipPlacing);
     if (this.terminated) return;
     try {
       let arrayBuffer = this.parseObject(json);
@@ -142,7 +142,7 @@ class Manager {
     if (this.terminated) return;
     this.#terminated = true;
     this.#yourTurn = false;
-    this.#shipPlacing = false;
+    this.shipPlacing = false;
     this.#haveOpponentShips = false;
     if (this.#connectionReference.session !== null) {
       this.#connectionReference.session.close();
@@ -164,9 +164,9 @@ class Manager {
       throw new Error("json object does not contain a type");
     switch (json.type) {
       case "place":
-        if (!this.#shipPlacing) this.terminate();
-        this.#shipPlacing = false;
-        console.log(this.#shipPlacing);
+        if (!this.shipPlacing) this.terminate();
+        this.shipPlacing = false;
+        console.log(this.shipPlacing);
         logger.success("Locked in, and ready to go!");
         return encodeShips(json);
       case "guess":
@@ -185,7 +185,7 @@ class Manager {
     const view = new Uint8Array(data);
     switch (view.length) {
       case 1:
-        if (this.#shipPlacing || !this.#haveOpponentShips || this.#yourTurn)
+        if (this.shipPlacing || !this.#haveOpponentShips || this.#yourTurn)
           this.terminate();
 
         let validGuess = await decodeGuess(view[0]);
@@ -203,8 +203,8 @@ class Manager {
 
         let validShip = validateShips();
         if (!validShip) this.terminate();
-        console.log(this.#shipPlacing);
-        if (this.#shipPlacing) {
+        console.log(this.shipPlacing);
+        if (this.shipPlacing) {
           console.log("Set yt to false");
           this.#yourTurn = false;
         }
@@ -219,7 +219,7 @@ class Manager {
   }
 
   get shipPlacing() {
-    return this.#shipPlacing;
+    return this.shipPlacing;
   }
 
   get haveOpponentShips() {
@@ -228,6 +228,11 @@ class Manager {
 
   get terminated() {
     return this.#terminated;
+  }
+
+  set shipPlacing(value) {
+    console.log("CHANGED");
+    this.#shipPlacing = value;
   }
 }
 
