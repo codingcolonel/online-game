@@ -116,7 +116,7 @@ function drawBoard(reset) {
   singleBoard(attackingBoard, attackingTiles, "Red", reset);
 
   // Update canvas
-  updateCanvas();
+  updateCanvas(true);
 }
 
 /**

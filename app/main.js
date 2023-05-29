@@ -3,6 +3,9 @@
 // -- Imports --
 import { registerErrorLogger } from "./js/errorLog.js";
 const logger = registerErrorLogger();
+window.addEventListener("error", (err) => {
+  logger.error(err.message);
+});
 
 import { CodeCrypt } from "./js/codecrypt.js";
 import { Manager } from "./js/gameManager.js";
@@ -148,20 +151,28 @@ class AudioManager {
   }
 
   play(soundName) {
-    if (this.#context.state === "suspended") this.#context.resume();
-    if (!this.#soundBuffers.hasOwnProperty(soundName)) return;
+    this.playWait(soundName);
+  }
 
-    let source = this.#context.createBufferSource();
-    source.connect(this.#context.destination);
+  playWait(soundName, ms) {
+    return new Promise((resolve, reject) => {
+      if (this.#context.state === "suspended") this.#context.resume();
+      if (!this.#soundBuffers.hasOwnProperty(soundName)) return;
 
-    const bufferObj = this.#soundBuffers[soundName];
-    const randomIndex = randomInt(0, bufferObj.length);
-    source.buffer = bufferObj[randomIndex];
+      let source = this.#context.createBufferSource();
+      source.connect(this.#context.destination);
 
-    source.addEventListener("ended", function () {
-      source = null;
+      const bufferObj = this.#soundBuffers[soundName];
+      const randomIndex = randomInt(0, bufferObj.length);
+      source.buffer = bufferObj[randomIndex];
+
+      source.addEventListener("ended", function () {
+        source = null;
+      });
+
+      source.start(0);
+      setTimeout(resolve, ms);
     });
-    source.start(0);
   }
 }
 
@@ -173,9 +184,6 @@ let decryptedRemoteSDP;
 let connection = new ConnectionManager();
 
 let gameManager = new Manager(connection);
-window.gm = gameManager;
-
-window.addEventListener("error", (err) => logger.error(err.message));
 
 const ably = new Ably.Realtime.Promise({
   authCallback: async (_, callback) => {
@@ -331,7 +339,7 @@ mainManager.references.query.sub.add(connectionBox, "connect", null, false);
 
 mainManager.references.loader.sub.add(cancelBtn, "button", null, false);
 
-mainManager.display("canvas");
+mainManager.display("query");
 
 // -- Event Listeners --
 confirmBtn.addEventListener("click", confirmUser);
@@ -556,8 +564,6 @@ connection.onconnected = function () {
 connection.ondisconnected = async function () {
   if (connection.status === "disabled") return;
 
-  gameManager = null;
-
   if (ably.connection.state !== "connected") {
     mainManager.hideAll();
     ably.connect();
@@ -656,7 +662,7 @@ async function fullscreenHandler() {
   drawBoard(false);
 }
 
-function getMouseCoordinates(e) {
+async function getMouseCoordinates(e) {
   // console.log(e);
   // console.log('x' + e.x + ' y' + e.y);
 
@@ -760,7 +766,10 @@ function getMouseCoordinates(e) {
             hit: hitCheck === false ? false : true,
           },
         });
+        await audio.playWait("fireClose", 3000);
       }
+    } else {
+      return;
     }
   } else if (
     mouseX >= resetButton.x &&
@@ -903,4 +912,4 @@ function setFavicon(version) {
   });
 }
 
-export { gameManager };
+export { gameManager, setFavicon, audio };

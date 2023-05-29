@@ -22,7 +22,13 @@
     Terminate the match
 */
 
-import { defendingTiles, updateCanvas } from "./board.js";
+import { audio } from "../main.js";
+import {
+  attackingTiles,
+  defendingTiles,
+  drawBoard,
+  updateCanvas,
+} from "./board.js";
 import { getOpponentShips, opponentShips } from "./ship.js";
 
 function createByte(position, leading) {
@@ -46,12 +52,14 @@ function encodeShips(json) {
   return placeBuffer;
 }
 
-function decodeGuess(response) {
+async function decodeGuess(response) {
   let hit = response >> 7;
   let position = response & 127;
 
   if ((defendingTiles[position].state === "ship") == hit) {
-    defendingTiles[position].state = "shiphit";
+    defendingTiles[position].state = hit ? "shiphit" : "miss";
+    await audio.playWait("fireFar", 2000);
+    await audio.playWait(hit ? "hit" : "miss", 666);
     return true;
   } else {
     return false;
@@ -76,9 +84,9 @@ function validateShips() {
           element + ship.length > nextMultipleOf10)
       )
         return false;
-      return defendingTiles[element].isValid;
-    };
 
+      return attackingTiles[index].isValid;
+    };
     if (!ship.position.every(isValidPosition)) return false;
   }
   return true;
@@ -94,6 +102,7 @@ class Manager {
   /** @type {RTCDataChannel} */
   #channelReference;
   #haveOpponenentShips;
+  #terminated;
 
   constructor(connection) {
     this.#connectionReference = connection;
@@ -108,9 +117,11 @@ class Manager {
     this.#yourTurn = true;
     this.#shipPlacing = true;
     this.#haveOpponenentShips = false;
+    this.#terminated = false;
   }
 
   send(json) {
+    if (this.#terminated) return;
     try {
       let arrayBuffer = this.parseObject(json);
       this.#channelReference.send(arrayBuffer);
@@ -120,16 +131,15 @@ class Manager {
   }
 
   recieve(event) {
-    try {
-      const data = event.data;
-      this.parseBuffer(data);
-    } catch (error) {
-      throw error;
-    }
+    if (this.#terminated) return;
+
+    const data = event.data;
+    this.parseBuffer(data);
   }
 
   terminate() {
-    logger.error("The match was terminated");
+    if (this.#terminated) return;
+    this.#terminated = true;
     this.#yourTurn = false;
     this.#shipPlacing = false;
     this.#haveOpponenentShips = false;
@@ -139,9 +149,16 @@ class Manager {
     } else {
       this.#connectionReference.status = "disconnected";
     }
+    this.#channelReference = {
+      send: function (val) {
+        console.log(val);
+      },
+    };
+    throw new Error("The match was terminated");
   }
 
   parseObject(json) {
+    if (this.#terminated) return;
     if (!json.hasOwnProperty("type"))
       throw new Error("json object does not contain a type");
     switch (json.type) {
@@ -150,31 +167,30 @@ class Manager {
         this.#shipPlacing = false;
         return encodeShips(json);
       case "guess":
-        if (!this.#yourTurn) this.terminate();
-        // this.#yourTurn = false;
+        if (!this.#yourTurn || !this.#haveOpponenentShips) this.terminate();
+        this.#yourTurn = false;
         return encodeGuess(json);
       default:
         throw new Error("type is not valid");
     }
   }
 
-  parseBuffer(data) {
+  async parseBuffer(data) {
+    if (this.#terminated) return;
     if (!(data instanceof ArrayBuffer))
       throw new Error("Invalid message recieved");
     const view = new Uint8Array(data);
     switch (view.length) {
       case 1:
-        if (
-          this.#shipPlacing ||
-          !this.#haveOpponenentShips /*|| this.#yourTurn*/
-        )
+        if (this.#shipPlacing || !this.#haveOpponenentShips || this.#yourTurn)
           this.terminate();
 
-        let validGuess = decodeGuess(view);
+        let validGuess = await decodeGuess(view[0]);
 
         if (!validGuess) this.terminate();
 
-        updateCanvas();
+        this.#yourTurn = true;
+        drawBoard(false);
         break;
       case 5:
         if (this.#haveOpponenentShips) this.terminate();
@@ -196,6 +212,10 @@ class Manager {
 
   get shipPlacing() {
     return this.#shipPlacing;
+  }
+
+  get haveOpponentShips() {
+    return this.#haveOpponenentShips;
   }
 }
 
