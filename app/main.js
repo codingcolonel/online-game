@@ -531,7 +531,7 @@ connection.onanswering = async function () {
     recieve.addEventListener("close", function () {
       connection.status = "disconnected";
     });
-    recieve.addEventListener("message", gameManager.recieve);
+    recieve.addEventListener("message", gameManager.recieve.bind(gameManager));
     connection.session.channel = recieve;
   };
 
