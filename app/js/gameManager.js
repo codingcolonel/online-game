@@ -114,8 +114,8 @@ class Manager {
               console.log(val);
             },
           };
-    this.#yourTurn = true;
-    this.shipPlacing = isHost;
+    this.#yourTurn = isHost;
+    this.shipPlacing = true;
     this.#haveOpponentShips = false;
     this.#terminated = false;
   }
