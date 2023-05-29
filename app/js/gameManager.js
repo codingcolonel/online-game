@@ -134,6 +134,7 @@ class Manager {
     if (this.terminated) return;
 
     const data = event.data;
+    console.log(event, data);
     this.parseBuffer(data);
   }
 

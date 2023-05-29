@@ -561,6 +561,7 @@ connection.onconnected = function () {
   if (connection.status === "disabled") return;
   ably.close();
   mainManager.display("canvas");
+  drawBoard(true);
   gameManager = new Manager(connection);
 };
 
