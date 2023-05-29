@@ -121,7 +121,7 @@ class Manager {
   }
 
   send(json) {
-    console.log(this.yourTurn, this.haveOpponenentShips, this.shipPlacing);
+    console.log(this.yourTurn, this.haveOpponentShips, this.shipPlacing);
     if (this.terminated) return;
     try {
       let arrayBuffer = this.parseObject(json);
@@ -202,8 +202,9 @@ class Manager {
 
         let validShip = validateShips();
         if (!validShip) this.terminate();
-        if (this.shipPlacing) {
-          console.log("Set sp to false");
+        console.log(this.#shipPlacing);
+        if (this.#shipPlacing) {
+          console.log("Set yt to false");
           this.#yourTurn = false;
         }
         break;
