@@ -928,3 +928,8 @@ function setFavicon(version) {
 }
 
 export { gameManager, setFavicon, audio, timer };
+
+// TO DO
+// Add win condition
+// Turn indicator
+// Game over screen - Play again???
