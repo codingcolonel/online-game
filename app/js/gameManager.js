@@ -122,7 +122,6 @@ class Manager {
   }
 
   send(json) {
-    console.log(this.#yourTurn, this.#haveOpponentShips, this.shipPlacing);
     if (this.terminated) return;
     try {
       let arrayBuffer = this.parseObject(json);
@@ -167,7 +166,6 @@ class Manager {
       case "place":
         if (!this.shipPlacing) this.terminate();
         this.shipPlacing = false;
-        console.log(this.shipPlacing);
         logger.success("Locked in, and ready to go!");
         return encodeShips(json);
       case "guess":
@@ -228,7 +226,6 @@ class Manager {
   }
 
   set shipPlacing(value) {
-    console.log("CHANGED to " + value);
     this.#shipPlacing = value;
   }
 }

@@ -345,6 +345,7 @@ mainManager.display("query");
 confirmBtn.addEventListener("click", confirmUser);
 
 connectBtn.addEventListener("click", function () {
+  console.log(connection.status);
   if (connection.status !== "waiting") return;
   const value = codeIn.value;
   if (!validateCode(value)) {
