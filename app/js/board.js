@@ -424,7 +424,7 @@ function drawHit(tile) {
 }
 
 function nextPhase() {
-  gameManager.send.bind(gameManager, { type: "place", ships: playerShips });
+  gameManager.send({ type: "place", ships: playerShips });
 }
 
 function trueWidth(input) {

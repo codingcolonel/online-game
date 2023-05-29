@@ -763,7 +763,7 @@ async function getMouseCoordinates(e) {
           attackingTiles[clickedAttackingTile].state = "miss";
         }
         // Send message with tile index here
-        gameManager.send.bind(gameManager, {
+        gameManager.send({
           type: "guess",
           guess: {
             index: clickedAttackingTile,

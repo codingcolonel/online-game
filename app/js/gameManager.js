@@ -101,7 +101,7 @@ class Manager {
   #connectionReference;
   /** @type {RTCDataChannel} */
   #channelReference;
-  #haveOpponenentShips;
+  #haveOpponentShips;
   #terminated;
 
   constructor(connection) {
@@ -116,7 +116,7 @@ class Manager {
           };
     this.#yourTurn = true;
     this.#shipPlacing = true;
-    this.#haveOpponenentShips = false;
+    this.#haveOpponentShips = false;
     this.#terminated = false;
   }
 
@@ -143,7 +143,7 @@ class Manager {
     this.#terminated = true;
     this.#yourTurn = false;
     this.#shipPlacing = false;
-    this.#haveOpponenentShips = false;
+    this.#haveOpponentShips = false;
     if (this.#connectionReference.session !== null) {
       this.#connectionReference.session.close();
       this.#connectionReference.session = null;
@@ -170,7 +170,7 @@ class Manager {
         logger.success("Locked in, and ready to go!");
         return encodeShips(json);
       case "guess":
-        if (!this.#yourTurn || !this.#haveOpponenentShips) this.terminate();
+        if (!this.#yourTurn || !this.#haveOpponentShips) this.terminate();
         this.#yourTurn = false;
         return encodeGuess(json);
       default:
@@ -185,7 +185,7 @@ class Manager {
     const view = new Uint8Array(data);
     switch (view.length) {
       case 1:
-        if (this.#shipPlacing || !this.#haveOpponenentShips || this.#yourTurn)
+        if (this.#shipPlacing || !this.#haveOpponentShips || this.#yourTurn)
           this.terminate();
 
         let validGuess = await decodeGuess(view[0]);
@@ -196,10 +196,10 @@ class Manager {
         drawBoard(false);
         break;
       case 5:
-        if (this.#haveOpponenentShips) this.terminate();
+        if (this.#haveOpponentShips) this.terminate();
 
         getOpponentShips(view);
-        this.#haveOpponenentShips = true;
+        this.#haveOpponentShips = true;
 
         let validShip = validateShips();
         if (!validShip) this.terminate();
@@ -223,7 +223,7 @@ class Manager {
   }
 
   get haveOpponentShips() {
-    return this.#haveOpponenentShips;
+    return this.#haveOpponentShips;
   }
 
   get terminated() {
