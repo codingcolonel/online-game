@@ -461,7 +461,10 @@ connection.onoffering = async function () {
   connection.session.channel.addEventListener("close", function () {
     connection.status = "disconnected";
   });
-  connection.session.channel.addEventListener("message", gameManager.recieve);
+  connection.session.channel.addEventListener(
+    "message",
+    gameManager.recieve.bind(gameManager)
+  );
 
   connection.session.onicegatheringstatechange = async function (event) {
     if (connection.session.iceGatheringState !== "complete") return;

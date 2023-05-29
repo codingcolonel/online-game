@@ -198,6 +198,8 @@ class Manager {
         getOpponentShips(view);
         this.#haveOpponenentShips = true;
 
+        if (this.shipPlacing) this.#yourTurn = false;
+
         let validShip = validateShips();
         if (!validShip) this.terminate();
         break;
