@@ -32,8 +32,9 @@ let defendingBoard,
   resetButton,
   randomizeButton,
   confirmationButton,
-  tileLength;
-defendingTransparency, attackingTransparency;
+  tileLength,
+  defendingTransparency,
+  attackingTransparency;
 
 // Create ship images
 let imageList = new Array(5);
