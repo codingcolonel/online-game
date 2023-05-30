@@ -115,9 +115,7 @@ function drawBoard(reset) {
   if (gameManager.shipPlacing === false) {
     if (gameManager.yourTurn === true) {
       defendingTransparency = 0.5;
-      attackingTransparency = 1;
     } else if (gameManager.yourTurn === false) {
-      defendingTransparency = 1;
       attackingTransparency = 0.5;
     }
   }
@@ -155,15 +153,23 @@ function drawBoard(reset) {
  * @returns {void} Does not return anything
  */
 function singleBoard(board, tiles, colour, resetArrays, transparency) {
+  // Color list
+  let colours = {
+    white: rgba(255, 255, 255, transparency),
+    black: rgba(0, 0, 0, transparency),
+    navy: rgba(0, 0, 128, transparency),
+    red: rgba(255, 0, 0, transparency),
+  };
+
   // Draw board
-  ctx.fillStyle = 'white';
+  ctx.fillStyle = colours['white'];
   ctx.fillRect(board.x, board.y, board.sideLength, board.sideLength);
 
   // Variables for drawing letters and numbers
   let counter = 1;
   let letter = 'A';
 
-  ctx.strokeStyle = 'black';
+  ctx.strokeStyle = colours['black'];
   ctx.lineWidth = 2;
   let currentIndex = 0;
   for (
@@ -173,7 +179,7 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
   ) {
     // Draw numbers
     ctx.font = `${tileLength * 0.5}px Verdana, sans-serif`;
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = colours['white'];
     ctx.textAlign = 'center';
     ctx.fillText(
       `${counter}`,
@@ -203,7 +209,7 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
       if (letter !== 'END') {
         // Draw letters
         ctx.font = `${tileLength * 0.5}px Verdana, sans-serif`;
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = colours['white'];
         ctx.fillText(
           `${letter}`,
           board.x - board.sideLength / 25,
@@ -215,17 +221,17 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
   }
 
   // Draw outline for defending board
-  ctx.strokeStyle = colour;
+  ctx.strokeStyle = colours[colour];
   ctx.lineWidth = 5;
   ctx.strokeRect(board.x, board.y, board.sideLength, board.sideLength);
 
   if (gameManager.shipPlacing === true) {
     // Draw reset button
-    ctx.fillStyle = resetButton.colour;
+    ctx.fillStyle = colours[resetButton.colour];
     ctx.fillRect(resetButton.x, resetButton.y, buttons.length, buttons.height);
 
     // Draw reset button
-    ctx.fillStyle = randomizeButton.colour;
+    ctx.fillStyle = colours[randomizeButton.colour];
     ctx.fillRect(
       randomizeButton.x,
       randomizeButton.y,
@@ -234,7 +240,7 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
     );
 
     // Draw reset button
-    ctx.fillStyle = confirmationButton.colour;
+    ctx.fillStyle = colours[confirmationButton.colour];
     ctx.fillRect(
       confirmationButton.x,
       confirmationButton.y,
@@ -244,7 +250,7 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
 
     // Reset Text
     ctx.font = `${tileLength * 0.5}px Verdana, sans-serif`;
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = colours['white'];
     ctx.fillText(
       'RESET',
       resetButton.x + buttons.length * 0.5,
@@ -253,7 +259,7 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
 
     // Random Text
     ctx.font = `${tileLength * 0.5}px Verdana, sans-serif`;
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = colours['white'];
     ctx.fillText(
       'RANDOM',
       randomizeButton.x + buttons.length * 0.5,
@@ -262,7 +268,7 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
 
     // Confirm Text
     ctx.font = `${tileLength * 0.5}px Verdana, sans-serif`;
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = colours['white'];
     ctx.fillText(
       'CONFIRM',
       confirmationButton.x + buttons.length * 0.5,
