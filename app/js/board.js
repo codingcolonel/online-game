@@ -155,10 +155,10 @@ function drawBoard(reset) {
 function singleBoard(board, tiles, colour, resetArrays, transparency) {
   // Color list
   let colours = {
-    white: rgba(255, 255, 255, transparency),
-    black: rgba(0, 0, 0, transparency),
-    navy: rgba(0, 0, 128, transparency),
-    red: rgba(255, 0, 0, transparency),
+    white: `rgba(255, 255, 255, ${transparency})`,
+    black: `rgba(0, 0, 0, ${transparency})`,
+    navy: `rgba(0, 0, 128, ${transparency})`,
+    red: `rgba(255, 0, 0, ${transparency})`,
   };
 
   // Draw board
