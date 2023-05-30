@@ -33,6 +33,7 @@ let defendingBoard,
   randomizeButton,
   confirmationButton,
   tileLength;
+defendingTransparency, attackingTransparency;
 
 // Create ship images
 let imageList = new Array(5);
@@ -41,6 +42,25 @@ imageList[1] = generateSource('/img/ships/Battleship');
 imageList[2] = generateSource('/img/ships/Cruiser');
 imageList[3] = generateSource('/img/ships/Submarine');
 imageList[4] = generateSource('/img/ships/Destroyer');
+
+// Colours class
+class Colours {
+  constructor(transparency) {
+    this.white = `rgba(255, 255, 255, ${transparency})`;
+    this.black = `rgba(0, 0, 0, ${transparency})`;
+    this.navy = `rgba(0, 0, 128, ${transparency})`;
+    this.red = `rgba(255, 0, 0, ${transparency})`;
+    this.green = `rgba(0, 255, 0, ${transparency})`;
+  }
+}
+
+let colours = {
+  white: `rgba(255, 255, 255, ${transparency})`,
+  black: `rgba(0, 0, 0, ${transparency})`,
+  navy: `rgba(0, 0, 128, ${transparency})`,
+  red: `rgba(255, 0, 0, ${transparency})`,
+  green: `rgba(0, 255, 0, ${transparency})`,
+};
 
 function generateSource(source) {
   let result = [new Image(), new Image()];
@@ -109,16 +129,7 @@ function drawBoard(reset) {
   // Draw Background
   ctx.clearRect(0, 0, TrueWidth, TrueHeight);
 
-  let defendingTransparency = 1;
-  let attackingTransparency = 1;
-  // If it is the player's turn make defending board slightly transparent
-  if (gameManager.shipPlacing === false) {
-    if (gameManager.yourTurn === true) {
-      defendingTransparency = 0.5;
-    } else if (gameManager.yourTurn === false) {
-      attackingTransparency = 0.5;
-    }
-  }
+  adjustTransparency();
 
   // Draw defending board
   singleBoard(
@@ -154,13 +165,7 @@ function drawBoard(reset) {
  */
 function singleBoard(board, tiles, colour, resetArrays, transparency) {
   // Color list
-  let colours = {
-    white: `rgba(255, 255, 255, ${transparency})`,
-    black: `rgba(0, 0, 0, ${transparency})`,
-    navy: `rgba(0, 0, 128, ${transparency})`,
-    red: `rgba(255, 0, 0, ${transparency})`,
-    green: `rgba(0, 255, 0, ${transparency})`,
-  };
+  let colourList = new Colours(transparency);
 
   // Draw board
   ctx.fillStyle = colours['white'];
@@ -170,7 +175,7 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
   let counter = 1;
   let letter = 'A';
 
-  ctx.strokeStyle = colours['black'];
+  ctx.strokeStyle = colourList['black'];
   ctx.lineWidth = 2;
   let currentIndex = 0;
   for (
@@ -180,7 +185,7 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
   ) {
     // Draw numbers
     ctx.font = `${tileLength * 0.5}px Verdana, sans-serif`;
-    ctx.fillStyle = colours['white'];
+    ctx.fillStyle = colourList['white'];
     ctx.textAlign = 'center';
     ctx.fillText(
       `${counter}`,
@@ -210,7 +215,7 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
       if (letter !== 'END') {
         // Draw letters
         ctx.font = `${tileLength * 0.5}px Verdana, sans-serif`;
-        ctx.fillStyle = colours['white'];
+        ctx.fillStyle = colourList['white'];
         ctx.fillText(
           `${letter}`,
           board.x - board.sideLength / 25,
@@ -222,18 +227,18 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
   }
 
   // Draw outline for defending board
-  console.log(colours[colour]);
-  ctx.strokeStyle = colours[colour];
+  console.log(colourList[colour]);
+  ctx.strokeStyle = colourList[colour];
   ctx.lineWidth = 5;
   ctx.strokeRect(board.x, board.y, board.sideLength, board.sideLength);
 
   if (gameManager.shipPlacing === true) {
     // Draw reset button
-    ctx.fillStyle = colours[resetButton.colour];
+    ctx.fillStyle = colourList[resetButton.colour];
     ctx.fillRect(resetButton.x, resetButton.y, buttons.length, buttons.height);
 
     // Draw reset button
-    ctx.fillStyle = colours[randomizeButton.colour];
+    ctx.fillStyle = colourList[randomizeButton.colour];
     ctx.fillRect(
       randomizeButton.x,
       randomizeButton.y,
@@ -242,7 +247,7 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
     );
 
     // Draw reset button
-    ctx.fillStyle = colours[confirmationButton.colour];
+    ctx.fillStyle = colourList[confirmationButton.colour];
     ctx.fillRect(
       confirmationButton.x,
       confirmationButton.y,
@@ -252,7 +257,7 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
 
     // Reset Text
     ctx.font = `${tileLength * 0.5}px Verdana, sans-serif`;
-    ctx.fillStyle = colours['white'];
+    ctx.fillStyle = colourList['white'];
     ctx.fillText(
       'RESET',
       resetButton.x + buttons.length * 0.5,
@@ -261,7 +266,7 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
 
     // Random Text
     ctx.font = `${tileLength * 0.5}px Verdana, sans-serif`;
-    ctx.fillStyle = colours['white'];
+    ctx.fillStyle = colourList['white'];
     ctx.fillText(
       'RANDOM',
       randomizeButton.x + buttons.length * 0.5,
@@ -270,7 +275,7 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
 
     // Confirm Text
     ctx.font = `${tileLength * 0.5}px Verdana, sans-serif`;
-    ctx.fillStyle = colours['white'];
+    ctx.fillStyle = colourList['white'];
     ctx.fillText(
       'CONFIRM',
       confirmationButton.x + buttons.length * 0.5,
@@ -280,6 +285,11 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
 }
 
 function updateCanvas() {
+  // Get correct transparency
+  adjustTransparency();
+  let colourListDefending = new Colours(defendingTransparency);
+  let colourListAttacking = new Colours(attackingTransparency);
+
   // Update status of ship tiles
   updateShips(defendingTiles, playerShips);
 
@@ -296,13 +306,13 @@ function updateCanvas() {
     };
     switch (element.state) {
       case 'none':
-        drawBlank(tile);
+        drawBlank(colourListDefending, tile);
         break;
       case 'miss':
-        drawMiss(tile);
+        drawMiss(colourListDefending, tile);
         break;
       case 'ship':
-        drawShip(tile);
+        drawShip(colourListDefending, tile);
         break;
       case 'hover':
         drawHover(tile);
@@ -326,12 +336,12 @@ function updateCanvas() {
     };
     if (element.state === 'miss') {
       // Draw dot to mark as a miss
-      drawMiss(tile);
+      drawMiss(colourListAttacking, tile);
     } else if (element.state === 'hit') {
       // Draw red x to mark as hit
-      drawX('red', tile);
+      drawX('red', colourListAttacking, tile);
     } else if (element.state === 'sunk') {
-      drawX('black', tile);
+      drawX('black', colourListAttacking, tile);
     }
   }
 
@@ -352,15 +362,15 @@ function updateCanvas() {
   });
 }
 
-function drawBlank(tile) {
-  ctx.fillStyle = 'white';
+function drawBlank(colourList, tile) {
+  ctx.fillStyle = colourList['white'];
   ctx.fillRect(
     tile.x1,
     tile.y1,
     attackingBoard.sideLength / 10,
     attackingBoard.sideLength / 10
   );
-  ctx.strokeStyle = 'black';
+  ctx.strokeStyle = colourList['black'];
   ctx.lineWidth = 2;
   ctx.strokeRect(
     tile.x1,
@@ -370,15 +380,15 @@ function drawBlank(tile) {
   );
 }
 
-function drawX(color, tile) {
+function drawX(color, colourList, tile) {
   // Draw red x to mark as hit
-  ctx.strokeStyle = `${color}`;
+  ctx.strokeStyle = colourList[color];
   ctx.lineWidth = 5;
   ctx.beginPath();
   ctx.moveTo(tile.x1, tile.y1);
   ctx.lineTo(tile.x2, tile.y2);
   ctx.stroke();
-  ctx.strokeStyle = `${color}`;
+  ctx.strokeStyle = colourList[color];
   ctx.lineWidth = 5;
   ctx.beginPath();
   ctx.moveTo(tile.x2, tile.y1);
@@ -393,15 +403,15 @@ function drawX(color, tile) {
   );
 }
 
-function drawMiss(tile) {
-  ctx.fillStyle = 'black';
+function drawMiss(colourList, tile) {
+  ctx.fillStyle = colourList['black'];
   ctx.beginPath();
   ctx.arc(tile.centerX, tile.centerY, 5, 0, 2 * Math.PI);
   ctx.fill();
 }
 
-function drawShip(tile) {
-  ctx.strokeStyle = 'black';
+function drawShip(colourList, tile) {
+  ctx.strokeStyle = colourList['black'];
   ctx.lineWidth = 2;
   ctx.strokeRect(
     tile.x1,
@@ -458,6 +468,19 @@ function drawHit(tile) {
 
 function nextPhase() {
   gameManager.send({ type: 'place', ships: playerShips });
+}
+
+function adjustTransparency() {
+  defendingTransparency = 1;
+  attackingTransparency = 1;
+  // If it is the player's turn make defending board slightly transparent
+  if (gameManager.shipPlacing === false) {
+    if (gameManager.yourTurn === true) {
+      defendingTransparency = 0.5;
+    } else if (gameManager.yourTurn === false) {
+      attackingTransparency = 0.5;
+    }
+  }
 }
 
 function trueWidth(input) {
