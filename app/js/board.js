@@ -55,14 +55,6 @@ class Colours {
   }
 }
 
-let colours = {
-  white: `rgba(255, 255, 255, ${transparency})`,
-  black: `rgba(0, 0, 0, ${transparency})`,
-  navy: `rgba(0, 0, 128, ${transparency})`,
-  red: `rgba(255, 0, 0, ${transparency})`,
-  green: `rgba(0, 255, 0, ${transparency})`,
-};
-
 function generateSource(source) {
   let result = [new Image(), new Image()];
   result[0].src = source + '.png';
