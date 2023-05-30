@@ -161,7 +161,7 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
   let colourList = new Colours(transparency);
 
   // Draw board
-  ctx.fillStyle = colours['white'];
+  ctx.fillStyle = colourList['white'];
   ctx.fillRect(board.x, board.y, board.sideLength, board.sideLength);
 
   // Variables for drawing letters and numbers
