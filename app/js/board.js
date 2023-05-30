@@ -159,6 +159,7 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
     black: `rgba(0, 0, 0, ${transparency})`,
     navy: `rgba(0, 0, 128, ${transparency})`,
     red: `rgba(255, 0, 0, ${transparency})`,
+    green: `rgba(0, 255, 0, ${transparency})`,
   };
 
   // Draw board
@@ -221,6 +222,7 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
   }
 
   // Draw outline for defending board
+  console.log(colours[colour]);
   ctx.strokeStyle = colours[colour];
   ctx.lineWidth = 5;
   ctx.strokeRect(board.x, board.y, board.sideLength, board.sideLength);
