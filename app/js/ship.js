@@ -97,7 +97,7 @@ function randomPosition() {
 
 // When opponents ships are received convert them into useable data
 if (opponentShips.length === 0) {
-  getOpponentShips([142, 55, 29, 82, 206]);
+  getOpponentShips([0, 10, 20, 30, 40]);
 }
 
 function getOpponentShips(response) {

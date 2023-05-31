@@ -338,6 +338,24 @@ function updateCanvas() {
     }
   }
 
+  opponentShips.forEach(({ rotation, position }, index) => {
+    const tile = attackingTiles[position[0]];
+    if (tile.state === "sunk") {
+      const img = imageList[index][rotation];
+      const length =
+        (attackingBoard.sideLength / 10) * position.length -
+        attackingBoard.sideLength / 10;
+
+      ctx.drawImage(
+        img,
+        tile.x,
+        tile.y,
+        attackingBoard.sideLength / 10 + length * rotation,
+        attackingBoard.sideLength / 10 + length * (1 - rotation)
+      );
+    }
+  });
+
   playerShips.forEach(({ rotation, position }, index) => {
     const tile = defendingTiles[position[0]];
     const img = imageList[index][rotation];
@@ -375,7 +393,6 @@ function drawBlank(colourList, tile) {
 
 function drawIndicator(color, colourList, tile) {
   // Draw red x to mark as hit
-  console.log(tile);
   ctx.strokeStyle = colourList[color];
   ctx.lineWidth = 5;
   ctx.beginPath();
