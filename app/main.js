@@ -499,8 +499,8 @@ connection.onoffering = async function () {
 
   connection.session.addEventListener("iceconnectionstatechange", function () {
     if (
-      connection.session.connectionState === "disconnected" ||
-      connection.session.connectionState === "failed"
+      connection.session.iceConnectionState === "disconnected" ||
+      connection.session.iceConnectionState === "failed"
     ) {
       connection.session.close();
       if (connection.status !== "disconnected")
@@ -570,8 +570,8 @@ connection.onanswering = async function () {
 
   connection.session.addEventListener("iceconnectionstatechange", function () {
     if (
-      connection.session.connectionState === "disconnected" ||
-      connection.session.connectionState === "failed"
+      connection.session.iceConnectionState === "disconnected" ||
+      connection.session.iceConnectionState === "failed"
     ) {
       connection.session.close();
       if (connection.status !== "disconnected")

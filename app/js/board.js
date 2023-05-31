@@ -143,7 +143,7 @@ function drawBoard(reset) {
   );
 
   // Update canvas
-  updateCanvas(true);
+  updateCanvas();
 }
 
 /**
