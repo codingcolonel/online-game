@@ -714,8 +714,7 @@ async function getMouseCoordinates(e) {
     mouseX <= defendingBoard.x + defendingBoard.sideLength &&
     mouseY >= defendingBoard.y &&
     mouseY <= defendingBoard.y + defendingBoard.sideLength &&
-    gameManager.shipPlacing === true &&
-    gameManager.haveOpponentShips === true
+    gameManager.shipPlacing === true
   ) {
     // Get index of clicked tile on defending board
     let clickedDefendingTile = findTileByCoordinates(
@@ -771,7 +770,8 @@ async function getMouseCoordinates(e) {
     mouseX <= attackingBoard.x + attackingBoard.sideLength &&
     mouseY >= attackingBoard.y &&
     mouseY <= attackingBoard.y + attackingBoard.sideLength &&
-    gameManager.shipPlacing === false
+    gameManager.shipPlacing === false &&
+    gameManager.haveOpponentShips === true
   ) {
     if (gameManager.yourTurn === true) {
       // Get index of clicked tile on attacking board
