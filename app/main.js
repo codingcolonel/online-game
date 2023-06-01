@@ -756,6 +756,12 @@ async function getMouseCoordinates(e) {
       // Else move the selected ship to new position
     } else {
       if (clickedShip === undefined) return;
+      console.log(
+        clickedShip,
+        playerShips,
+        defendingTiles,
+        clickedDefendingTile
+      );
       moveShip(
         clickedShip,
         playerShips,
