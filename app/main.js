@@ -868,6 +868,7 @@ function hoverHandler(e) {
       mouseY,
       defendingTiles
     );
+    updateTiles(clickedShip, playerShips, hoverDefendingTile);
     moveShip(
       clickedShip,
       playerShips,
