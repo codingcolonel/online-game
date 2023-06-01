@@ -728,10 +728,7 @@ async function getMouseCoordinates(e) {
       true
     );
     // If a ship is clicked for the first time or is being rotated act accordingly
-    if (
-      shipElement !== false &&
-      (clickedShip !== shipElement || e.detail >= 2)
-    ) {
+    if (shipElement !== false && (clickedShip === undefined || e.detail >= 2)) {
       // If ship is clicked for the first time update clickedShip to current ship and update tiles
       if (e.detail === 1) {
         clickedShip = shipElement;
@@ -750,7 +747,6 @@ async function getMouseCoordinates(e) {
           playerShips[shipElement].position[0],
           true
         );
-        clickedShip = undefined;
       }
       // Else move the selected ship to new position
     } else {
