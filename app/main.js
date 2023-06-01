@@ -498,15 +498,14 @@ connection.onoffering = async function () {
   };
 
   connection.session.addEventListener("iceconnectionstatechange", function () {
-    console.log(connection.session.iceConnectionState);
-    // if (
-    //   connection.session.iceConnectionState === 'disconnected' ||
-    //   connection.session.iceConnectionState === 'failed'
-    // ) {
-    //   connection.session.close();
-    //   if (connection.status !== 'disconnected')
-    //     connection.status = 'disconnected';
-    // }
+    if (
+      connection.session.iceConnectionState === "disconnected" ||
+      connection.session.iceConnectionState === "failed"
+    ) {
+      connection.session.close();
+      if (connection.status !== "disconnected")
+        connection.status = "disconnected";
+    }
   });
 
   await connection.session.setLocalDescription(
@@ -570,15 +569,14 @@ connection.onanswering = async function () {
   };
 
   connection.session.addEventListener("iceconnectionstatechange", function () {
-    console.log(connection.session.iceConnectionState);
-    // if (
-    //   connection.session.iceConnectionState === "disconnected" ||
-    //   connection.session.iceConnectionState === "failed"
-    // ) {
-    //   connection.session.close();
-    //   if (connection.status !== "disconnected")
-    //     connection.status = "disconnected";
-    // }
+    if (
+      connection.session.iceConnectionState === "disconnected" ||
+      connection.session.iceConnectionState === "failed"
+    ) {
+      connection.session.close();
+      if (connection.status !== "disconnected")
+        connection.status = "disconnected";
+    }
   });
 
   await connection.session.setRemoteDescription(JSON.parse(decryptedRemoteSDP));
