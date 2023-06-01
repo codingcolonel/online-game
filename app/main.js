@@ -747,6 +747,7 @@ async function getMouseCoordinates(e) {
           playerShips[shipElement].position[0],
           true
         );
+        clickedShip = undefined;
       }
       // Else move the selected ship to new position
     } else {
