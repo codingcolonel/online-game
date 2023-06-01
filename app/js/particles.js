@@ -1,3 +1,4 @@
+// Utility functions and variables
 function randomFloat(min, max) {
   if (typeof min !== "number" || typeof max !== "number") return NaN;
   if (min > max) throw new RangeError("min is larger than max");
@@ -112,20 +113,27 @@ class DefendingTest extends Particle {
       { x: 0, y: 0 },
       { x: 0, y: 0 },
       context,
-      +new Date() + 5000,
+      +new Date() + 2000,
       array
     );
   }
 
   draw() {
-    let w = this.contextReference.canvas.width / 100;
-    let h = this.contextReference.canvas.height / 100;
-    this.contextReference.fillStyle = "red";
-    this.contextReference.fillRect(
-      w * this.position.x,
-      h * this.position.y,
-      10,
-      10
+    let width = attBoard.sideLength / 100;
+    let currLife = this.life / 2000;
+    let additive =
+      (-1 / (9 * (1 - currLife) + 1) + 1) * 1.1111111111111111 * 2 * width;
+    let length = attBoard.sideLength / 10 - width * 2 + 2 * additive;
+
+    this.contextReference.strokeStyle = "red";
+    this.contextReference.lineJoin = "bevel";
+    this.contextReference.lineWidth = width;
+
+    this.contextReference.strokeRect(
+      attBoard.x + width - additive,
+      attBoard.y + width - additive,
+      length,
+      length
     );
   }
 }
@@ -187,8 +195,6 @@ class ParticleEmitter {
     this.#leftoverTime = 0;
 
     this.spawn = true;
-
-    console.log(this.interval);
   }
 
   update(deltaTime) {

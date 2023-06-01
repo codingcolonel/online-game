@@ -220,7 +220,6 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
   }
 
   // Draw outline for defending board
-  console.log(colourList[colour]);
   ctx.strokeStyle = colourList[colour];
   ctx.lineWidth = 5;
   ctx.strokeRect(board.x, board.y, board.sideLength, board.sideLength);

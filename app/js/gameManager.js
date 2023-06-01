@@ -60,7 +60,7 @@ async function decodeGuess(response) {
     defendingTiles[position].state = hit ? "shiphit" : "miss";
     await timer(850);
     await audio.playWait("fireFar", 1500);
-    await audio.playWait(hit ? "hit" : "miss", 666);
+    await audio.playWait(hit ? "hit" : "miss", 575);
     return true;
   } else {
     return false;

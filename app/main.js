@@ -264,7 +264,6 @@ const Drawing = new Worker("./js/drawWorker.js");
 Drawing.postMessage({ type: "init", canvas: offCnv, scale }, [offCnv]);
 // ! Temporary
 window.Drawing = Drawing;
-window.connection = connection;
 
 drawBoard(true);
 updateDim();
@@ -343,7 +342,7 @@ mainManager.references.query.sub.add(connectionBox, "connect", null, false);
 
 mainManager.references.loader.sub.add(cancelBtn, "button", null, false);
 
-mainManager.display("query");
+mainManager.display("canvas");
 
 // -- Event Listeners --
 confirmBtn.addEventListener("click", confirmUser);
@@ -807,7 +806,7 @@ async function getMouseCoordinates(e) {
             hit: hitCheck === false ? false : true,
           },
         });
-        await audio.playWait("fireClose", 3000);
+        await audio.playWait("fireClose", 2900);
       }
     } else {
       return;

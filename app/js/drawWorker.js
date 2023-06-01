@@ -1,3 +1,6 @@
+let defBoard = { x: undefined, y: undefined, sideLength: undefined };
+let attBoard = { x: undefined, y: undefined, sideLength: undefined };
+
 // Need to use importScripts instead of import, for Firefox compatability
 importScripts("./particles.js");
 
@@ -8,10 +11,9 @@ let ctx;
 
 let prevTime = +new Date();
 
-let scale;
-
 let TrueWidth;
 let TrueHeight;
+let scale;
 
 let activeEmitters = new Array();
 
@@ -56,6 +58,8 @@ function dimensions(data) {
   cnv.height = Math.floor(data.dim.height);
   TrueWidth = data.dim.width;
   TrueHeight = data.dim.height;
+  defBoard = getBoard("defending");
+  attBoard = getBoard("attacking");
 }
 
 function draw() {
@@ -73,19 +77,30 @@ function draw() {
   requestAnimationFrame(draw);
 }
 
-// ! Example function using the board
-/*
-function drawBoard() {
+/**
+ * @param {"defending"|"attacking"} boardName
+ * @returns {object}
+ */
+function getBoard(boardName) {
   let centerWidth = TrueWidth / 2;
   let centerHeight = TrueHeight / 2;
 
-  board = {
-    x:
-      Math.round((centerWidth - TrueWidth * 0.025 - TrueWidth * 0.4) * 10) / 10, // x is offset by 2.5% of the width from the center to the left
-    y: Math.round((centerHeight - TrueWidth * 0.2) * 10) / 10, // y is offset by 20% of the height from the center upwards
-    sideLength: Math.round(TrueWidth * 0.4 * 10) / 10, // length is same as height (40% of screen)
-  };
-  ctx.fillStyle = "white";
-  ctx.fillRect(board.x, board.y, board.sideLength, board.sideLength);
+  let board;
+
+  if (boardName === "defending")
+    board = {
+      x:
+        Math.round((centerWidth - TrueWidth * 0.025 - TrueWidth * 0.4) * 10) /
+        10, // x is offset by 2.5% of the width from the center to the left
+      y: Math.round((centerHeight - TrueWidth * 0.2) * 10) / 10, // y is offset by 20% of the height from the center upwards
+      sideLength: Math.round(TrueWidth * 0.4 * 10) / 10, // length is same as height (40% of screen)
+    };
+  if (boardName === "attacking")
+    board = {
+      x: Math.round((centerWidth + TrueWidth * 0.05) * 10) / 10, // x is offset by 2.5% of the width from the center to the right
+      y: Math.round((centerHeight - TrueWidth * 0.2) * 10) / 10, // y is offset by 20% of the height from the center upwards
+      sideLength: Math.round(TrueWidth * 0.4 * 10) / 10, // length is same as height (40% of screen)
+    };
+
+  return board;
 }
-*/
