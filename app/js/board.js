@@ -65,6 +65,9 @@ function generateSource(source) {
 // Draw the board on load
 window.onload = function () {
   drawBoard(true);
+  logger.generic(
+    "Click on a ship to move it to a new location/nDouble click a ship to rotate it"
+  );
 };
 
 function drawBoard(reset) {
