@@ -832,7 +832,7 @@ async function getMouseCoordinates(e) {
         });
         await audio.playWait("fireClose", 2800);
         if (sunk) {
-          sunk.every((index) => {
+          sunk.forEach((index) => {
             Drawing.postMessage({
               type: "particle",
               name: "attackImpact",
