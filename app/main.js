@@ -785,6 +785,7 @@ async function getMouseCoordinates(e) {
     gameManager.haveOpponentShips === true
   ) {
     if (gameManager.yourTurn === true) {
+      let sunk;
       // Get index of clicked tile on attacking board
       let clickedAttackingTile = findTileByCoordinates(
         mouseX,
@@ -805,6 +806,7 @@ async function getMouseCoordinates(e) {
               const element = hitCheck.position[i];
               attackingTiles[element].state = "sunk";
             }
+            sunk = hitCheck.position;
           }
         } else {
           attackingTiles[clickedAttackingTile].state = "miss";
@@ -829,17 +831,33 @@ async function getMouseCoordinates(e) {
           },
         });
         await audio.playWait("fireClose", 2800);
-        Drawing.postMessage({
-          type: "particle",
-          name: "attackImpact",
-          time: 0.3,
-          frequency: 600,
-          max: 1000,
-          position: {
-            x: Math.floor(clickedAttackingTile / 10),
-            y: clickedAttackingTile % 10,
-          },
-        });
+        if (sunk) {
+          sunk.every((index) => {
+            Drawing.postMessage({
+              type: "particle",
+              name: "attackImpact",
+              time: 0.3,
+              frequency: 600,
+              max: 1000,
+              position: {
+                x: Math.floor(index / 10),
+                y: index % 10,
+              },
+            });
+          });
+        } else {
+          Drawing.postMessage({
+            type: "particle",
+            name: "attackImpact",
+            time: 0.3,
+            frequency: 600,
+            max: 1000,
+            position: {
+              x: Math.floor(clickedAttackingTile / 10),
+              y: clickedAttackingTile % 10,
+            },
+          });
+        }
         await timer(100);
       }
     } else {
