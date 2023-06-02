@@ -345,6 +345,16 @@ function updateCanvas() {
     }
   }
 
+  if (defendingHitCount === 17) {
+    gameOver("lose");
+    return;
+  }
+
+  if (attackingHitCount === 17) {
+    gameOver("win");
+    return;
+  }
+
   opponentShips.forEach(({ rotation, position }, index) => {
     const tile = attackingTiles[position[0]];
     if (tile.state === "sunk") {
@@ -378,14 +388,6 @@ function updateCanvas() {
       defendingBoard.sideLength / 10 + length * (1 - rotation)
     );
   });
-
-  if (defendingHitCount === 17) {
-    gameOver("lose");
-  }
-
-  if (attackingHitCount === 17) {
-    gameOver("win");
-  }
 }
 
 function drawBlank(colourList, tile) {
@@ -509,16 +511,21 @@ function adjustTransparency() {
   }
 }
 
-// test event listener
+// test event listener (feel free to comment this out)
 document.addEventListener("keyup", gameOver);
 function gameOver(result) {
   console.log("game over");
+
+  // Make both boards transparent
+  singleBoard(defendingBoard, defendingTiles, "navy", false, 0.5);
+
+  singleBoard(attackingBoard, attackingTiles, "red", false, 0.5);
 
   // Update game manager
   gameManager.gameOver = true;
 
   // Draw game over screen here
-  ctx.clearRect(0, 0, TrueWidth, TrueHeight);
+  // ctx.fillRect()
 }
 
 function trueWidth(input) {
@@ -549,5 +556,3 @@ export {
   nextPhase,
   ctx,
 };
-
-// http://en.battleship-game.org/
