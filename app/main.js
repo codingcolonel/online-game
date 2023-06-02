@@ -352,7 +352,7 @@ mainManager.references.query.sub.add(connectionBox, "connect", null, false);
 
 mainManager.references.loader.sub.add(cancelBtn, "button", null, false);
 
-mainManager.display("query");
+mainManager.display("canvas");
 
 // -- Event Listeners --
 confirmBtn.addEventListener("click", confirmUser);

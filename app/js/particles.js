@@ -41,10 +41,11 @@ class Particle {
 
   life;
 
-  constructor(pos, vel, acc, ctx, life = 0, arr) {
+  constructor(pos, vel, acc, drag, ctx, life = 0, arr) {
     this.position = pos;
     this.velocity = vel;
     this.acceleration = acc;
+    this.drag = drag;
     this.contextReference = ctx;
     this.lifespan = life;
     this.arrayReference = arr;
@@ -66,6 +67,9 @@ class Particle {
     this.position.y += ((finalVelocity.y + this.velocity.y) / 2) * deltaTime;
 
     this.velocity = finalVelocity;
+
+    this.velocity.x = this.velocity.x * this.drag;
+    this.velocity.y = this.velocity.y * this.drag;
   }
 
   draw() {
@@ -84,6 +88,7 @@ class Example extends Particle {
       },
       { x: randomFloat(-0.3, 0.3), y: randomFloat(-0.3, 0.3) },
       { x: 0, y: 0.0015 },
+      1,
       context,
       +new Date() + 1000,
       array
@@ -112,6 +117,7 @@ class attackBoardClick extends Particle {
       position,
       { x: 0, y: 0 },
       { x: 0, y: 0 },
+      1,
       context,
       +new Date() + 4000,
       array
@@ -154,6 +160,7 @@ class attackBoardImpact extends Particle {
       },
       { x: 0, y: 0 },
       { x: 0, y: 0 },
+      1,
       context,
       +new Date() + 6,
       array
@@ -164,8 +171,6 @@ class attackBoardImpact extends Particle {
   }
 
   draw() {
-    let currLife = 1 - this.life / 6;
-
     this.contextReference.fillStyle = this.color;
 
     let multiplier = attBoard.sideLength / 10;
@@ -179,10 +184,52 @@ class attackBoardImpact extends Particle {
   }
 }
 
+class defendBoardSmoke extends Particle {
+  constructor(position, context, array) {
+    let xMult = randomFloat(0.00000005, 0.0000001);
+    let yMult = randomFloat(0.00000001, 0.0000001);
+    super(
+      {
+        x: position.x + randomFloat(0.4, 0.6),
+        y: position.y + randomFloat(0.4, 0.6),
+      },
+      { x: 0, y: 0 },
+      { x: -8 * xMult, y: -1.75 * yMult },
+      0.99,
+      context,
+      +new Date() + 12000,
+      array
+    );
+
+    this.size = randomFloat(0.01, 0.3);
+    this.color = randomInt(10, 40);
+  }
+
+  draw() {
+    let currLife = 1 - this.life / 12000;
+
+    let opacity = -25.81 * currLife * (currLife - 1) ** 9;
+    this.contextReference.fillStyle = `rgba(${this.color},${this.color},${this.color},${opacity})`;
+
+    let multiplier = defBoard.sideLength / 10;
+
+    this.contextReference.beginPath();
+    this.contextReference.arc(
+      defBoard.x + this.position.x * multiplier,
+      defBoard.y + this.position.y * multiplier,
+      multiplier * this.size + multiplier * 0.75 * currLife,
+      0,
+      2 * Math.PI
+    );
+    this.contextReference.fill();
+  }
+}
+
 const particleRegistry = {
   example: Example,
   attackClick: attackBoardClick,
   attackImpact: attackBoardImpact,
+  defendSmoke: defendBoardSmoke,
 };
 
 class ParticleEmitter {
@@ -216,8 +263,9 @@ class ParticleEmitter {
    * @param {Object} position Origin point of the particles
    * @param {CanvasRenderingContext2D} context Context to render with
    * @param {Array} array activeEmitter array
+   * @param {boolean} under Whether or not to display UNDER previous particles
    */
-  constructor(name, time, frequency, max, position, context, array) {
+  constructor(name, time, frequency, max, position, context, array, under) {
     if (typeof max !== "number") throw new Error("Possible overflow");
 
     this.startTime = +new Date();
@@ -237,6 +285,8 @@ class ParticleEmitter {
     this.#leftoverTime = 0;
 
     this.spawn = true;
+
+    this.under = under;
   }
 
   update(deltaTime) {
@@ -251,9 +301,16 @@ class ParticleEmitter {
         this.#leftoverTime = this.interval - (currTime - i);
         if (this.particles.length >= this.max) continue;
 
-        this.particles.push(
-          new this.particleClass(this.position, this.context, this.particles)
-        );
+        if (this.under) {
+          this.particles.unshift(
+            new this.particleClass(this.position, this.context, this.particles)
+          );
+        } else {
+          this.particles.push(
+            new this.particleClass(this.position, this.context, this.particles)
+          );
+        }
+
         this.#prevTime = currTime;
       }
     }

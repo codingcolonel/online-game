@@ -285,40 +285,6 @@ function updateCanvas() {
   // Update status of ship tiles
   updateShips(defendingTiles, playerShips);
 
-  opponentShips.forEach(({ rotation, position }, index) => {
-    const tile = attackingTiles[position[0]];
-    if (tile.state === "sunk") {
-      const img = imageList[index][rotation];
-      const length =
-        (attackingBoard.sideLength / 10) * position.length -
-        attackingBoard.sideLength / 10;
-
-      ctx.drawImage(
-        img,
-        tile.x,
-        tile.y,
-        attackingBoard.sideLength / 10 + length * rotation,
-        attackingBoard.sideLength / 10 + length * (1 - rotation)
-      );
-    }
-  });
-
-  playerShips.forEach(({ rotation, position }, index) => {
-    const tile = defendingTiles[position[0]];
-    const img = imageList[index][rotation];
-    const length =
-      (defendingBoard.sideLength / 10) * position.length -
-      defendingBoard.sideLength / 10;
-
-    ctx.drawImage(
-      img,
-      tile.x,
-      tile.y,
-      defendingBoard.sideLength / 10 + length * rotation,
-      defendingBoard.sideLength / 10 + length * (1 - rotation)
-    );
-  });
-
   // Update Defending Board for any changes
   for (let i = 0; i < defendingTiles.length; i++) {
     const element = defendingTiles[i];
@@ -370,6 +336,40 @@ function updateCanvas() {
       drawIndicator("black", colourListAttacking, tile);
     }
   }
+
+  opponentShips.forEach(({ rotation, position }, index) => {
+    const tile = attackingTiles[position[0]];
+    if (tile.state === "sunk") {
+      const img = imageList[index][rotation];
+      const length =
+        (attackingBoard.sideLength / 10) * position.length -
+        attackingBoard.sideLength / 10;
+
+      ctx.drawImage(
+        img,
+        tile.x,
+        tile.y,
+        attackingBoard.sideLength / 10 + length * rotation,
+        attackingBoard.sideLength / 10 + length * (1 - rotation)
+      );
+    }
+  });
+
+  playerShips.forEach(({ rotation, position }, index) => {
+    const tile = defendingTiles[position[0]];
+    const img = imageList[index][rotation];
+    const length =
+      (defendingBoard.sideLength / 10) * position.length -
+      defendingBoard.sideLength / 10;
+
+    ctx.drawImage(
+      img,
+      tile.x,
+      tile.y,
+      defendingBoard.sideLength / 10 + length * rotation,
+      defendingBoard.sideLength / 10 + length * (1 - rotation)
+    );
+  });
 }
 
 function drawBlank(colourList, tile) {

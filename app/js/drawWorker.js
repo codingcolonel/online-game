@@ -39,7 +39,8 @@ function receiveMessage(msg) {
           data.max,
           data.position,
           ctx,
-          activeEmitters
+          activeEmitters,
+          data.hasOwnProperty("under") ? data.under : false
         )
       );
       break;
