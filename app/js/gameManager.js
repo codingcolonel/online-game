@@ -127,6 +127,7 @@ class Manager {
     try {
       let arrayBuffer = this.parseObject(json);
       this.#channelReference.send(arrayBuffer);
+      setFavicon(3);
     } catch (error) {
       throw error;
     }

@@ -817,8 +817,30 @@ async function getMouseCoordinates(e) {
             hit: hitCheck === false ? false : true,
           },
         });
-        await audio.playWait("fireClose", 2900);
-        setFavicon(3);
+        Drawing.postMessage({
+          type: "particle",
+          name: "attackClick",
+          time: 1,
+          frequency: 1,
+          max: 1,
+          position: {
+            x: Math.floor(clickedAttackingTile / 10),
+            y: clickedAttackingTile % 10,
+          },
+        });
+        await audio.playWait("fireClose", 2800);
+        Drawing.postMessage({
+          type: "particle",
+          name: "attackImpact",
+          time: 0.3,
+          frequency: 600,
+          max: 1000,
+          position: {
+            x: Math.floor(clickedAttackingTile / 10),
+            y: clickedAttackingTile % 10,
+          },
+        });
+        await timer(100);
       }
     } else {
       return;

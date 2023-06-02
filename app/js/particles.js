@@ -106,41 +106,83 @@ class Example extends Particle {
   }
 }
 
-class DefendingTest extends Particle {
+class attackBoardClick extends Particle {
   constructor(position, context, array) {
     super(
       position,
       { x: 0, y: 0 },
       { x: 0, y: 0 },
       context,
-      +new Date() + 2000,
+      +new Date() + 4000,
       array
     );
   }
 
   draw() {
-    let width = attBoard.sideLength / 100;
-    let currLife = this.life / 2000;
-    let additive =
-      (-1 / (9 * (1 - currLife) + 1) + 1) * 1.1111111111111111 * 2 * width;
+    let width = attBoard.sideLength / 75;
+    let currLife = 1 - this.life / 4000;
+
+    let additive = (-1 / (5 * currLife + 1) + 1) * 3.75 * width;
+    let opacity = -25.81 * currLife * (currLife - 1) ** 9;
+
     let length = attBoard.sideLength / 10 - width * 2 + 2 * additive;
 
-    this.contextReference.strokeStyle = "red";
+    this.contextReference.strokeStyle = `rgba(255,0,0,${opacity})`;
     this.contextReference.lineJoin = "bevel";
     this.contextReference.lineWidth = width;
 
+    let multiplier = attBoard.sideLength / 10;
+
     this.contextReference.strokeRect(
-      attBoard.x + width - additive,
-      attBoard.y + width - additive,
+      attBoard.x + width - additive + this.position.x * multiplier,
+      attBoard.y + width - additive + this.position.y * multiplier,
       length,
       length
     );
   }
 }
 
+class attackBoardImpact extends Particle {
+  constructor(position, context, array) {
+    let width = randomInt(10, 100);
+    let length = randomInt(10, 100);
+
+    super(
+      {
+        x: position.x + randomFloat(0.05, 0.95) - 5 / width,
+        y: position.y + randomFloat(0.05, 0.95) - 5 / length,
+      },
+      { x: 0, y: 0 },
+      { x: 0, y: 0 },
+      context,
+      +new Date() + 6,
+      array
+    );
+    this.color = `rgb(${randomInt(100, 230)},0,0)`;
+    this.width = attBoard.sideLength / width;
+    this.length = attBoard.sideLength / length;
+  }
+
+  draw() {
+    let currLife = 1 - this.life / 6;
+
+    this.contextReference.fillStyle = this.color;
+
+    let multiplier = attBoard.sideLength / 10;
+
+    this.contextReference.fillRect(
+      attBoard.x + this.position.x * multiplier,
+      attBoard.y + this.position.y * multiplier,
+      this.width,
+      this.length
+    );
+  }
+}
+
 const particleRegistry = {
   example: Example,
-  dTest: DefendingTest,
+  attackClick: attackBoardClick,
+  attackImpact: attackBoardImpact,
 };
 
 class ParticleEmitter {
@@ -209,7 +251,6 @@ class ParticleEmitter {
         this.#leftoverTime = this.interval - (currTime - i);
         if (this.particles.length >= this.max) continue;
 
-        console.log("new");
         this.particles.push(
           new this.particleClass(this.position, this.context, this.particles)
         );
