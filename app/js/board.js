@@ -512,6 +512,8 @@ function adjustTransparency() {
 // test event listener
 document.addEventListener("keyup", gameOver);
 function gameOver(result) {
+  console.log("game over");
+
   // Update game manager
   gameManager.gameOver = true;
 
