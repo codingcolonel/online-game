@@ -324,7 +324,17 @@ mainManager.add(
   },
   true
 );
-mainManager.add(canvasContain, "canvas", null, false);
+mainManager.add(
+  canvasContain,
+  "canvas",
+  function (state) {
+    if (state)
+      logger.generic(
+        `Click on a ship to move it to a new location. Double&nbspclick&nbspa&nbspship&nbspto&nbsprotate&nbspit.`
+      );
+  },
+  false
+);
 
 mainManager.references.query.sub.add(
   userBox,
@@ -342,7 +352,7 @@ mainManager.references.query.sub.add(connectionBox, "connect", null, false);
 
 mainManager.references.loader.sub.add(cancelBtn, "button", null, false);
 
-mainManager.display("canvas");
+mainManager.display("query");
 
 // -- Event Listeners --
 confirmBtn.addEventListener("click", confirmUser);
@@ -410,6 +420,8 @@ cnv.addEventListener("mousemove", hoverHandler);
 
 connection.onwaiting = async function () {
   if (connection.status === "disabled") return;
+  setFavicon(1);
+
   if (typeof channel.subscriptions.events.answer !== "undefined")
     channel.unsubscribe("answer");
   isHost = false;
@@ -587,6 +599,8 @@ connection.onanswering = async function () {
 
 connection.onconnected = function () {
   if (connection.status === "disabled") return;
+  setFavicon(2);
+
   ably.close();
   mainManager.display("canvas");
   drawBoard(true);
@@ -804,6 +818,7 @@ async function getMouseCoordinates(e) {
           },
         });
         await audio.playWait("fireClose", 2900);
+        setFavicon(3);
       }
     } else {
       return;
@@ -952,7 +967,8 @@ function setFavicon(version) {
 
 export { gameManager, setFavicon, audio, timer };
 
-// TO DO
-// Add win condition
-// Turn indicator
-// Game over screen - Play again???
+/* 
+TODO: Add win condition
+TODO: Turn indicator
+TODO: Game over screen - Play again???
+*/

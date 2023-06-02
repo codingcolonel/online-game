@@ -22,7 +22,7 @@
     Terminate the match
 */
 
-import { audio, timer } from "../main.js";
+import { audio, setFavicon, timer } from "../main.js";
 import {
   attackingTiles,
   defendingTiles,
@@ -61,6 +61,7 @@ async function decodeGuess(response) {
     await timer(850);
     await audio.playWait("fireFar", 1500);
     await audio.playWait(hit ? "hit" : "miss", 575);
+    setFavicon(2);
     return true;
   } else {
     return false;
