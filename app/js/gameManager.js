@@ -235,6 +235,10 @@ class Manager {
   set shipPlacing(value) {
     this.#shipPlacing = value;
   }
+
+  set gameOver(value) {
+    this.#gameOver = value;
+  }
 }
 
 export { Manager };
