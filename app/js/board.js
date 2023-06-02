@@ -285,6 +285,9 @@ function updateCanvas() {
   // Update status of ship tiles
   updateShips(defendingTiles, playerShips);
 
+  // Track hit count to initiate game over
+  let defendingHitCount = 0;
+
   // Update Defending Board for any changes
   for (let i = 0; i < defendingTiles.length; i++) {
     const element = defendingTiles[i];
@@ -311,9 +314,13 @@ function updateCanvas() {
         break;
       case "shiphit":
         drawHit(tile);
+        defendingHitCount++;
         break;
     }
   }
+
+  // Track hit count to initiate game over
+  let attackingHitCount = 0;
 
   // Update Attacking Board for any changes
   for (let i = 0; i < attackingTiles.length; i++) {
@@ -334,6 +341,7 @@ function updateCanvas() {
       drawIndicator("red", colourListAttacking, tile);
     } else if (element.state === "sunk") {
       drawIndicator("black", colourListAttacking, tile);
+      attackingHitCount++;
     }
   }
 
@@ -370,6 +378,14 @@ function updateCanvas() {
       defendingBoard.sideLength / 10 + length * (1 - rotation)
     );
   });
+
+  if (defendingHitCount === 17) {
+    gameOver("lose");
+  }
+
+  if (attackingHitCount === 17) {
+    gameOver("win");
+  }
 }
 
 function drawBlank(colourList, tile) {
@@ -491,6 +507,16 @@ function adjustTransparency() {
       attackingTransparency = 0.5;
     }
   }
+}
+
+// test event listener
+document.addEventListener("keyup", gameOver);
+function gameOver(result) {
+  // Update game manager
+  gameManager.gameOver = true;
+
+  // Draw game over screen here
+  ctx.clearRect(0, 0, TrueWidth, TrueHeight);
 }
 
 function trueWidth(input) {
