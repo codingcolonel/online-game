@@ -197,7 +197,7 @@ class defendBoardSmoke extends Particle {
       { x: -8 * xMult, y: -1.75 * yMult },
       0.99,
       context,
-      +new Date() + 12000,
+      +new Date() + 7000,
       array
     );
 
@@ -206,7 +206,7 @@ class defendBoardSmoke extends Particle {
   }
 
   draw() {
-    let currLife = 1 - this.life / 12000;
+    let currLife = 1 - this.life / 7000;
     let fireGlow = clamp(
       this.color + clamp(0.1 / (currLife + 0.087) - 0.17, 0, 1) * 255,
       0,
