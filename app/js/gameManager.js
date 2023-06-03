@@ -216,8 +216,12 @@ class Manager {
     }
   }
 
-  gameActive() {
+  gameOver() {
     this.#gameActive = false;
+  }
+
+  get gameActive() {
+    return this.#gameActive;
   }
 
   get yourTurn() {
