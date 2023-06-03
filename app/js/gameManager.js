@@ -105,6 +105,7 @@ class Manager {
   #channelReference;
   #haveOpponentShips;
   #terminated;
+  #gameActive;
 
   constructor(connection, isHost) {
     this.#connectionReference = connection;
@@ -120,10 +121,11 @@ class Manager {
     this.shipPlacing = true;
     this.#haveOpponentShips = false;
     this.#terminated = false;
+    this.#gameActive = true;
   }
 
   send(json) {
-    if (this.terminated) return;
+    if (this.terminated || !this.#gameActive) return;
     try {
       let arrayBuffer = this.parseObject(json);
       this.#channelReference.send(arrayBuffer);
@@ -135,17 +137,21 @@ class Manager {
 
   recieve(event) {
     if (this.terminated) return;
-
-    const data = event.data;
-    this.parseBuffer(data);
+    if (!this.#gameActive) {
+      // TODO: Rematch accepting code goes here
+    } else {
+      const data = event.data;
+      this.parseBuffer(data);
+    }
   }
 
   terminate() {
-    if (this.terminated) return;
+    if (this.terminated || !this.#gameActive) return;
     this.#terminated = true;
     this.#yourTurn = false;
     this.shipPlacing = false;
     this.#haveOpponentShips = false;
+    this.#gameActive = false;
     if (this.#connectionReference.session !== null) {
       this.#connectionReference.session.close();
     } else {
@@ -160,7 +166,7 @@ class Manager {
   }
 
   parseObject(json) {
-    if (this.terminated) return;
+    if (this.terminated || !this.#gameActive) return;
     if (!json.hasOwnProperty("type"))
       throw new Error("json object does not contain a type");
     switch (json.type) {
@@ -208,6 +214,10 @@ class Manager {
       default:
         throw new Error("Invalid message recieved");
     }
+  }
+
+  gameActive() {
+    this.#gameActive = false;
   }
 
   get yourTurn() {

@@ -301,6 +301,12 @@ const nameOut = document.getElementById("userOut");
 const acceptBtn = document.getElementById("acceptBtn");
 const rejectBtn = document.getElementById("rejectBtn");
 
+const gameoverBox = document.getElementById("gameoverBox");
+const victorOut = document.getElementById("victorOut");
+const conditionOut = document.getElementById("conditionOut");
+const rematchBtn = document.getElementById("rematchBtn");
+const quitBtn = document.getElementById("quitBtn");
+
 const canvasContain = document.getElementById("canvasContain");
 
 mainManager.add(
@@ -388,25 +394,13 @@ dialogBox.addEventListener("cancel", function (event) {
   event.preventDefault();
 });
 
-rejectBtn.addEventListener("click", function () {
-  if (!dialogBox.open || dialogBox.classList.contains("hide")) return;
-  resolvers.reject();
-  resolvers = {
-    resolve: null,
-    reject: null,
-  };
-  closeInviteDialog();
-});
+rejectBtn.addEventListener("click", dialogBtnClicked);
 
-acceptBtn.addEventListener("click", function () {
-  if (!dialogBox.open || dialogBox.classList.contains("hide")) return;
-  resolvers.resolve();
-  resolvers = {
-    resolve: null,
-    reject: null,
-  };
-  closeInviteDialog();
-});
+acceptBtn.addEventListener("click", dialogBtnClicked);
+
+rematchBtn.addEventListener("click", dialogBtnClicked);
+
+quitBtn.addEventListener("click", dialogBtnClicked);
 
 document.addEventListener("keyup", fullscreenToggle);
 
@@ -627,7 +621,7 @@ connection.ondisconnected = async function () {
 
 // -- Functions --
 
-// Dialog box
+// Dialog boxes
 function openInviteDialog(name) {
   return new Promise((resolve, reject) => {
     nameOut.innerText = name;
@@ -639,11 +633,23 @@ function openInviteDialog(name) {
   });
 }
 
-async function closeInviteDialog() {
-  dialogBox.classList.add("hide");
-  dialogBox.classList.remove("reveal");
+async function closeDialog(dialog) {
+  dialog.classList.add("hide");
+  dialog.classList.remove("reveal");
   await timer(800);
-  dialogBox.close();
+  dialog.close();
+}
+
+function openGameOverDialog(name, condition) {
+  return new Promise((resolve, reject) => {
+    victorOut.innerText = name;
+    conditionOut.innerText = condition;
+    gameoverBox.showModal();
+    gameoverBox.classList.add("reveal");
+    gameoverBox.classList.remove("hide");
+    resolvers.resolve = resolve;
+    resolvers.reject = reject;
+  });
 }
 
 // Listener
@@ -731,7 +737,8 @@ async function getMouseCoordinates(e) {
     mouseX <= defendingBoard.x + defendingBoard.sideLength &&
     mouseY >= defendingBoard.y &&
     mouseY <= defendingBoard.y + defendingBoard.sideLength &&
-    gameManager.shipPlacing === true
+    gameManager.shipPlacing === true &&
+    gameManager.gameActive
   ) {
     // Get index of clicked tile on defending board
     let clickedDefendingTile = findTileByCoordinates(
@@ -786,7 +793,8 @@ async function getMouseCoordinates(e) {
     mouseY >= attackingBoard.y &&
     mouseY <= attackingBoard.y + attackingBoard.sideLength &&
     gameManager.shipPlacing === false &&
-    gameManager.haveOpponentShips === true
+    gameManager.haveOpponentShips === true &&
+    gameManager.gameActive
   ) {
     if (gameManager.yourTurn === true) {
       let sunk;
@@ -872,7 +880,8 @@ async function getMouseCoordinates(e) {
     mouseX <= resetButton.x + buttons.length &&
     mouseY >= resetButton.y &&
     mouseY <= resetButton.y + buttons.height &&
-    gameManager.shipPlacing === true
+    gameManager.shipPlacing === true &&
+    gameManager.gameActive
   ) {
     defaultPosition();
   } else if (
@@ -880,7 +889,8 @@ async function getMouseCoordinates(e) {
     mouseX <= randomizeButton.x + buttons.length &&
     mouseY >= randomizeButton.y &&
     mouseY <= randomizeButton.y + buttons.height &&
-    gameManager.shipPlacing === true
+    gameManager.shipPlacing === true &&
+    gameManager.gameActive
   ) {
     randomPosition();
   } else if (
@@ -888,7 +898,8 @@ async function getMouseCoordinates(e) {
     mouseX <= confirmationButton.x + buttons.length &&
     mouseY >= confirmationButton.y &&
     mouseY <= confirmationButton.y + buttons.height &&
-    gameManager.shipPlacing === true
+    gameManager.shipPlacing === true &&
+    gameManager.gameActive
   ) {
     // send off message containing confirmation here
     // document.addEventListener('message', startGame)
@@ -931,21 +942,31 @@ function hoverHandler(e) {
       hoverDefendingTile,
       false
     );
-    // console.log(defendingTiles);
 
     updateCanvas();
   }
 }
 
-function startGame(message) {
-  // After both players have confirmed start the game
-  // if (message === confirmation message) {
-  nextPhase();
-  // }
+function dialogBtnClicked(event) {
+  let value = parseInt(event.target.closest("button").value);
+  let parent = event.target.closest("dialog");
+
+  if (!parent.open || parent.classList.contains("hide")) return;
+  if (value) {
+    resolvers.resolve();
+  } else {
+    resolvers.reject();
+  }
+  resolvers = {
+    resolve: null,
+    reject: null,
+  };
+  closeDialog(parent);
 }
 
-function incomingHitOrMiss(message) {
-  // Convert message to tile index then update board accordingly
+function startGame() {
+  // After both players have confirmed start the game
+  nextPhase();
 }
 
 // Utility
@@ -1016,8 +1037,22 @@ async function gameOver(condition) {
   console.log("game over", condition);
   switch (condition) {
     case "win":
+      gameManager.gameOver();
+      try {
+        await openGameOverDialog(user.name, "Victory!");
+      } catch (error) {
+        connection.status = "disconnected";
+      }
+
       break;
     case "lose":
+      gameManager.gameOver();
+      try {
+        await openGameOverDialog(opponentName, "Defeat...");
+      } catch (error) {
+        connection.status = "disconnected";
+      }
+
       break;
   }
 }

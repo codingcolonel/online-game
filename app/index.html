@@ -47,7 +47,7 @@
             <h1>USERNAME:</h1>
             <div class="inputWrapper username">
               <div>
-                <input type="text" maxlength="20" id="userIn" />
+                <input type="text" maxlength="20" id="userIn" value="" />
               </div>
             </div>
             <button class="bttn in" id="confirmBtn">
@@ -64,7 +64,7 @@
                 <h2>Input Code:</h2>
                 <div class="inputWrapper">
                   <div>
-                    <input type="text" maxlength="6" id="codeIn" />
+                    <input type="text" maxlength="6" id="codeIn" value="" />
                   </div>
                 </div>
               </div>
@@ -117,14 +117,34 @@
       <br />
       <p><span id="userOut">USER</span> is trying to connect</p>
       <div id="btnBox">
-        <button class="bttn in" id="acceptBtn">
+        <button class="bttn in" id="acceptBtn" value="1">
           <span>Accept</span>
           <div class="inner"></div>
           <div class="corners top"></div>
           <div class="corners bottom"></div>
         </button>
-        <button class="bttn in" id="rejectBtn">
+        <button class="bttn in" id="rejectBtn" value="0">
           <span>Reject</span>
+          <div class="inner"></div>
+          <div class="corners top"></div>
+          <div class="corners bottom"></div>
+        </button>
+      </div>
+    </dialog>
+
+    <dialog class="hide" id="gameoverBox">
+      <h1 id="conditionOut"></h1>
+      <br />
+      <p><span id="victorOut">USER</span> has won the game!</p>
+      <div id="btnBox">
+        <button class="bttn in" id="rematchBtn" value="1">
+          <span>Request Rematch</span>
+          <div class="inner"></div>
+          <div class="corners top"></div>
+          <div class="corners bottom"></div>
+        </button>
+        <button class="bttn in" id="quitBtn" value="0">
+          <span>Quit</span>
           <div class="inner"></div>
           <div class="corners top"></div>
           <div class="corners bottom"></div>
