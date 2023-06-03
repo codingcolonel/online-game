@@ -207,9 +207,16 @@ class defendBoardSmoke extends Particle {
 
   draw() {
     let currLife = 1 - this.life / 12000;
+    let fireGlow = clamp(
+      this.color + clamp(0.1 / (currLife + 0.087) - 0.17, 0, 1) * 255,
+      0,
+      255
+    );
 
     let opacity = -25.81 * currLife * (currLife - 1) ** 9;
-    this.contextReference.fillStyle = `rgba(${this.color},${this.color},${this.color},${opacity})`;
+    this.contextReference.fillStyle = `rgba(${fireGlow},${fireGlow / 2},${
+      this.color
+    },${opacity})`;
 
     let multiplier = defBoard.sideLength / 10;
 
@@ -254,6 +261,10 @@ class ParticleEmitter {
 
   spawn;
 
+  under;
+
+  name;
+
   /**
    *
    * @param {String} name Name of the particle to spawn
@@ -287,6 +298,8 @@ class ParticleEmitter {
     this.spawn = true;
 
     this.under = under;
+
+    this.name = name;
   }
 
   update(deltaTime) {
@@ -315,10 +328,11 @@ class ParticleEmitter {
       }
     }
 
-    if (currTime > this.time) {
+    if (currTime > this.time || !this.spawn) {
       this.spawn = false;
       if (this.particles.length === 0) {
         this.arrayReference.splice(this.arrayReference.indexOf(this), 1);
+        console.log("killed");
         return;
       }
     }
@@ -332,5 +346,13 @@ class ParticleEmitter {
     this.particles.forEach((particle) => {
       particle.draw();
     });
+  }
+
+  kill() {
+    this.spawn = false;
+    if (this.particles.length === 0) {
+      this.arrayReference.splice(this.arrayReference.indexOf(this), 1);
+      return;
+    }
   }
 }

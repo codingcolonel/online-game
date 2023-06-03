@@ -30,7 +30,6 @@ function receiveMessage(msg) {
       dimensions(data);
       break;
     case "particle":
-      // Example, don't do just this, get it from data
       activeEmitters.push(
         new ParticleEmitter(
           data.name,
@@ -43,6 +42,9 @@ function receiveMessage(msg) {
           data.hasOwnProperty("under") ? data.under : false
         )
       );
+      break;
+    case "killParticle":
+      kill(data.name);
       break;
   }
 }
@@ -76,6 +78,13 @@ function draw() {
     emitter.draw();
   });
   requestAnimationFrame(draw);
+}
+
+function kill(killName) {
+  for (let index = activeEmitters.length; index > 0; index--) {
+    const emitter = activeEmitters[index - 1];
+    if (emitter.name === killName) emitter.kill();
+  }
 }
 
 /**

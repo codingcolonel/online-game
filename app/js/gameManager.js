@@ -22,7 +22,7 @@
     Terminate the match
 */
 
-import { audio, setFavicon, timer } from "../main.js";
+import { Drawing, audio, setFavicon, timer } from "../main.js";
 import {
   attackingTiles,
   defendingTiles,
@@ -60,7 +60,23 @@ async function decodeGuess(response) {
     defendingTiles[position].state = hit ? "shiphit" : "miss";
     await timer(850);
     await audio.playWait("fireFar", 1500);
-    await audio.playWait(hit ? "hit" : "miss", 575);
+
+    if (hit) {
+      await audio.playWait("hit", 575);
+      Drawing.postMessage({
+        type: "particle",
+        name: "defendSmoke",
+        time: Number.MAX_SAFE_INTEGER,
+        frequency: 60,
+        max: 1000,
+        position: {
+          x: Math.floor(position / 10),
+          y: position % 10,
+        },
+      });
+    } else {
+      await audio.playWait("miss", 575);
+    }
     setFavicon(2);
     return true;
   } else {

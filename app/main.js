@@ -1057,7 +1057,7 @@ async function gameOver(condition) {
   }
 }
 
-export { gameManager, setFavicon, audio, timer, gameOver };
+export { gameManager, setFavicon, audio, timer, gameOver, Drawing };
 
 /* 
 TODO: Add win condition
