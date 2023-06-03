@@ -1038,6 +1038,7 @@ async function gameOver(condition) {
   switch (condition) {
     case "win":
       gameManager.gameOver();
+      Drawing.postMessage({ type: "killParticle", name: "defendSmoke" });
       try {
         await openGameOverDialog(user.name, "Victory!");
       } catch (error) {

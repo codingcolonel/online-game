@@ -67,12 +67,13 @@ async function decodeGuess(response) {
         type: "particle",
         name: "defendSmoke",
         time: Number.MAX_SAFE_INTEGER,
-        frequency: 60,
+        frequency: 8,
         max: 1000,
         position: {
           x: Math.floor(position / 10),
           y: position % 10,
         },
+        under: true,
       });
     } else {
       await audio.playWait("miss", 575);

@@ -224,7 +224,7 @@ class defendBoardSmoke extends Particle {
     this.contextReference.arc(
       defBoard.x + this.position.x * multiplier,
       defBoard.y + this.position.y * multiplier,
-      multiplier * this.size + multiplier * 0.75 * currLife,
+      (multiplier * this.size + multiplier * 0.75 * currLife) * 0.33333,
       0,
       2 * Math.PI
     );
