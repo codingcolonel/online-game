@@ -190,8 +190,8 @@ class defendBoardSmoke extends Particle {
     let yMult = randomFloat(0.00000001, 0.0000001);
     super(
       {
-        x: position.x + randomFloat(0.4, 0.6),
-        y: position.y + randomFloat(0.4, 0.6),
+        x: position.x + randomFloat(0.42, 0.58),
+        y: position.y + randomFloat(0.42, 0.58),
       },
       { x: 0, y: 0 },
       { x: -8 * xMult, y: -1.75 * yMult },
@@ -224,7 +224,7 @@ class defendBoardSmoke extends Particle {
     this.contextReference.arc(
       defBoard.x + this.position.x * multiplier,
       defBoard.y + this.position.y * multiplier,
-      (multiplier * this.size + multiplier * 0.75 * currLife) * 0.33333,
+      (multiplier * this.size + multiplier * 0.75 * currLife) * 0.75,
       0,
       2 * Math.PI
     );
