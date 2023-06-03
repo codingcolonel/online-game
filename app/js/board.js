@@ -7,7 +7,7 @@ import {
   updateShips,
 } from "./functions.js";
 import { playerShips, opponentShips } from "./ship.js";
-import { gameManager } from "../main.js";
+import { gameManager, gameOver } from "../main.js";
 
 // Set up canvas and 2d graphics content
 /** @type {HTMLCanvasElement} */
@@ -512,7 +512,8 @@ function adjustTransparency() {
 }
 
 // test event listener (feel free to comment this out)
-document.addEventListener("keyup", gameOver);
+// document.addEventListener("keyup", gameOver);
+/*
 function gameOver(result) {
   console.log("game over");
 
@@ -527,6 +528,7 @@ function gameOver(result) {
   // Draw game over screen here
   // ctx.fillRect()
 }
+*/
 
 function trueWidth(input) {
   if (input) TrueWidth = input;

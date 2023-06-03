@@ -100,7 +100,6 @@ function validateShips() {
 class Manager {
   #yourTurn;
   #shipPlacing;
-  #gameOver;
   #connectionReference;
   /** @type {RTCDataChannel} */
   #channelReference;
@@ -119,7 +118,6 @@ class Manager {
           };
     this.#yourTurn = isHost;
     this.shipPlacing = true;
-    this.#gameOver = false;
     this.#haveOpponentShips = false;
     this.#terminated = false;
   }
@@ -220,10 +218,6 @@ class Manager {
     return this.#shipPlacing;
   }
 
-  get gameOver() {
-    return this.#gameOver;
-  }
-
   get haveOpponentShips() {
     return this.#haveOpponentShips;
   }
@@ -234,10 +228,6 @@ class Manager {
 
   set shipPlacing(value) {
     this.#shipPlacing = value;
-  }
-
-  set gameOver(value) {
-    this.#gameOver = value;
   }
 }
 

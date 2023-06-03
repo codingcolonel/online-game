@@ -272,6 +272,8 @@ let clickedShip;
 
 let isHost;
 
+let opponentName;
+
 // HTML References
 
 const favicons =
@@ -352,7 +354,7 @@ mainManager.references.query.sub.add(connectionBox, "connect", null, false);
 
 mainManager.references.loader.sub.add(cancelBtn, "button", null, false);
 
-mainManager.display("canvas");
+mainManager.display("query");
 
 // -- Event Listeners --
 confirmBtn.addEventListener("click", confirmUser);
@@ -393,7 +395,7 @@ rejectBtn.addEventListener("click", function () {
     resolve: null,
     reject: null,
   };
-  closeDialog();
+  closeInviteDialog();
 });
 
 acceptBtn.addEventListener("click", function () {
@@ -403,7 +405,7 @@ acceptBtn.addEventListener("click", function () {
     resolve: null,
     reject: null,
   };
-  closeDialog();
+  closeInviteDialog();
 });
 
 document.addEventListener("keyup", fullscreenToggle);
@@ -435,7 +437,8 @@ connection.onwaiting = async function () {
     try {
       decryptedRemoteSDP = await codecrypt.decrypt(data.sdp, "offer");
       try {
-        await openDialog(data.user);
+        await openInviteDialog(data.user);
+        opponentName = data.user;
         connection.status = "answering";
       } catch {
         console.log("Rejected incoming request");
@@ -499,6 +502,7 @@ connection.onoffering = async function () {
       try {
         decryptedRemoteSDP = await codecrypt.decrypt(data.sdp, "answer");
         connection.session.setRemoteDescription(JSON.parse(decryptedRemoteSDP));
+        opponentName = data.user;
         if (typeof channel.subscriptions.events.answer !== "undefined")
           channel.unsubscribe("answer");
       } catch (error) {
@@ -624,7 +628,7 @@ connection.ondisconnected = async function () {
 // -- Functions --
 
 // Dialog box
-function openDialog(name) {
+function openInviteDialog(name) {
   return new Promise((resolve, reject) => {
     nameOut.innerText = name;
     dialogBox.showModal();
@@ -635,7 +639,7 @@ function openDialog(name) {
   });
 }
 
-async function closeDialog() {
+async function closeInviteDialog() {
   dialogBox.classList.add("hide");
   dialogBox.classList.remove("reveal");
   await timer(800);
@@ -1005,7 +1009,20 @@ function setFavicon(version) {
   });
 }
 
-export { gameManager, setFavicon, audio, timer };
+/**
+ * @param {"lose"|"win"} condition
+ */
+async function gameOver(condition) {
+  console.log("game over", condition);
+  switch (condition) {
+    case "win":
+      break;
+    case "lose":
+      break;
+  }
+}
+
+export { gameManager, setFavicon, audio, timer, gameOver };
 
 /* 
 TODO: Add win condition
