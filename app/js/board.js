@@ -228,10 +228,10 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
   ctx.strokeStyle = colourList[colour];
   ctx.lineWidth = thickLineWidth;
   ctx.strokeRect(
-    board.x - thickLineWidth,
-    board.y - thickLineWidth,
-    board.sideLength + thickLineWidth * 2,
-    board.sideLength + thickLineWidth * 2
+    board.x - thickLineWidth + lineWidth,
+    board.y - thickLineWidth + lineWidth,
+    board.sideLength + thickLineWidth * 2 - lineWidth * 2,
+    board.sideLength + thickLineWidth * 2 - lineWidth * 2
   );
 
   if (gameManager.shipPlacing === true) {
