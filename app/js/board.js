@@ -7,7 +7,7 @@ import {
   updateShips,
 } from "./functions.js";
 import { playerShips, opponentShips } from "./ship.js";
-import { gameManager, gameOver } from "../main.js";
+import { connection, gameManager, gameOver } from "../main.js";
 
 // Set up canvas and 2d graphics content
 /** @type {HTMLCanvasElement} */
@@ -72,6 +72,7 @@ function drawBoard(reset) {
   if (reset === true) {
     defendingTiles = [];
     attackingTiles = [];
+    defaultPosition();
   }
 
   // Update center values for drawing
@@ -277,6 +278,7 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
 }
 
 function updateCanvas() {
+  if (connection.status !== "connected") return;
   // Get correct transparency
   adjustTransparency();
   let colourListDefending = new Colours(defendingTransparency);

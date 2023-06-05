@@ -332,7 +332,6 @@ class ParticleEmitter {
       this.spawn = false;
       if (this.particles.length === 0) {
         this.arrayReference.splice(this.arrayReference.indexOf(this), 1);
-        console.log("killed");
         return;
       }
     }

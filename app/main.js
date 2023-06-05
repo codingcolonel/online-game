@@ -70,7 +70,6 @@ class ConnectionManager {
   set status(newStatus) {
     this.#status = newStatus;
     if (this["on" + newStatus]) this["on" + newStatus]();
-    console.log(this.#status);
   }
 }
 
@@ -186,7 +185,7 @@ let decryptedRemoteSDP;
 
 let connection = new ConnectionManager();
 
-let gameManager = new Manager(connection, true);
+let gameManager = new Manager(connection, true, () => {});
 
 const ably = new Ably.Realtime.Promise({
   authCallback: async (_, callback) => {
@@ -601,9 +600,9 @@ connection.onconnected = function () {
 
   ably.close();
   mainManager.display("canvas");
-  drawBoard(true);
+  gameManager = new Manager(connection, isHost, resetGame);
 
-  gameManager = new Manager(connection, isHost);
+  drawBoard(true);
 };
 
 connection.ondisconnected = async function () {
@@ -1034,31 +1033,36 @@ function setFavicon(version) {
  * @param {"lose"|"win"} condition
  */
 async function gameOver(condition) {
-  console.log("game over", condition);
-  switch (condition) {
-    case "win":
-      gameManager.gameOver();
-      Drawing.postMessage({ type: "killParticle", name: "defendSmoke" });
-      try {
+  setFavicon(1);
+  if (condition !== "lose" && condition !== "win") {
+    connection.status = "disconnected";
+    return;
+  }
+  gameManager.gameOver();
+  Drawing.postMessage({ type: "killParticle", name: "defendSmoke" });
+  try {
+    switch (condition) {
+      case "win":
         await openGameOverDialog(user.name, "Victory!");
-      } catch (error) {
-        connection.status = "disconnected";
-      }
-
-      break;
-    case "lose":
-      gameManager.gameOver();
-      try {
+        break;
+      case "lose":
         await openGameOverDialog(opponentName, "Defeat...");
-      } catch (error) {
-        connection.status = "disconnected";
-      }
-
-      break;
+        break;
+    }
+    mainManager.display("loader");
+    gameManager.send({ type: "rematchRequest" });
+  } catch (error) {
+    connection.status = "disconnected";
   }
 }
 
-export { gameManager, setFavicon, audio, timer, gameOver, Drawing };
+function resetGame() {
+  gameManager = new Manager(connection, isHost, resetGame);
+
+  drawBoard(true);
+}
+
+export { gameManager, setFavicon, audio, timer, gameOver, Drawing, connection };
 
 /* 
 TODO: Add win condition

@@ -123,8 +123,10 @@ class Manager {
   #haveOpponentShips;
   #terminated;
   #gameActive;
+  #rematch;
+  #initiateRematch;
 
-  constructor(connection, isHost) {
+  constructor(connection, isHost, rematchCallback) {
     this.#connectionReference = connection;
     this.#channelReference =
       this.#connectionReference.session !== null
@@ -139,23 +141,43 @@ class Manager {
     this.#haveOpponentShips = false;
     this.#terminated = false;
     this.#gameActive = true;
+    this.#rematch = {
+      me: false,
+      them: false,
+    };
+    this.#initiateRematch = rematchCallback;
   }
 
   send(json) {
-    if (this.terminated || !this.#gameActive) return;
-    try {
-      let arrayBuffer = this.parseObject(json);
-      this.#channelReference.send(arrayBuffer);
-      setFavicon(3);
-    } catch (error) {
-      throw error;
+    if (this.terminated) return;
+    if (!this.#gameActive) {
+      if (json.type !== "rematchRequest") this.terminate();
+      let buffer = new ArrayBuffer(1);
+      new Uint8Array(buffer)[0] = 255;
+      this.#channelReference.send(buffer);
+
+      this.#rematch.me = true;
+      if (this.#rematch.them && this.#rematch.me) this.#initiateRematch();
+    } else {
+      try {
+        let arrayBuffer = this.parseObject(json);
+        this.#channelReference.send(arrayBuffer);
+        setFavicon(3);
+      } catch (error) {
+        throw error;
+      }
     }
   }
 
   recieve(event) {
     if (this.terminated) return;
     if (!this.#gameActive) {
-      // TODO: Rematch accepting code goes here
+      if (!(event.data instanceof ArrayBuffer))
+        throw new Error("Invalid message recieved");
+      if (event.data[0] !== 255) this.terminate();
+
+      this.#rematch.them = true;
+      if (this.#rematch.them && this.#rematch.me) this.#initiateRematch();
     } else {
       const data = event.data;
       this.parseBuffer(data);
