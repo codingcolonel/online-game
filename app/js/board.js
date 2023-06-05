@@ -34,8 +34,9 @@ let defendingBoard,
   confirmationButton,
   tileLength,
   lineWidth,
-  thickLineWidth;
-defendingTransparency, attackingTransparency;
+  thickLineWidth,
+  defendingTransparency,
+  attackingTransparency;
 
 // Create ship images
 let imageList = new Array(5);
