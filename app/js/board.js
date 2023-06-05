@@ -33,6 +33,7 @@ let defendingBoard,
   randomizeButton,
   confirmationButton,
   tileLength,
+  lineWidth,
   defendingTransparency,
   attackingTransparency;
 
@@ -93,6 +94,7 @@ function drawBoard(reset) {
   };
 
   tileLength = defendingBoard.sideLength / 10;
+  lineWidth = tileLength / 20;
 
   // Update button objects
   if (gameManager.shipPlacing === true) {
@@ -170,7 +172,7 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
   let letter = "A";
 
   ctx.strokeStyle = colourList["black"];
-  ctx.lineWidth = 2;
+  ctx.lineWidth = lineWidth;
   let currentIndex = 0;
   for (
     let i = board.x;
@@ -222,7 +224,7 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
 
   // Draw outline for defending board
   ctx.strokeStyle = colourList[colour];
-  ctx.lineWidth = 5;
+  ctx.lineWidth = lineWidth * 2.5;
   ctx.strokeRect(board.x, board.y, board.sideLength, board.sideLength);
 
   if (gameManager.shipPlacing === true) {
@@ -401,7 +403,7 @@ function drawBlank(colourList, tile) {
     attackingBoard.sideLength / 10
   );
   ctx.strokeStyle = colourList["black"];
-  ctx.lineWidth = 2;
+  ctx.lineWidth = lineWidth;
   ctx.strokeRect(
     tile.x1,
     tile.y1,
@@ -413,13 +415,13 @@ function drawBlank(colourList, tile) {
 function drawIndicator(color, colourList, tile) {
   // Draw red x to mark as hit
   ctx.strokeStyle = colourList[color];
-  ctx.lineWidth = 5;
+  ctx.lineWidth = lineWidth * 2.5;
   ctx.beginPath();
   ctx.moveTo(tile.x1, tile.y1);
   ctx.lineTo(tile.x2, tile.y2);
   ctx.stroke();
   ctx.strokeStyle = colourList[color];
-  ctx.lineWidth = 5;
+  ctx.lineWidth = lineWidth * 2.5;
   ctx.beginPath();
   ctx.moveTo(tile.x2, tile.y1);
   ctx.lineTo(tile.x1, tile.y2);
@@ -442,7 +444,7 @@ function drawMiss(colourList, tile) {
 
 function drawShip(colourList, tile) {
   ctx.strokeStyle = colourList["black"];
-  ctx.lineWidth = 2;
+  ctx.lineWidth = lineWidth;
   ctx.strokeRect(
     tile.x1,
     tile.y1,
@@ -479,7 +481,7 @@ function drawHover(tile) {
 
 function drawHit(tile) {
   ctx.strokeStyle = "black";
-  ctx.lineWidth = 2;
+  ctx.lineWidth = lineWidth;
   ctx.strokeRect(
     tile.x1,
     tile.y1,
@@ -493,7 +495,6 @@ function drawHit(tile) {
     defendingBoard.sideLength / 10,
     defendingBoard.sideLength / 10
   );
-  // Add an outline to the blue squares to tell them apart (later)
 }
 
 function nextPhase() {
