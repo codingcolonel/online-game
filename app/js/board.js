@@ -230,8 +230,8 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
   ctx.strokeRect(
     board.x - thickLineWidth + lineWidth * 0.5,
     board.y - thickLineWidth + lineWidth * 0.5,
-    board.sideLength + thickLineWidth * 2 - lineWidth * 2.5,
-    board.sideLength + thickLineWidth * 2 - lineWidth * 2.5
+    board.sideLength + thickLineWidth * 2 - lineWidth,
+    board.sideLength + thickLineWidth * 2 - lineWidth
   );
 
   if (gameManager.shipPlacing === true) {
@@ -427,13 +427,12 @@ function drawIndicator(color, colourList, tile) {
   ctx.moveTo(tile.x1, tile.y1);
   ctx.lineTo(tile.x2, tile.y2);
   ctx.stroke();
-  ctx.strokeStyle = colourList[color];
-  ctx.lineWidth = lineWidth;
   ctx.beginPath();
   ctx.moveTo(tile.x2, tile.y1);
   ctx.lineTo(tile.x1, tile.y2);
   ctx.stroke();
   // Draw box around the x
+  ctx.lineWidth = lineWidth;
   ctx.strokeRect(
     tile.x1,
     tile.y1,
