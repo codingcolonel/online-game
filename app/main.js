@@ -32,6 +32,7 @@ import {
   buttons,
   nextPhase,
   ctx,
+  drawAttackHover,
 } from "./js/board.js";
 import {
   findTileByCoordinates,
@@ -941,8 +942,30 @@ function hoverHandler(e) {
       hoverDefendingTile,
       false
     );
-
     updateCanvas();
+  } else if (
+    mouseX >= attackingBoard.x &&
+    mouseX <= attackingBoard.x + attackingBoard.sideLength &&
+    mouseY >= attackingBoard.y &&
+    mouseY <= attackingBoard.y + attackingBoard.sideLength &&
+    gameManager.shipPlacing === false &&
+    gameManager.haveOpponentShips === true &&
+    gameManager.gameActive
+  ) {
+    if (gameManager.yourTurn === true) {
+      let hoverAttackingTile = findTileByCoordinates(
+        mouseX,
+        mouseY,
+        attackingTiles
+      );
+      const tile = {
+        x1: attackingTiles[hoverAttackingTile].x,
+        y1: attackingTiles[hoverAttackingTile].y,
+      };
+      drawAttackHover(tile);
+    } else {
+      return;
+    }
   }
 }
 

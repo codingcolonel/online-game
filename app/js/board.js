@@ -344,7 +344,9 @@ function updateCanvas() {
       centerX: element.x + attackingBoard.sideLength / 20,
       centerY: element.y + attackingBoard.sideLength / 20,
     };
-    if (element.state === "miss") {
+    if (element.state === "none") {
+      drawBlank(colourListAttacking, tile);
+    } else if (element.state === "miss") {
       // Draw dot to mark as a miss
       drawMiss(colourListAttacking, tile);
     } else if (element.state === "hit") {
@@ -484,6 +486,24 @@ function drawHover(tile) {
   );
 }
 
+function drawAttackHover(tile) {
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = lineWidth;
+  ctx.strokeRect(
+    tile.x1,
+    tile.y1,
+    attackingBoard.sideLength / 10,
+    attackingBoard.sideLength / 10
+  );
+  ctx.fillStyle = "rgba(255, 0, 0, 0.6)";
+  ctx.fillRect(
+    tile.x1,
+    tile.y1,
+    defendingBoard.sideLength / 10,
+    defendingBoard.sideLength / 10
+  );
+}
+
 function drawHit(tile) {
   ctx.strokeStyle = "black";
   ctx.lineWidth = lineWidth;
@@ -546,4 +566,5 @@ export {
   buttons,
   nextPhase,
   ctx,
+  drawAttackHover,
 };
