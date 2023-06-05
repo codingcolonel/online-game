@@ -422,7 +422,7 @@ function drawBlank(colourList, tile) {
 function drawIndicator(color, colourList, tile) {
   // Draw red x to mark as hit
   ctx.strokeStyle = colourList[color];
-  ctx.lineWidth = lineWidth;
+  ctx.lineWidth = thickLineWidth;
   ctx.beginPath();
   ctx.moveTo(tile.x1, tile.y1);
   ctx.lineTo(tile.x2, tile.y2);
