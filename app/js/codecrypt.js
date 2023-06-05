@@ -1,3 +1,8 @@
+/**
+ * Generate an AES-GCM symmetrical encryption & decryption key using an input
+ * @param {ArrayBuffer} rawKey
+ * @returns AES-GCM crypto key
+ */
 async function generateKey(rawKey) {
   return await crypto.subtle.importKey("raw", rawKey, "AES-GCM", true, [
     "encrypt",
@@ -5,16 +10,31 @@ async function generateKey(rawKey) {
   ]);
 }
 
+/**
+ * Encodes a string to an ArrayBuffer
+ * @param {string} message
+ * @returns Uint8Array representing the message
+ */
 function encodeMessage(message) {
   return new TextEncoder().encode(message);
 }
 
+/**
+ * Convert a Uint8Array to a hexadecimal string
+ * @param {Uint8Array} arr
+ * @returns Hexadecimal string
+ */
 function decodeToHex(arr) {
   return arr.reduce((prev, curr) => {
     return prev + curr.toString(16).padStart(2, 0);
   }, "");
 }
 
+/**
+ * Convert a hexadecimal string to a Uint8Array
+ * @param {string} hex
+ * @returns Uint8Array
+ */
 function encodeFromHex(hex) {
   let arrBuff = new Uint8Array(new ArrayBuffer(hex.length / 2));
   for (let i = 0; i < hex.length / 2; i++) {
@@ -22,16 +42,32 @@ function encodeFromHex(hex) {
   }
   return arrBuff;
 }
+
+/**
+ * A class used to manage encryption/decryption keys derived from random, human-readable authenticator codes
+ */
 class CodeCrypt {
+  /** @type {ArrayBuffer} */
   #auth;
+  /** @type {ArrayBuffer} */
   #keyBuffer;
+  /** @type {CryptoKey} */
   #key;
+  /**
+   * Initialization vector
+   * @type {ArrayBuffer}
+   * */
   #iv;
 
   constructor() {
     this.generateAuthenticator();
   }
 
+  /**
+   * Creates a CryptoKey and Initialization vector, both of which are derived from the ArrayBuffer representation of a short hexadecimal string
+   * @param {Uint8Array} arrBuff Uint8Array of an ArrayBuffer
+   * @returns {void}
+   */
   async #createKeyIV(arrBuff) {
     let digest = await crypto.subtle.digest("SHA-256", arrBuff);
     this.#keyBuffer = digest.slice(0, 16);
