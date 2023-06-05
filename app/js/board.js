@@ -34,8 +34,8 @@ let defendingBoard,
   confirmationButton,
   tileLength,
   lineWidth,
-  defendingTransparency,
-  attackingTransparency;
+  thickLineWidth;
+defendingTransparency, attackingTransparency;
 
 // Create ship images
 let imageList = new Array(5);
@@ -95,6 +95,7 @@ function drawBoard(reset) {
 
   tileLength = defendingBoard.sideLength / 10;
   lineWidth = tileLength / 20;
+  thickLineWidth = lineWidth * 2.5;
 
   // Update button objects
   if (gameManager.shipPlacing === true) {
@@ -222,10 +223,15 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
     }
   }
 
-  // Draw outline for defending board
+  // Draw outline for board
   ctx.strokeStyle = colourList[colour];
-  ctx.lineWidth = lineWidth * 2.5;
-  ctx.strokeRect(board.x, board.y, board.sideLength, board.sideLength);
+  ctx.lineWidth = thickLineWidth;
+  ctx.strokeRect(
+    board.x - thickLineWidth,
+    board.y - thickLineWidth,
+    board.sideLength + thickLineWidth * 2,
+    board.sideLength + thickLineWidth * 2
+  );
 
   if (gameManager.shipPlacing === true) {
     // Draw reset button
@@ -415,13 +421,13 @@ function drawBlank(colourList, tile) {
 function drawIndicator(color, colourList, tile) {
   // Draw red x to mark as hit
   ctx.strokeStyle = colourList[color];
-  ctx.lineWidth = lineWidth * 2.5;
+  ctx.lineWidth = thickLineWidth;
   ctx.beginPath();
   ctx.moveTo(tile.x1, tile.y1);
   ctx.lineTo(tile.x2, tile.y2);
   ctx.stroke();
   ctx.strokeStyle = colourList[color];
-  ctx.lineWidth = lineWidth * 2.5;
+  ctx.lineWidth = thickLineWidth;
   ctx.beginPath();
   ctx.moveTo(tile.x2, tile.y1);
   ctx.lineTo(tile.x1, tile.y2);
@@ -458,7 +464,6 @@ function drawShip(colourList, tile) {
     defendingBoard.sideLength / 10,
     defendingBoard.sideLength / 10
   );
-  // Add an outline to the blue squares to tell them apart (later)
 }
 
 function drawHover(tile) {
