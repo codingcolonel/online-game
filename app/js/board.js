@@ -6,7 +6,7 @@ import {
   findTileByCoordinates,
   updateShips,
 } from "./functions.js";
-import { playerShips, opponentShips } from "./ship.js";
+import { playerShips, opponentShips, defaultPosition } from "./ship.js";
 import { connection, gameManager, gameOver } from "../main.js";
 
 // Set up canvas and 2d graphics content
@@ -512,25 +512,6 @@ function adjustTransparency() {
     }
   }
 }
-
-// test event listener (feel free to comment this out)
-// document.addEventListener("keyup", gameOver);
-/*
-function gameOver(result) {
-  console.log("game over");
-
-  // Make both boards transparent
-  singleBoard(defendingBoard, defendingTiles, "navy", false, 0.5);
-
-  singleBoard(attackingBoard, attackingTiles, "red", false, 0.5);
-
-  // Update game manager
-  gameManager.gameOver = true;
-
-  // Draw game over screen here
-  // ctx.fillRect()
-}
-*/
 
 function trueWidth(input) {
   if (input) TrueWidth = input;
