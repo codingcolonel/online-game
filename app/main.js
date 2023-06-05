@@ -1057,6 +1057,8 @@ async function gameOver(condition) {
 }
 
 function resetGame() {
+  mainManager.display("canvas");
+
   gameManager = new Manager(connection, isHost, resetGame);
 
   drawBoard(true);
