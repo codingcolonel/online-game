@@ -942,15 +942,20 @@ function hoverHandler(e) {
       mouseY,
       defendingTiles
     );
-    updateTiles(clickedShip, playerShips, defendingTiles);
-    moveShip(
-      clickedShip,
-      playerShips,
-      defendingTiles,
-      hoverDefendingTile,
-      false
-    );
-    updateCanvas();
+
+    if (hoverDefendingTile !== hoveredIndex) {
+      hoveredIndex = hoverDefendingTile;
+      audio.play("hover", 0.1);
+      updateTiles(clickedShip, playerShips, defendingTiles);
+      moveShip(
+        clickedShip,
+        playerShips,
+        defendingTiles,
+        hoverDefendingTile,
+        false
+      );
+      updateCanvas();
+    }
   } else if (
     mouseX >= attackingBoard.x &&
     mouseX <= attackingBoard.x + attackingBoard.sideLength &&
@@ -975,7 +980,11 @@ function hoverHandler(e) {
           y1: attackingTiles[hoverAttackingTile].y,
         };
         drawBoard(false);
-        drawAttackHover(tile);
+        let color = { r: 50, g: 50, b: 50 };
+        if (attackingTiles[hoverAttackingTile].state === "none") {
+          color.r = 255;
+        }
+        drawAttackHover(tile, color);
       }
     } else {
       return;

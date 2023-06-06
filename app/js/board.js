@@ -344,17 +344,22 @@ function updateCanvas() {
       centerX: element.x + attackingBoard.sideLength / 20,
       centerY: element.y + attackingBoard.sideLength / 20,
     };
-    if (element.state === "none") {
-      drawBlank(colourListAttacking, tile);
-    } else if (element.state === "miss") {
-      // Draw dot to mark as a miss
-      drawMiss(colourListAttacking, tile);
-    } else if (element.state === "hit") {
-      // Draw red x to mark as hit
-      drawIndicator("red", colourListAttacking, tile);
-    } else if (element.state === "sunk") {
-      drawIndicator("black", colourListAttacking, tile);
-      attackingHitCount++;
+    switch (element.state) {
+      case "none":
+        drawBlank(colourListAttacking, tile);
+        break;
+      case "miss":
+        // Draw dot to mark as a miss
+        drawMiss(colourListAttacking, tile);
+        break;
+      case "hit":
+        // Draw red x to mark as hit
+        drawIndicator("red", colourListAttacking, tile);
+        break;
+      case "sunk":
+        drawIndicator("black", colourListAttacking, tile);
+        attackingHitCount++;
+        break;
     }
   }
 
@@ -486,7 +491,7 @@ function drawHover(tile) {
   );
 }
 
-function drawAttackHover(tile) {
+function drawAttackHover(tile, color) {
   ctx.strokeStyle = "black";
   ctx.lineWidth = lineWidth;
   ctx.strokeRect(
@@ -495,7 +500,7 @@ function drawAttackHover(tile) {
     attackingBoard.sideLength / 10,
     attackingBoard.sideLength / 10
   );
-  ctx.fillStyle = "rgba(255, 0, 0, 0.6)";
+  ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, 0.5)`;
   ctx.fillRect(
     tile.x1,
     tile.y1,
