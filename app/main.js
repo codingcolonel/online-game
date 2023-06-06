@@ -955,10 +955,10 @@ function hoverHandler(e) {
     mouseX >= attackingBoard.x &&
     mouseX <= attackingBoard.x + attackingBoard.sideLength &&
     mouseY >= attackingBoard.y &&
-    mouseY <= attackingBoard.y + attackingBoard.sideLength /*&&
+    mouseY <= attackingBoard.y + attackingBoard.sideLength &&
     gameManager.shipPlacing === false &&
     gameManager.haveOpponentShips === true &&
-    gameManager.gameActive*/
+    gameManager.gameActive
   ) {
     if (gameManager.yourTurn === true) {
       let hoverAttackingTile = findTileByCoordinates(
