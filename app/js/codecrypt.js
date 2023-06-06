@@ -44,7 +44,7 @@ function encodeFromHex(hex) {
 }
 
 /**
- * A class used to manage encryption/decryption keys derived from random, human-readable authenticator codes
+ * A class used to manage encryption/decryption keys derived from random, human-readable authenticator codes, to be used for encrypting/decrypting WebRTC SDPs
  */
 class CodeCrypt {
   /** @type {ArrayBuffer} */
@@ -66,7 +66,7 @@ class CodeCrypt {
   /**
    * Creates a CryptoKey and Initialization vector, both of which are derived from the ArrayBuffer representation of a short hexadecimal string
    * @param {Uint8Array} arrBuff Uint8Array of an ArrayBuffer
-   * @returns {void}
+   * @returns {Promise<void>}
    */
   async #createKeyIV(arrBuff) {
     let digest = await crypto.subtle.digest("SHA-256", arrBuff);
@@ -75,6 +75,10 @@ class CodeCrypt {
     this.#key = await generateKey(this.#keyBuffer);
   }
 
+  /**
+   * Creates, stores, and returns a new random authenticator
+   * @returns {Promise<string>} Returns a promise which resolves with the new authenticator
+   */
   async generateAuthenticator() {
     let arrBuff = new Uint8Array(new ArrayBuffer(3));
     crypto.getRandomValues(arrBuff);
@@ -85,6 +89,11 @@ class CodeCrypt {
     return this.authenticator;
   }
 
+  /**
+   * Stores, and returns an inputted authenticator
+   * @param {string} auth Authenticator string to match to
+   * @returns {Promise<string>} Returns a promise which resolves with the new authenticator
+   */
   async setAuthenticator(auth) {
     this.#auth = encodeFromHex(auth);
 
@@ -94,9 +103,10 @@ class CodeCrypt {
   }
 
   /**
-   * @param {string} message
-   * @param {("offer"|"answer")} type
-   * @returns Hex string
+   * Encrypts the inputted SDP using AES-GCM, and returns it as a hexadecimal string
+   * @param {string} message An un-encrypted SDP
+   * @param {("offer"|"answer")} type The type of SDP, which is used as additional encryption data
+   * @returns {Promise<string>} Returns a promise which resolves with the encrypted data
    */
   async encrypt(message, type) {
     if (!this.#key || !this.#iv) throw new Error("No authenticator generated");
@@ -116,9 +126,10 @@ class CodeCrypt {
   }
 
   /**
-   * @param {string} message
-   * @param {("offer"|"answer")} type
-   * @returns String
+   * Decrypts the inputted encrypted data using AES-GCM, and returns it as a string
+   * @param {string} message An encrypted hexadecimal string
+   * @param {("offer"|"answer")} type The type of SDP, which is used as additional decryption data
+   * @returns {Promise<string>} Returns a promise which resolves with the decrypted SDP
    */
   async decrypt(encrypted, type) {
     if (!this.#key || !this.#iv) throw new Error("No authenticator generated");
@@ -137,6 +148,7 @@ class CodeCrypt {
     return new TextDecoder("utf-8").decode(decrypted);
   }
 
+  /** @type {string} */
   get authenticator() {
     let result = decodeToHex(this.#auth);
     result = result.toUpperCase();

@@ -1,3 +1,5 @@
+// * Web Worker to draw Particles on a secondary canvas *
+
 let defBoard = { x: undefined, y: undefined, sideLength: undefined };
 let attBoard = { x: undefined, y: undefined, sideLength: undefined };
 
@@ -9,7 +11,7 @@ let cnv;
 /** @type {OffscreenCanvasRenderingContext2D} */
 let ctx;
 
-let prevTime = +new Date();
+let prevTime = Date.now();
 
 let TrueWidth;
 let TrueHeight;
@@ -19,6 +21,11 @@ let activeEmitters = new Array();
 
 addEventListener("message", receiveMessage);
 
+/**
+ * Event Listener, which listens for messages posted to this worker
+ * @param {MessageEvent} msg A message
+ * @returns {void}
+ */
 function receiveMessage(msg) {
   let data = msg.data;
 
@@ -67,7 +74,7 @@ function dimensions(data) {
 
 function draw() {
   // Calculate DeltaTime
-  let currTime = +new Date();
+  let currTime = Date.now();
   let deltaTime = currTime - prevTime;
   prevTime = currTime;
 

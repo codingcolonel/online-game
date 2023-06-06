@@ -47,12 +47,12 @@ class Particle {
     this.acceleration = acc;
     this.drag = drag;
     this.contextReference = ctx;
-    this.lifespan = life;
+    this.lifespan = Date.now() + life;
     this.arrayReference = arr;
   }
 
   update(deltaTime) {
-    this.life = this.lifespan - +new Date();
+    this.life = this.lifespan - Date.now();
     if (this.life <= 0) {
       this.arrayReference.splice(this.arrayReference.indexOf(this), 1);
       return;
@@ -90,7 +90,7 @@ class Example extends Particle {
       { x: 0, y: 0.0015 },
       1,
       context,
-      +new Date() + 1000,
+      1000,
       array
     );
   }
@@ -113,15 +113,7 @@ class Example extends Particle {
 
 class attackBoardClick extends Particle {
   constructor(position, context, array) {
-    super(
-      position,
-      { x: 0, y: 0 },
-      { x: 0, y: 0 },
-      1,
-      context,
-      +new Date() + 4000,
-      array
-    );
+    super(position, { x: 0, y: 0 }, { x: 0, y: 0 }, 1, context, 4000, array);
   }
 
   draw() {
@@ -151,7 +143,7 @@ class attackBoardClick extends Particle {
 class attackBoardImpact extends Particle {
   constructor(position, context, array) {
     let width = randomInt(10, 100);
-    let length = randomInt(10, 100);
+    let length = randomInt(10, 66);
 
     super(
       {
@@ -162,7 +154,7 @@ class attackBoardImpact extends Particle {
       { x: 0, y: 0 },
       1,
       context,
-      +new Date() + 6,
+      6,
       array
     );
     this.color = `rgb(${randomInt(100, 230)},0,0)`;
@@ -197,7 +189,7 @@ class defendBoardSmoke extends Particle {
       { x: -8 * xMult, y: -1.75 * yMult },
       0.99,
       context,
-      +new Date() + 7000,
+      7000,
       array
     );
 
@@ -279,7 +271,7 @@ class ParticleEmitter {
   constructor(name, time, frequency, max, position, context, array, under) {
     if (typeof max !== "number") throw new Error("Possible overflow");
 
-    this.startTime = +new Date();
+    this.startTime = Date.now();
 
     this.particleClass = particleRegistry[name];
     this.time = this.startTime + time * 1000;
@@ -303,7 +295,7 @@ class ParticleEmitter {
   }
 
   update(deltaTime) {
-    const currTime = +new Date();
+    const currTime = Date.now();
 
     if (this.spawn) {
       for (
