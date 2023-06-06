@@ -244,6 +244,10 @@ const audio = new AudioManager(
       "./audio/WeblshipsCannonsMiss2.mp3",
     ],
     soundName: "miss",
+  },
+  {
+    uris: ["./audio/WeblshipsHover.mp3"],
+    soundName: "hover",
   }
 );
 
@@ -271,6 +275,8 @@ drawBoard(true);
 updateDim();
 
 let clickedShip;
+
+let hoveredIndex;
 
 let isHost;
 
@@ -949,10 +955,10 @@ function hoverHandler(e) {
     mouseX >= attackingBoard.x &&
     mouseX <= attackingBoard.x + attackingBoard.sideLength &&
     mouseY >= attackingBoard.y &&
-    mouseY <= attackingBoard.y + attackingBoard.sideLength &&
+    mouseY <= attackingBoard.y + attackingBoard.sideLength /*&&
     gameManager.shipPlacing === false &&
     gameManager.haveOpponentShips === true &&
-    gameManager.gameActive
+    gameManager.gameActive*/
   ) {
     if (gameManager.yourTurn === true) {
       let hoverAttackingTile = findTileByCoordinates(
@@ -965,9 +971,15 @@ function hoverHandler(e) {
         y1: attackingTiles[hoverAttackingTile].y,
       };
       drawAttackHover(tile);
+      if (hoverAttackingTile !== hoveredIndex) {
+        hoveredIndex = hoverAttackingTile;
+        audio.play("hover", 0.1);
+      }
     } else {
       return;
     }
+  } else {
+    hoveredIndex = undefined;
   }
 }
 
