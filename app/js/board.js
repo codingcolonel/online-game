@@ -510,7 +510,7 @@ function drawAttackHover(tile, color, mouse) {
 
   // Draw crosshair
   document.body.style.cursor = "none";
-  ctx.strokeStyle = black;
+  ctx.strokeStyle = "black";
   ctx.lineWidth = thickLineWidth;
   ctx.beginPath();
   ctx.moveTo(mouse.x - tileLength * 0.5, mouse.y);
