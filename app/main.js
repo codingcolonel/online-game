@@ -924,15 +924,7 @@ async function getMouseCoordinates(e) {
   drawBoard();
 }
 
-let callCount = 0;
 function hoverHandler(e) {
-  callCount++;
-  if (callCount === 2) {
-    callCount = 0;
-  } else {
-    return;
-  }
-
   // Adjust mouse x and y to pixel ratio
   let mouseX = e.x * scale;
   let mouseY = e.y * scale;
