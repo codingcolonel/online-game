@@ -927,7 +927,7 @@ async function getMouseCoordinates(e) {
 let callCount = 0;
 function hoverHandler(e) {
   callCount++;
-  if (callCount === 4) {
+  if (callCount === 10) {
     callCount = 0;
   } else {
     return;
