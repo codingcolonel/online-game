@@ -966,14 +966,16 @@ function hoverHandler(e) {
         mouseY,
         attackingTiles
       );
-      const tile = {
-        x1: attackingTiles[hoverAttackingTile].x,
-        y1: attackingTiles[hoverAttackingTile].y,
-      };
-      drawAttackHover(tile);
+
       if (hoverAttackingTile !== hoveredIndex) {
         hoveredIndex = hoverAttackingTile;
         audio.play("hover", 0.1);
+        const tile = {
+          x1: attackingTiles[hoverAttackingTile].x,
+          y1: attackingTiles[hoverAttackingTile].y,
+        };
+        drawBoard(false);
+        drawAttackHover(tile);
       }
     } else {
       return;
@@ -1102,9 +1104,3 @@ function resetGame() {
 }
 
 export { gameManager, setFavicon, audio, timer, gameOver, Drawing, connection };
-
-/* 
-TODO: Add win condition
-TODO: Turn indicator
-TODO: Game over screen - Play again???
-*/
