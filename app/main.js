@@ -966,6 +966,8 @@ function hoverHandler(e) {
     gameManager.gameActive
   ) {
     if (gameManager.yourTurn === true) {
+      document.body.style.cursor = "crosshair";
+
       let hoverAttackingTile = findTileByCoordinates(
         mouseX,
         mouseY,
@@ -991,6 +993,7 @@ function hoverHandler(e) {
     }
   } else {
     hoveredIndex = undefined;
+    document.body.style.cursor = "default";
   }
 }
 
