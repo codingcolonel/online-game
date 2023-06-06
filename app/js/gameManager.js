@@ -59,10 +59,10 @@ async function decodeGuess(response) {
   if ((defendingTiles[position].state === "ship") == hit) {
     defendingTiles[position].state = hit ? "shiphit" : "miss";
     await timer(850);
-    await audio.playWait("fireFar", 1500);
+    await audio.playWait("fireFar", 0, 1500);
 
     if (hit) {
-      await audio.playWait("hit", 575);
+      await audio.playWait("hit", 0.15, 575);
       Drawing.postMessage({
         type: "particle",
         name: "defendSmoke",
@@ -76,7 +76,7 @@ async function decodeGuess(response) {
         under: true,
       });
     } else {
-      await audio.playWait("miss", 575);
+      await audio.playWait("miss", 0.15, 575);
     }
     setFavicon(2);
     return true;

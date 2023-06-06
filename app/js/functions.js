@@ -208,6 +208,13 @@ function randomInt(min, max) {
   return Math.floor(rand);
 }
 
+function randomFloat(min, max) {
+  if (typeof min !== "number" || typeof max !== "number") return NaN;
+  if (min > max) throw new RangeError("min is larger than max");
+
+  return Math.random() * (max - min) + min;
+}
+
 export {
   processResponse,
   addTileToArray,
@@ -219,4 +226,5 @@ export {
   moveShip,
   updateTiles,
   randomInt,
+  randomFloat,
 };

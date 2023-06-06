@@ -42,6 +42,7 @@ import {
   moveShip,
   updateTiles,
   randomInt,
+  randomFloat,
 } from "./js/functions.js";
 
 // -- Classes --
@@ -153,11 +154,11 @@ class AudioManager {
     }
   }
 
-  play(soundName) {
-    this.playWait(soundName);
+  play(soundName, pitchRange) {
+    this.playWait(soundName, pitchRange, 0);
   }
 
-  playWait(soundName, ms) {
+  playWait(soundName, pitchRange, ms) {
     return new Promise((resolve, reject) => {
       if (this.#context.state === "suspended") this.#context.resume();
       if (!this.#soundBuffers.hasOwnProperty(soundName)) return;
@@ -168,6 +169,7 @@ class AudioManager {
       const bufferObj = this.#soundBuffers[soundName];
       const randomIndex = randomInt(0, bufferObj.length);
       source.buffer = bufferObj[randomIndex];
+      source.playbackRate.value = randomFloat(1 - pitchRange, 1);
 
       source.addEventListener("ended", function () {
         source = null;
@@ -842,7 +844,7 @@ async function getMouseCoordinates(e) {
             y: clickedAttackingTile % 10,
           },
         });
-        await audio.playWait("fireClose", 2800);
+        await audio.playWait("fireClose", 0, 2800);
         if (sunk) {
           sunk.forEach((index) => {
             Drawing.postMessage({
