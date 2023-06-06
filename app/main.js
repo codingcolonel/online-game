@@ -966,8 +966,6 @@ function hoverHandler(e) {
     gameManager.gameActive
   ) {
     if (gameManager.yourTurn === true) {
-      document.body.style.cursor = "crosshair";
-
       let hoverAttackingTile = findTileByCoordinates(
         mouseX,
         mouseY,
@@ -986,7 +984,8 @@ function hoverHandler(e) {
         if (attackingTiles[hoverAttackingTile].state === "none") {
           color.r = 255;
         }
-        drawAttackHover(tile, color);
+        const mouse = { x: mouseX, y: mouseY };
+        drawAttackHover(tile, color, mouse);
       }
     } else {
       return;

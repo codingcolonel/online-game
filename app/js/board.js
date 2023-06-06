@@ -491,7 +491,7 @@ function drawHover(tile) {
   );
 }
 
-function drawAttackHover(tile, color) {
+function drawAttackHover(tile, color, mouse) {
   ctx.strokeStyle = "black";
   ctx.lineWidth = lineWidth;
   ctx.strokeRect(
@@ -507,6 +507,19 @@ function drawAttackHover(tile, color) {
     defendingBoard.sideLength / 10,
     defendingBoard.sideLength / 10
   );
+
+  // Draw crosshair
+  document.body.style.cursor = "none";
+  ctx.strokeStyle = black;
+  ctx.lineWidth = thickLineWidth;
+  ctx.beginPath();
+  ctx.moveTo(mouse.x - tileLength * 0.5, mouse.y);
+  ctx.lineTo(mouse.x + tileLength * 0.5, mouse.y);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(mouse.x, mouse.y - tileLength * 0.5);
+  ctx.lineTo(mouse.x, mouse.y + tileLength * 0.5);
+  ctx.stroke();
 }
 
 function drawHit(tile) {
