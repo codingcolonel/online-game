@@ -523,8 +523,8 @@ function drawAttackCrosshair(mouse) {
   clipAndClear();
   // Draw crosshair
   document.body.style.cursor = "none";
-  crosshairCtx.strokeStyle = "#550700";
-  crosshairCtx.lineWidth = thickLineWidth / 2;
+  crosshairCtx.strokeStyle = "#440000";
+  crosshairCtx.lineWidth = thickLineWidth / 3;
   crosshairCtx.lineCap = "round";
 
   crosshairCtx.beginPath();
@@ -534,19 +534,43 @@ function drawAttackCrosshair(mouse) {
   crosshairCtx.lineTo(mouse.x, mouse.y + tileLength * 0.28);
   crosshairCtx.stroke();
 
-  crosshairCtx.lineWidth = thickLineWidth / 3;
-  crosshairCtx.strokeStyle = "#dd0700";
+  crosshairCtx.lineWidth = thickLineWidth / 4;
 
   crosshairCtx.beginPath();
   crosshairCtx.moveTo(0, mouse.y);
-  crosshairCtx.lineTo(mouse.x - tileLength * 0.66, mouse.y);
-  crosshairCtx.moveTo(mouse.x + tileLength * 0.66, mouse.y);
+  crosshairCtx.lineTo(mouse.x - tileLength * 0.55, mouse.y);
+  crosshairCtx.moveTo(mouse.x + tileLength * 0.55, mouse.y);
   crosshairCtx.lineTo(crosshairCnv.width, mouse.y);
   crosshairCtx.moveTo(mouse.x, 0);
-  crosshairCtx.lineTo(mouse.x, mouse.y - tileLength * 0.66);
-  crosshairCtx.moveTo(mouse.x, mouse.y + tileLength * 0.66);
+  crosshairCtx.lineTo(mouse.x, mouse.y - tileLength * 0.55);
+  crosshairCtx.moveTo(mouse.x, mouse.y + tileLength * 0.55);
   crosshairCtx.lineTo(mouse.x, crosshairCnv.height);
   crosshairCtx.stroke();
+
+  crosshairCtx.strokeStyle = "#dd0700";
+  crosshairCtx.lineJoin = "bevel";
+  crosshairCtx.lineWidth = lineWidth * 1.5;
+
+  for (let x = -1; x < 2; x += 2) {
+    for (let y = -1; y < 2; y += 2) {
+      crosshairCtx.beginPath();
+      crosshairCtx.moveTo(
+        mouse.x - (tileLength / 6) * x,
+        mouse.y - (tileLength / 3.5) * y
+      );
+      crosshairCtx.lineTo(
+        mouse.x - (tileLength / 3.5) * x,
+        mouse.y - (tileLength / 3.5) * y
+      );
+      crosshairCtx.lineTo(
+        mouse.x - (tileLength / 3.5) * x,
+        mouse.y - (tileLength / 6) * y
+      );
+      crosshairCtx.stroke();
+    }
+  }
+
+  crosshairCtx.lineJoin = "miter";
 }
 
 function drawHit(tile) {
