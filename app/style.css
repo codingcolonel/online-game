@@ -272,6 +272,11 @@ canvas {
   pointer-events: none;
 }
 
+#midCanvas {
+  pointer-events: none;
+  transition: all 500ms ease-in-out;
+}
+
 #topCanvas {
   pointer-events: none;
 }
@@ -520,6 +525,11 @@ canvas {
 
 .reveal {
   transition: 700ms ease-in-out 400ms;
+}
+
+.cnvHide {
+  filter: blur(5%);
+  opacity: 0;
 }
 
 /* Animations */

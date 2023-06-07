@@ -33,6 +33,8 @@ import {
   nextPhase,
   ctx,
   drawAttackHover,
+  drawAttackCrosshair,
+  crosshairCnv,
 } from "./js/board.js";
 import {
   findTileByCoordinates,
@@ -696,8 +698,6 @@ async function copyLink() {
 function windowResize() {
   trueHeight(Math.floor(window.innerHeight * scale));
   trueWidth(Math.floor(window.innerWidth * scale));
-  cnv.height = trueHeight();
-  cnv.width = trueWidth();
   updateDim();
   drawBoard(false);
 }
@@ -714,8 +714,6 @@ async function fullscreenToggle(e) {
       trueHeight(Math.floor(window.innerHeight * scale));
       trueWidth(Math.floor(window.innerWidth * scale));
     }
-    cnv.height = trueHeight();
-    cnv.width = trueWidth();
     updateDim();
     drawBoard(false);
   }
@@ -726,8 +724,6 @@ async function fullscreenHandler() {
     trueHeight(Math.floor(window.innerHeight * scale));
     trueWidth(Math.floor(window.innerWidth * scale));
   }
-  cnv.height = trueHeight();
-  cnv.width = trueWidth();
   updateDim();
   drawBoard(false);
 }
@@ -850,6 +846,7 @@ async function getMouseCoordinates(e) {
             y: clickedAttackingTile % 10,
           },
         });
+        crosshairCnv.classList.add("cnvHide");
         await audio.playWait("fireClose", 0, 2800);
         if (sunk) {
           sunk.forEach((index) => {
@@ -972,6 +969,11 @@ function hoverHandler(e) {
         attackingTiles
       );
 
+      if (crosshairCnv.classList.contains("cnvHide"))
+        crosshairCnv.classList.remove("cnvHide");
+      const mouse = { x: mouseX, y: mouseY };
+      drawAttackCrosshair(mouse);
+
       if (hoverAttackingTile !== hoveredIndex) {
         hoveredIndex = hoverAttackingTile;
         audio.play("hover", 0.1);
@@ -984,8 +986,7 @@ function hoverHandler(e) {
         if (attackingTiles[hoverAttackingTile].state === "none") {
           color.r = 255;
         }
-        const mouse = { x: mouseX, y: mouseY };
-        drawAttackHover(tile, color, mouse);
+        drawAttackHover(tile, color);
       }
     } else {
       return;
@@ -1065,6 +1066,10 @@ function validateCode(code) {
 }
 
 function updateDim() {
+  cnv.height = trueHeight();
+  cnv.width = trueWidth();
+  crosshairCnv.height = trueHeight();
+  crosshairCnv.width = trueWidth();
   Drawing.postMessage({
     type: "dim",
     dim: { width: trueWidth(), height: trueHeight() },

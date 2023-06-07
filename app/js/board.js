@@ -9,17 +9,27 @@ import {
 import { playerShips, opponentShips, defaultPosition } from "./ship.js";
 import { connection, gameManager, gameOver } from "../main.js";
 
-// Set up canvas and 2d graphics content
+// Set up canvases and 2d graphics contexts
 /** @type {HTMLCanvasElement} */
-let cnv = document.getElementById("mainCanvas");
+const cnv = document.getElementById("mainCanvas");
 /** @type {CanvasRenderingContext2D} */
-let ctx = cnv.getContext("2d");
+const ctx = cnv.getContext("2d");
+
+/** @type {HTMLCanvasElement} */
+const crosshairCnv = document.getElementById("midCanvas");
+/** @type {CanvasRenderingContext2D} */
+const crosshairCtx = crosshairCnv.getContext("2d");
+
 let scale = window.devicePixelRatio;
 let TrueHeight = Math.floor(window.innerHeight * scale);
 let TrueWidth = Math.floor(window.innerWidth * scale);
 cnv.height = TrueHeight;
 cnv.width = TrueWidth;
 ctx.translate(0.5, 0.5);
+
+crosshairCnv.height = TrueHeight;
+crosshairCnv.width = TrueWidth;
+crosshairCtx.translate(0.5, 0.5);
 
 // Tile data arrays
 let defendingTiles = [];
@@ -491,7 +501,7 @@ function drawHover(tile) {
   );
 }
 
-function drawAttackHover(tile, color, mouse) {
+function drawAttackHover(tile, color) {
   ctx.strokeStyle = "black";
   ctx.lineWidth = lineWidth;
   ctx.strokeRect(
@@ -507,19 +517,36 @@ function drawAttackHover(tile, color, mouse) {
     defendingBoard.sideLength / 10,
     defendingBoard.sideLength / 10
   );
+}
 
+function drawAttackCrosshair(mouse) {
+  clipAndClear();
   // Draw crosshair
   document.body.style.cursor = "none";
-  ctx.strokeStyle = "black";
-  ctx.lineWidth = thickLineWidth;
-  ctx.beginPath();
-  ctx.moveTo(mouse.x - tileLength * 0.5, mouse.y);
-  ctx.lineTo(mouse.x + tileLength * 0.5, mouse.y);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(mouse.x, mouse.y - tileLength * 0.5);
-  ctx.lineTo(mouse.x, mouse.y + tileLength * 0.5);
-  ctx.stroke();
+  crosshairCtx.strokeStyle = "#550700";
+  crosshairCtx.lineWidth = thickLineWidth / 2;
+  crosshairCtx.lineCap = "round";
+
+  crosshairCtx.beginPath();
+  crosshairCtx.moveTo(mouse.x - tileLength * 0.28, mouse.y);
+  crosshairCtx.lineTo(mouse.x + tileLength * 0.28, mouse.y);
+  crosshairCtx.moveTo(mouse.x, mouse.y - tileLength * 0.28);
+  crosshairCtx.lineTo(mouse.x, mouse.y + tileLength * 0.28);
+  crosshairCtx.stroke();
+
+  crosshairCtx.lineWidth = thickLineWidth / 3;
+  crosshairCtx.strokeStyle = "#dd0700";
+
+  crosshairCtx.beginPath();
+  crosshairCtx.moveTo(0, mouse.y);
+  crosshairCtx.lineTo(mouse.x - tileLength * 0.66, mouse.y);
+  crosshairCtx.moveTo(mouse.x + tileLength * 0.66, mouse.y);
+  crosshairCtx.lineTo(crosshairCnv.width, mouse.y);
+  crosshairCtx.moveTo(mouse.x, 0);
+  crosshairCtx.lineTo(mouse.x, mouse.y - tileLength * 0.66);
+  crosshairCtx.moveTo(mouse.x, mouse.y + tileLength * 0.66);
+  crosshairCtx.lineTo(mouse.x, crosshairCnv.height);
+  crosshairCtx.stroke();
 }
 
 function drawHit(tile) {
@@ -567,6 +594,19 @@ function trueHeight(input) {
   else return TrueHeight;
 }
 
+function clipAndClear() {
+  crosshairCtx.clearRect(0, 0, crosshairCnv.width, crosshairCnv.height);
+  let longX = attackingBoard.x + attackingBoard.sideLength;
+  let longY = attackingBoard.y + attackingBoard.sideLength;
+  crosshairCtx.beginPath();
+  crosshairCtx.moveTo(attackingBoard.x, attackingBoard.y);
+  crosshairCtx.lineTo(longX, attackingBoard.y);
+  crosshairCtx.lineTo(longX, longY);
+  crosshairCtx.lineTo(attackingBoard.x, longY);
+  crosshairCtx.closePath();
+  crosshairCtx.clip();
+}
+
 export {
   drawBoard,
   updateCanvas,
@@ -585,4 +625,8 @@ export {
   nextPhase,
   ctx,
   drawAttackHover,
+  drawAttackCrosshair,
+  crosshairCnv,
+  crosshairCtx,
+  clipAndClear,
 };
