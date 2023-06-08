@@ -1,11 +1,7 @@
 // Draw the board and update changes to canvas
-import {
-  nextLetter,
-  addTileToArray,
-  checkArrayPosition,
-  findTileByCoordinates,
-  updateShips,
-} from "./functions.js";
+
+// Import code from other modules
+import { nextLetter, addTileToArray, updateShips } from "./functions.js";
 import { playerShips, opponentShips, defaultPosition } from "./ship.js";
 import { connection, gameManager, gameOver } from "../main.js";
 
@@ -79,6 +75,13 @@ window.onload = function () {
   drawBoard(true);
 };
 
+/**
+ * This is the main board function that updates drawing values then runs the helper functions
+ *
+ * @param {boolean} reset
+ *
+ * @returns {void} Does not return anything
+ */
 function drawBoard(reset) {
   // Reset tile array
   if (reset === true) {
@@ -296,6 +299,11 @@ function singleBoard(board, tiles, colour, resetArrays, transparency) {
   }
 }
 
+/**
+ * This is a helper function that updates the canvas for new changes ex: hit/miss
+ *
+ * @returns {void} Does not return anything
+ */
 function updateCanvas() {
   if (connection.status !== "connected") return;
   // Get correct transparency
@@ -418,6 +426,14 @@ function updateCanvas() {
   });
 }
 
+/**
+ * A helper function that draws a blank tile
+ *
+ * @param {object} colourList An object with the needed colours and the assigned RGBA values
+ * @param {object} tile An object with the coordinates of the provided tile
+ *
+ * @returns {void} Does not return anything
+ */
 function drawBlank(colourList, tile) {
   ctx.fillStyle = colourList["white"];
   ctx.fillRect(
@@ -436,6 +452,15 @@ function drawBlank(colourList, tile) {
   );
 }
 
+/**
+ * A helper function that draws a hit or sunk indicator
+ *
+ * @param {"red"|"black"} color The colour of the indicator (red = hit | black = sunk)
+ * @param {object} colourList An object with the needed colours and the assigned RGBA values
+ * @param {object} tile An object with the coordinates of the provided tile
+ *
+ * @returns {void} Does not return anything
+ */
 function drawIndicator(color, colourList, tile) {
   // Draw red x to mark as hit
   ctx.strokeStyle = colourList[color];
@@ -458,6 +483,14 @@ function drawIndicator(color, colourList, tile) {
   );
 }
 
+/**
+ * A helper function that draws a miss
+ *
+ * @param {object} colourList An object with the needed colours and the assigned RGBA values
+ * @param {object} tile An object with the coordinates of the provided tile
+ *
+ * @returns {void} Does not return anything
+ */
 function drawMiss(colourList, tile) {
   ctx.fillStyle = colourList["black"];
   ctx.beginPath();
@@ -465,6 +498,14 @@ function drawMiss(colourList, tile) {
   ctx.fill();
 }
 
+/**
+ * A helper function that draws a ship
+ *
+ * @param {object} colourList An object with the needed colours and the assigned RGBA values
+ * @param {object} tile An object with the coordinates of the provided tile
+ *
+ * @returns {void} Does not return anything
+ */
 function drawShip(colourList, tile) {
   ctx.strokeStyle = colourList["black"];
   ctx.lineWidth = lineWidth;
@@ -483,6 +524,13 @@ function drawShip(colourList, tile) {
   );
 }
 
+/**
+ * A helper function that draws a hovering effect during the ship placing phase
+ *
+ * @param {object} tile An object with the coordinates of the provided tile
+ *
+ * @returns {void} Does not return anything
+ */
 function drawHover(tile) {
   ctx.fillStyle = "white";
   ctx.fillRect(
@@ -501,6 +549,14 @@ function drawHover(tile) {
   );
 }
 
+/**
+ * A helper function that draws a hovering effect during while guessing
+ *
+ * @param {object} color An object with the specified rgb values for drawing
+ * @param {object} tile An object with the coordinates of the provided tile
+ *
+ * @returns {void} Does not return anything
+ */
 function drawAttackHover(tile, color) {
   ctx.strokeStyle = "black";
   ctx.lineWidth = lineWidth;
@@ -519,6 +575,13 @@ function drawAttackHover(tile, color) {
   );
 }
 
+/**
+ * A helper function that draws a hovering effect during while guessing
+ *
+ * @param {object} mouse An object with the mouse's x and y coordinates where the crosshair is going to be drawn
+ *
+ * @returns {void} Does not return anything
+ */
 function drawAttackCrosshair(mouse) {
   clipAndClear();
   // Draw crosshair
@@ -573,6 +636,13 @@ function drawAttackCrosshair(mouse) {
   crosshairCtx.lineJoin = "miter";
 }
 
+/**
+ * A helper function that draws a hit on the defending board
+ *
+ * @param {object} tile An object with the coordinates of the provided tile
+ *
+ * @returns {void} Does not return anything
+ */
 function drawHit(tile) {
   ctx.strokeStyle = "black";
   ctx.lineWidth = lineWidth;
@@ -591,10 +661,20 @@ function drawHit(tile) {
   );
 }
 
+/**
+ * A helper function that sends a message with the player's ships to the opponent
+ *
+ * @returns {void} Does not return anything
+ */
 function nextPhase() {
   gameManager.send({ type: "place", ships: playerShips });
 }
 
+/**
+ * A helper function that updates transparency values for the boards depending on who's turn it is
+ *
+ * @returns {void} Does not return anything
+ */
 function adjustTransparency() {
   defendingTransparency = 1;
   attackingTransparency = 1;
@@ -631,6 +711,7 @@ function clipAndClear() {
   crosshairCtx.clip();
 }
 
+// Export code to other modules
 export {
   drawBoard,
   updateCanvas,
