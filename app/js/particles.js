@@ -17,6 +17,64 @@ function clamp(num, min, max) {
   return Math.max(min, Math.min(num, max));
 }
 
+function clipDefending() {
+  let longX = defBoard.x + defBoard.sideLength;
+  let longY = defBoard.y + defBoard.sideLength;
+  ctx.beginPath();
+  ctx.moveTo(defBoard.x, defBoard.y);
+  ctx.lineTo(longX, defBoard.y);
+  ctx.lineTo(longX, longY);
+  ctx.lineTo(defBoard.x, longY);
+  ctx.clip();
+}
+
+/**
+ * Small class for managing canvas bezier curves
+ */
+class BezierCurve {
+  points;
+  scale;
+  /**
+   * @param {Array.<{x:number, y:number}>} positions
+   */
+  constructor(...positions) {
+    if (positions.length < 4 || positions.length % 3 !== 1)
+      throw new Error("Invalid point length");
+    this.points = positions;
+  }
+  /**
+   *
+   * @param {CanvasRenderingContext2D} context Canvas Context
+   * @param {{x:number, y:number}} referencePoint Object with an x and a y
+   * @param {number} widthScale New scale value
+   */
+  draw(context, referencePoint, widthScale) {
+    context.beginPath();
+    context.moveTo(
+      referencePoint.x + this.#rescale(this.points[0].x, widthScale),
+      referencePoint.y + this.#rescale(this.points[0].y, widthScale)
+    );
+    for (let index = 1; index < this.points.length - 1; index += 3) {
+      context.bezierCurveTo(
+        referencePoint.x + this.#rescale(this.points[index].x, widthScale),
+        referencePoint.y + this.#rescale(this.points[index].y, widthScale),
+        referencePoint.x + this.#rescale(this.points[index + 1].x, widthScale),
+        referencePoint.y + this.#rescale(this.points[index + 1].y, widthScale),
+        referencePoint.x + this.#rescale(this.points[index + 2].x, widthScale),
+        referencePoint.y + this.#rescale(this.points[index + 2].y, widthScale)
+      );
+    }
+  }
+  /**
+   * Assuming a default scale of 1000, rescale a value relative to a new scale
+   * @param {number}
+   * @param {number} newScale
+   */
+  #rescale(value, newScale) {
+    return (value / 1000) * newScale;
+  }
+}
+
 // ! Do not modify this class, it is the basis from which all other particles are created
 class Particle {
   position = {
@@ -74,40 +132,6 @@ class Particle {
 
   draw() {
     // Empty method simply to exist
-  }
-}
-
-// * This is an example of how to create your own particle
-class Example extends Particle {
-  constructor(position, context, array) {
-    // The super calls the parent's constructor with the passed in parameters
-    super(
-      {
-        x: position.x + randomFloat(-2, 2),
-        y: position.y + randomFloat(-2, 2),
-      },
-      { x: randomFloat(-0.3, 0.3), y: randomFloat(-0.3, 0.3) },
-      { x: 0, y: 0.0015 },
-      1,
-      context,
-      1000,
-      array
-    );
-  }
-
-  draw() {
-    let w = this.contextReference.canvas.width / 100;
-    let h = this.contextReference.canvas.height / 100;
-    this.contextReference.fillStyle = "red";
-    this.contextReference.save();
-    this.contextReference.globalAlpha = this.life / 1000;
-    this.contextReference.fillRect(
-      w * this.position.x,
-      h * this.position.y,
-      10,
-      10
-    );
-    this.contextReference.restore();
   }
 }
 
@@ -224,11 +248,68 @@ class defendBoardSmoke extends Particle {
   }
 }
 
+class defendBoardFireShot extends Particle {
+  constructor(position, context, array) {
+    super(
+      {
+        x: position.x + randomFloat(0.42, 0.58),
+        y: position.y + randomFloat(0.42, 0.58),
+      },
+      { x: 0, y: 0 },
+      { x: 0, y: 0 },
+      1,
+      context,
+      7000,
+      array
+    );
+
+    this.curve = new BezierCurve(
+      { x: 50, y: 0 },
+      { x: 50, y: 10 },
+      { x: 25, y: 25 },
+      { x: -550, y: 0 },
+      { x: 25, y: -25 },
+      { x: 50, y: -10 },
+      { x: 50, y: 0 }
+    );
+  }
+
+  draw() {
+    this.contextReference.save();
+
+    clipDefending();
+
+    this.contextReference.fillStyle = "red";
+    this.curve.draw(
+      this.contextReference,
+      {
+        x: defBoard.x + defBoard.sideLength / 2,
+        y: defBoard.y + defBoard.sideLength / 2,
+      },
+      defBoard.sideLength
+    );
+    this.contextReference.fill();
+
+    this.contextReference.fillStyle = "orange";
+    this.curve.draw(
+      this.contextReference,
+      {
+        x: defBoard.x + defBoard.sideLength / 2,
+        y: defBoard.y + defBoard.sideLength / 2,
+      },
+      defBoard.sideLength * 0.6
+    );
+    this.contextReference.fill();
+
+    this.contextReference.restore();
+  }
+}
+
 const particleRegistry = {
-  example: Example,
   attackClick: attackBoardClick,
   attackImpact: attackBoardImpact,
   defendSmoke: defendBoardSmoke,
+  defendShoot: defendBoardFireShot,
 };
 
 class ParticleEmitter {
