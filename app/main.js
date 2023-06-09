@@ -328,6 +328,14 @@ mainManager.add(
   true
 );
 mainManager.add(
+  queryBoxContain,
+  "query",
+  function (state) {
+    if (state) logger.generic(`Press backtick key to enter fullscreen`);
+  },
+  false
+);
+mainManager.add(
   loaderContain,
   "loader",
   async function (state) {
@@ -701,7 +709,7 @@ function windowResize() {
 }
 
 async function fullscreenToggle(e) {
-  if (e.key === "f") {
+  if (e.key === "`") {
     // Change width and height when switching in/out of fullscreen
     if (!document.fullscreenElement) {
       await document.documentElement.requestFullscreen();
@@ -914,8 +922,7 @@ async function getMouseCoordinates(e) {
     gameManager.shipPlacing === true &&
     gameManager.gameActive
   ) {
-    // send off message containing confirmation here
-    // document.addEventListener('message', startGame)
+    // Send off message containing confirmation here
     startGame();
   }
 
