@@ -62,7 +62,8 @@ async function decodeGuess(response) {
     await audio.playWait("fireFar", 0, 1500);
 
     if (hit) {
-      await audio.playWait("hit", 0.15, 575);
+      await audio.playWait("hit", 0.15, 350);
+      await audio.playWait("hit", 0.15, 225);
       Drawing.postMessage({
         type: "particle",
         name: "defendSmoke",

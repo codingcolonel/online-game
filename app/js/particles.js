@@ -316,11 +316,112 @@ class defendBoardFireShot extends Particle {
   }
 }
 
+class defendBoardRecieveShot extends Particle {
+  constructor(position, context, array) {
+    let yPos = position.y + randomFloat(0.25, 0.75);
+    super(
+      {
+        x: 10.5,
+        y: yPos,
+      },
+      { x: -0.08, y: 0 },
+      { x: 0, y: 0 },
+      0.99999,
+      context,
+      7000,
+      array
+    );
+
+    this.curve = new BezierCurve(
+      { x: -50, y: 0 },
+      { x: -50, y: 10 },
+      { x: -25, y: 25 },
+      { x: 750, y: 0 },
+      { x: -25, y: -25 },
+      { x: -50, y: -10 },
+      { x: -50, y: 0 }
+    );
+    this.target = position;
+  }
+
+  draw() {
+    this.contextReference.save();
+
+    let multiplier = clamp(
+      (this.position.x - this.target.x) / 10,
+      -Infinity,
+      1
+    );
+
+    clipDefending();
+
+    let position = {
+      x: defBoard.x + (this.position.x * defBoard.sideLength) / 10,
+      y: defBoard.y + (this.position.y * defBoard.sideLength) / 10,
+    };
+
+    this.contextReference.filter = `blur(${1.5 * multiplier}px)`;
+
+    this.contextReference.fillStyle = "#b36f4d";
+    this.curve.draw(
+      this.contextReference,
+      position,
+      defBoard.sideLength * (multiplier * 1.1 + 0.15)
+    );
+    this.contextReference.fill();
+
+    this.contextReference.fillStyle = "#de9e62";
+    this.curve.draw(
+      this.contextReference,
+      position,
+      defBoard.sideLength * 0.85 * (multiplier * 1.1 + 0.15)
+    );
+    this.contextReference.fill();
+
+    this.contextReference.fillStyle = "#fce36f";
+    this.curve.draw(
+      this.contextReference,
+      position,
+      defBoard.sideLength * 0.4 * (multiplier * 1.1 + 0.15)
+    );
+    this.contextReference.fill();
+
+    this.contextReference.restore();
+  }
+
+  update(deltaTime) {
+    this.life = this.lifespan - Date.now();
+    if (this.life <= 0) {
+      this.arrayReference.splice(this.arrayReference.indexOf(this), 1);
+      return;
+    }
+
+    let finalVelocity = {
+      x: this.velocity.x + this.acceleration.x * deltaTime,
+      y: this.velocity.y + this.acceleration.y * deltaTime,
+    };
+
+    finalVelocity.x = finalVelocity.x * this.drag ** (deltaTime / 1000);
+    finalVelocity.y = finalVelocity.y * this.drag ** (deltaTime / 1000);
+
+    this.position.x += ((finalVelocity.x + this.velocity.x) / 2) * deltaTime;
+    this.position.y += ((finalVelocity.y + this.velocity.y) / 2) * deltaTime;
+
+    this.velocity = finalVelocity;
+
+    if (this.position.x < this.target.x + 0.2) {
+      this.arrayReference.splice(this.arrayReference.indexOf(this), 1);
+      return;
+    }
+  }
+}
+
 const particleRegistry = {
   attackClick: attackBoardClick,
   attackImpact: attackBoardImpact,
   defendSmoke: defendBoardSmoke,
   defendShoot: defendBoardFireShot,
+  defendIncoming: defendBoardRecieveShot,
 };
 
 class ParticleEmitter {
