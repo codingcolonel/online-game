@@ -324,17 +324,11 @@ mainManager.add(
     if (!state) return;
     await codecrypt.generateAuthenticator();
     codeOut.innerText = codecrypt.authenticator;
+    logger.generic(`Press backtick key to enter fullscreen`);
   },
   true
 );
-mainManager.add(
-  queryBoxContain,
-  "query",
-  function (state) {
-    if (state) logger.generic(`Press backtick key to enter fullscreen`);
-  },
-  false
-);
+
 mainManager.add(
   loaderContain,
   "loader",
