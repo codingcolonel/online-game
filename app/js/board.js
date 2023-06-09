@@ -78,8 +78,7 @@ window.onload = function () {
 /**
  * This is the main board function that updates drawing values then runs the helper functions
  *
- * @param {boolean} reset
- *
+ * @param {Boolean} reset
  * @returns {void} Does not return anything
  */
 function drawBoard(reset) {
@@ -167,11 +166,10 @@ function drawBoard(reset) {
 /**
  * This is a helper function, which draws either the attacking or the defending board
  *
- * @param {array} board This is the defending/attacking board array
- * @param {array} tiles This is the defending/attacking tiles array
+ * @param {Array} board This is the defending/attacking board array
+ * @param {Array} tiles This is the defending/attacking tiles array
  * @param {"navy"|"red"} colour This is either navy or red, the colour of the border
- * @param {boolean} resetArrays
- *
+ * @param {Boolean} resetArrays
  * @returns {void} Does not return anything
  */
 function singleBoard(board, tiles, colour, resetArrays, transparency) {
@@ -429,9 +427,8 @@ function updateCanvas() {
 /**
  * A helper function that draws a blank tile
  *
- * @param {object} colourList An object with the needed colours and the assigned RGBA values
- * @param {object} tile An object with the coordinates of the provided tile
- *
+ * @param {Object} colourList An object with the needed colours and the assigned RGBA values
+ * @param {Object} tile An object with the coordinates of the provided tile
  * @returns {void} Does not return anything
  */
 function drawBlank(colourList, tile) {
@@ -456,9 +453,8 @@ function drawBlank(colourList, tile) {
  * A helper function that draws a hit or sunk indicator
  *
  * @param {"red"|"black"} color The colour of the indicator (red = hit | black = sunk)
- * @param {object} colourList An object with the needed colours and the assigned RGBA values
- * @param {object} tile An object with the coordinates of the provided tile
- *
+ * @param {Object} colourList An object with the needed colours and the assigned RGBA values
+ * @param {Object} tile An object with the coordinates of the provided tile
  * @returns {void} Does not return anything
  */
 function drawIndicator(color, colourList, tile) {
@@ -486,9 +482,8 @@ function drawIndicator(color, colourList, tile) {
 /**
  * A helper function that draws a miss
  *
- * @param {object} colourList An object with the needed colours and the assigned RGBA values
- * @param {object} tile An object with the coordinates of the provided tile
- *
+ * @param {Object} colourList An object with the needed colours and the assigned RGBA values
+ * @param {Object} tile An object with the coordinates of the provided tile
  * @returns {void} Does not return anything
  */
 function drawMiss(colourList, tile) {
@@ -501,9 +496,8 @@ function drawMiss(colourList, tile) {
 /**
  * A helper function that draws a ship
  *
- * @param {object} colourList An object with the needed colours and the assigned RGBA values
- * @param {object} tile An object with the coordinates of the provided tile
- *
+ * @param {Object} colourList An object with the needed colours and the assigned RGBA values
+ * @param {Object} tile An object with the coordinates of the provided tile
  * @returns {void} Does not return anything
  */
 function drawShip(colourList, tile) {
@@ -527,8 +521,7 @@ function drawShip(colourList, tile) {
 /**
  * A helper function that draws a hovering effect during the ship placing phase
  *
- * @param {object} tile An object with the coordinates of the provided tile
- *
+ * @param {Object} tile An object with the coordinates of the provided tile
  * @returns {void} Does not return anything
  */
 function drawHover(tile) {
@@ -552,9 +545,8 @@ function drawHover(tile) {
 /**
  * A helper function that draws a hovering effect during while guessing
  *
- * @param {object} color An object with the specified rgb values for drawing
- * @param {object} tile An object with the coordinates of the provided tile
- *
+ * @param {Object} color An object with the specified rgb values for drawing
+ * @param {Object} tile An object with the coordinates of the provided tile
  * @returns {void} Does not return anything
  */
 function drawAttackHover(tile, color) {
@@ -578,8 +570,7 @@ function drawAttackHover(tile, color) {
 /**
  * A helper function that draws a hovering effect during while guessing
  *
- * @param {object} mouse An object with the mouse's x and y coordinates where the crosshair is going to be drawn
- *
+ * @param {Object} mouse An object with the mouse's x and y coordinates where the crosshair is going to be drawn
  * @returns {void} Does not return anything
  */
 function drawAttackCrosshair(mouse) {
@@ -639,8 +630,7 @@ function drawAttackCrosshair(mouse) {
 /**
  * A helper function that draws a hit on the defending board
  *
- * @param {object} tile An object with the coordinates of the provided tile
- *
+ * @param {Object} tile An object with the coordinates of the provided tile
  * @returns {void} Does not return anything
  */
 function drawHit(tile) {

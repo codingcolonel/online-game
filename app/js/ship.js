@@ -1,9 +1,10 @@
-// All code for thes ships appearance and functionality
+// All code for the ships appearance and functionality
+
+// Import code from other modules
 import {
   processResponse,
   createShip,
   randomInt,
-  moveShip,
   updateTiles,
 } from "./functions.js";
 import { defendingTiles } from "./board.js";
@@ -12,7 +13,10 @@ let playerShips = [];
 let opponentShips = [];
 defaultPosition();
 
-// Ships arrays (off of global scope)
+/**
+ * Sets the ships to the default formation from the start of the game
+ * @returns {void} Does not return anything
+ */
 function defaultPosition() {
   playerShips = [
     {
@@ -38,6 +42,10 @@ function defaultPosition() {
   ];
 }
 
+/**
+ * Sets the ships to a random valid formation
+ * @returns {void} Does not return anything
+ */
 function randomPosition() {
   playerShips = [];
   let shipLength = [5, 4, 3, 3, 2];
@@ -89,9 +97,6 @@ function randomPosition() {
         playerShips[i].rotation
       );
     }
-
-    // console.log(playerShips);
-    // console.log(defendingTiles);
   }
 }
 
@@ -100,6 +105,12 @@ if (opponentShips.length === 0) {
   getOpponentShips([0, 10, 20, 30, 40]);
 }
 
+/**
+ * Converts all binary values into useable data then adds them to the array
+ *
+ * @param {Uint8Array} response An array containing all the ship data received from other player after the ship placing phase
+ * @returns {void} Does not return anything
+ */
 function getOpponentShips(response) {
   let shipLength = [5, 4, 3, 3, 2];
 
@@ -117,6 +128,7 @@ function getOpponentShips(response) {
   }
 }
 
+// Export code to other modules
 export {
   playerShips,
   opponentShips,

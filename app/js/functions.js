@@ -3,10 +3,9 @@
 /**
  * Return object of a tile to be added to array
  *
- * @param {number} x X coordinate of tile
- * @param {number} y Y coordinate of tile
+ * @param {Number} x X coordinate of tile
+ * @param {Number} y Y coordinate of tile
  * @param {string} state The state of the tile (ex. none, hit, miss)
- *
  * @returns {object} Tile object
  */
 function addTileToArray(x, y, state) {
@@ -21,11 +20,10 @@ function addTileToArray(x, y, state) {
 /**
  * Find the closest tile to provided x and y coordinates
  *
- * @param {number} x Provided x value
- * @param {number} y Provided y value
- * @param {array} array Array of tiles
- *
- * @returns {number} Index of closest tile to coordinates
+ * @param {Number} x Provided x value
+ * @param {Number} y Provided y value
+ * @param {Array} array Array of tiles
+ * @returns {Number} Index of closest tile to coordinates
  */
 function findTileByCoordinates(x, y, array) {
   let closestIndex = 0;
@@ -47,9 +45,8 @@ function findTileByCoordinates(x, y, array) {
 /**
  * Process response into an object including rotation and position values
  *
- * @param {Uint8Array} response An 8-bit response composed of opponent ship locations
- *
- * @returns {object} An object containing rotation and position of ship
+ * @param {Number} response An 8-bit number composed of an opponent ship location
+ * @returns {Object} An object containing rotation and position of ship
  */
 function processResponse(response) {
   // Process binary data into useable form
@@ -65,9 +62,9 @@ function processResponse(response) {
 /**
  * Find the next letter in alphabetical sequence
  *
- * @param {string} letter An uppercase letter
+ * @param {String} letter An uppercase letter
  *
- * @returns {string} The next letter in alphebetical order or END if J has been reached
+ * @returns {String} The next letter in alphebetical order or END if J has been reached
  */
 function nextLetter(letter) {
   let encoded = new TextEncoder().encode(letter);
@@ -84,10 +81,9 @@ function nextLetter(letter) {
 /**
  * Check if provided index matches a ship tile position
  *
- * @param {number} index Index of tile
- * @param {array} array Array of opponents ships
- * @param {boolean} getIndex Used to return index instead of element if true
- *
+ * @param {Number} index Index of tile
+ * @param {Array} array Array of opponents ships
+ * @param {Boolean} getIndex Used to return index instead of element if true
  * @returns {element|index|false} Returns ship element or index depending on getIndex if there's a match or false if there's no match
  */
 function checkArrayPosition(index, array, getIndex) {
@@ -114,9 +110,8 @@ function checkArrayPosition(index, array, getIndex) {
 /**
  * Update tile state after ship position changes
  *
- * @param {array} tiles Array of tiles
- * @param {array} ships Array of ships
- *
+ * @param {Array} tiles Array of tiles
+ * @param {Array} ships Array of ships
  * @returns {void} Does not return anything
  */
 function updateShips(tiles, ships) {
@@ -142,11 +137,10 @@ function updateShips(tiles, ships) {
 /**
  * Create an array representing all the ship positions based on the index and rotation
  *
- * @param {number} index Index of the head of the ship
+ * @param {Number} index Index of the head of the ship
  * @param {5|4|3|2} shipLength Length of ship
  * @param {0|1} rotation Rotational value (0 = vertical | 1 = horizontal)
- *
- * @returns {array} Array including all the indexes where the ship is located
+ * @returns {Array} Array including all the indexes where the ship is located
  */
 function createShip(index, shipLength, rotation) {
   let ship = [index];
@@ -161,10 +155,9 @@ function createShip(index, shipLength, rotation) {
 /**
  * Update the validity of all the tiles in the event that a ship were to be placed there
  *
- * @param {number} shipIndex Current index of ship
- * @param {array} shipArray Array of ships
- * @param {array} tileArray Array of tiles
- *
+ * @param {Number} shipIndex Current index of ship
+ * @param {Array} shipArray Array of ships
+ * @param {Array} tileArray Array of tiles
  * @returns {void} Does not return anything
  */
 function updateTiles(shipIndex, shipArray, tileArray) {
@@ -203,14 +196,14 @@ function updateTiles(shipIndex, shipArray, tileArray) {
   }
 }
 
-// Move ship to the closest valid position and replace it in the array
 /**
+ * Move ship to the closest valid position and replace it in the array
  *
- * @param {number} shipIndex Index of ship in ship array
- * @param {array} shipArray Array of ships
- * @param {array} tileArray Array of tiles
- * @param {number} newPosition Tile index of requested new position
- * @param {boolean} moveTheShip If true will effectuate otherwise will display hover effect in that position
+ * @param {Number} shipIndex Index of ship in ship array
+ * @param {Array} shipArray Array of ships
+ * @param {Array} tileArray Array of tiles
+ * @param {Number} newPosition Tile index of requested new position
+ * @param {Boolean} moveTheShip If true will effectuate otherwise will display hover effect in that position
  */
 function moveShip(shipIndex, shipArray, tileArray, newPosition, moveTheShip) {
   // Get the closest valid position to place the ship
@@ -252,14 +245,23 @@ function moveShip(shipIndex, shipArray, tileArray, newPosition, moveTheShip) {
   }
 }
 
-// Return closest coordinate in an array
+/**
+ * Return closest coordinate in an array
+ *
+ * @param {Number} x Provided x value
+ * @param {Number} y Provided y value
+ * @param {Array} arr Array to be searched
+ * @returns {Number} Index of array object with closest x and y to provided coordinates
+ */
 function closestCoordinateInArray(x, y, arr) {
   let minDistance = 10000;
   let closestPoint;
   for (let i = 0; i < arr.length; i++) {
+    // Do some math to find distance from coordinates
     let distance = Math.sqrt(
       (x - arr[i].x) * (x - arr[i].x) + (y - arr[i].y) * (y - arr[i].y)
     );
+    // If distance is less than current closest than set that one as the closest
     if (distance < minDistance && arr[i].isValid === true) {
       minDistance = distance;
       closestPoint = i;
@@ -280,6 +282,12 @@ function randomInt(min, max) {
   return Math.floor(rand);
 }
 
+/**
+ *
+ * @param {Number} min Minimum value (Inclusive)
+ * @param {Number} max Maximum value (Exclusive)
+ * @returns {Number} A random value
+ */
 function randomFloat(min, max) {
   if (typeof min !== "number" || typeof max !== "number") return NaN;
   if (min > max) throw new RangeError("min is larger than max");
