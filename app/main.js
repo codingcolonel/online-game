@@ -260,8 +260,6 @@ let resolvers = {
   reject: null,
 };
 
-/** @type {Manager} */
-
 // Canvas shenanigans
 
 const effectCnv = document.getElementById("topCanvas");
@@ -847,7 +845,17 @@ async function getMouseCoordinates(e) {
           },
         });
         crosshairCnv.classList.add("cnvHide");
-        await audio.playWait("fireClose", 0, 2800);
+        await audio.playWait("fireClose", 0, 800);
+        Drawing.postMessage({
+          type: "particle",
+          name: "defendShoot",
+          time: 0.7,
+          max: 2,
+          frequency: 4,
+          position: { x: 0, y: clickedAttackingTile % 10 },
+          under: true,
+        });
+        await timer(2000);
         if (sunk) {
           sunk.forEach((index) => {
             Drawing.postMessage({

@@ -99,6 +99,16 @@ class Particle {
 
   life;
 
+  /**
+   *
+   * @param {{x:number, y:number}} pos Starting Position
+   * @param {{x:number, y:number}} vel Starting Velocity
+   * @param {{x:number, y:number}} acc Constant Acceleration
+   * @param {number} drag Constant drag multiplier
+   * @param {*} ctx
+   * @param {*} life
+   * @param {*} arr
+   */
   constructor(pos, vel, acc, drag, ctx, life = 0, arr) {
     this.position = pos;
     this.velocity = vel;
@@ -126,8 +136,8 @@ class Particle {
 
     this.velocity = finalVelocity;
 
-    this.velocity.x = this.velocity.x * this.drag;
-    this.velocity.y = this.velocity.y * this.drag;
+    this.velocity.x = this.velocity.x * this.drag ** (deltaTime / 1000);
+    this.velocity.y = this.velocity.y * this.drag ** (deltaTime / 1000);
   }
 
   draw() {
@@ -210,8 +220,8 @@ class defendBoardSmoke extends Particle {
         y: position.y + randomFloat(0.42, 0.58),
       },
       { x: 0, y: 0 },
-      { x: -8 * xMult, y: -1.75 * yMult },
-      0.99,
+      { x: -5 * xMult, y: -1.75 * yMult },
+      0.95,
       context,
       7000,
       array
@@ -252,14 +262,14 @@ class defendBoardFireShot extends Particle {
   constructor(position, context, array) {
     super(
       {
-        x: position.x + randomFloat(0.42, 0.58),
-        y: position.y + randomFloat(0.42, 0.58),
+        x: -0.5,
+        y: position.y + randomFloat(0.25, 0.75),
       },
+      { x: 0.15, y: 0 },
       { x: 0, y: 0 },
-      { x: 0, y: 0 },
-      1,
+      0.99999,
       context,
-      7000,
+      750,
       array
     );
 
@@ -267,7 +277,7 @@ class defendBoardFireShot extends Particle {
       { x: 50, y: 0 },
       { x: 50, y: 10 },
       { x: 25, y: 25 },
-      { x: -550, y: 0 },
+      { x: -750, y: 0 },
       { x: 25, y: -25 },
       { x: 50, y: -10 },
       { x: 50, y: 0 }
@@ -279,26 +289,27 @@ class defendBoardFireShot extends Particle {
 
     clipDefending();
 
-    this.contextReference.fillStyle = "red";
+    let position = {
+      x: defBoard.x + (this.position.x * defBoard.sideLength) / 10,
+      y: defBoard.y + (this.position.y * defBoard.sideLength) / 10,
+    };
+
+    this.contextReference.filter = "blur(1.5px)";
+
+    this.contextReference.fillStyle = "#b36f4d";
+    this.curve.draw(this.contextReference, position, defBoard.sideLength);
+    this.contextReference.fill();
+
+    this.contextReference.fillStyle = "#de9e62";
     this.curve.draw(
       this.contextReference,
-      {
-        x: defBoard.x + defBoard.sideLength / 2,
-        y: defBoard.y + defBoard.sideLength / 2,
-      },
-      defBoard.sideLength
+      position,
+      defBoard.sideLength * 0.85
     );
     this.contextReference.fill();
 
-    this.contextReference.fillStyle = "orange";
-    this.curve.draw(
-      this.contextReference,
-      {
-        x: defBoard.x + defBoard.sideLength / 2,
-        y: defBoard.y + defBoard.sideLength / 2,
-      },
-      defBoard.sideLength * 0.6
-    );
+    this.contextReference.fillStyle = "#fce36f";
+    this.curve.draw(this.contextReference, position, defBoard.sideLength * 0.4);
     this.contextReference.fill();
 
     this.contextReference.restore();

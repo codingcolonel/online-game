@@ -528,7 +528,7 @@ canvas {
 }
 
 .cnvHide {
-  filter: blur(5%);
+  filter: blur(15px);
   opacity: 0;
 }
 
