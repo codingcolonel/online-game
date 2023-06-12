@@ -1033,7 +1033,7 @@ function startGame() {
 /**
  * Use with await to wait a certain number of milliseconds
  *
- * @param {Number} ms Number of milliseconds to wait
+ * @param {number} ms Number of milliseconds to wait
  * @returns A promise, which will resolve after inputted time
  */
 function timer(ms) {

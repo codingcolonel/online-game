@@ -94,7 +94,7 @@ class Particle {
 
   lifespan;
 
-  /** @type {Array} */
+  /** @type {array} */
   arrayReference;
 
   life;
@@ -321,7 +321,7 @@ class defendBoardRecieveShot extends Particle {
     let yPos = position.y + randomFloat(0.25, 0.75);
     super(
       {
-        x: 10.5,
+        x: position.x + 10.5,
         y: yPos,
       },
       { x: -0.08, y: 0 },
@@ -416,12 +416,101 @@ class defendBoardRecieveShot extends Particle {
   }
 }
 
+class defendBoardHit extends Particle {
+  constructor(position, context, array) {
+    let xMult = randomFloat(0.00000005, 0.0000001);
+    let yMult = randomFloat(0.00000001, 0.0000001);
+    let direction = randomFloat(0, 2 * Math.PI);
+
+    let type = randomInt(1, 3);
+
+    let velocity = randomFloat(0.001, 0.009) / 1.5;
+
+    super(
+      {
+        x: position.x + randomFloat(0.42, 0.58),
+        y: position.y + randomFloat(0.42, 0.58),
+      },
+      {
+        x:
+          (Math.round(Math.cos(direction) * 100000) / 100000) * velocity * type,
+        y:
+          (Math.round(Math.sin(direction) * 100000) / 100000) * velocity * type,
+      },
+      { x: -5 * xMult, y: -1.75 * yMult },
+      0.01 * type,
+      context,
+      2400 / type ** 2,
+      array
+    );
+
+    this.size = randomFloat(0.01, 0.3);
+    this.color = randomInt(10, 40);
+    this.direction = direction;
+    this.type = type;
+  }
+
+  draw() {
+    if (this.type == 1) {
+      let currLife = 1 - this.life / 2400;
+      let fireGlow = clamp(
+        this.color + clamp(0.5 / (currLife + 0.48) - 0.37, 0, 1) * 255,
+        0,
+        255
+      );
+
+      let opacity = -25.81 * currLife * (currLife - 1) ** 9;
+      this.contextReference.fillStyle = `rgba(${fireGlow},${fireGlow / 2},${
+        this.color
+      },${opacity})`;
+
+      let multiplier = defBoard.sideLength / 10;
+
+      this.contextReference.beginPath();
+      this.contextReference.arc(
+        defBoard.x + this.position.x * multiplier,
+        defBoard.y + this.position.y * multiplier,
+        (multiplier * this.size + multiplier * 0.25 * currLife) * 0.75,
+        0,
+        2 * Math.PI
+      );
+      this.contextReference.fill();
+    } else {
+      let currLife = 1 - this.life / 2400;
+
+      this.contextReference.fillStyle = `rgb(${255},${125},${this.color})`;
+
+      let multiplier = defBoard.sideLength / 10;
+
+      this.contextReference.beginPath();
+      this.contextReference.ellipse(
+        defBoard.x + this.position.x * multiplier,
+        defBoard.y + this.position.y * multiplier,
+        multiplier * this.size * 1.85 * (1 - currLife),
+        multiplier * this.size * 0.75 * (1 - currLife),
+        this.direction,
+        0,
+        2 * Math.PI
+      );
+      this.contextReference.fill();
+    }
+  }
+}
+
+class defendBoardMiss extends Particle {
+  constructor(position, context, array) {}
+
+  draw() {}
+}
+
 const particleRegistry = {
   attackClick: attackBoardClick,
   attackImpact: attackBoardImpact,
   defendSmoke: defendBoardSmoke,
   defendShoot: defendBoardFireShot,
   defendIncoming: defendBoardRecieveShot,
+  defendHit: defendBoardHit,
+  defendMiss: defendBoardMiss,
 };
 
 class ParticleEmitter {
@@ -452,13 +541,13 @@ class ParticleEmitter {
 
   /**
    *
-   * @param {String} name Name of the particle to spawn
-   * @param {Number} time How long the particle should spawn for (in seconds)
-   * @param {Number} frequency Frequency of particle spawns
-   * @param {Number} max The max number of particles to spawn total
-   * @param {Object} position Origin point of the particles
+   * @param {string} name Name of the particle to spawn
+   * @param {number} time How long the particle should spawn for (in seconds)
+   * @param {number} frequency Frequency of particle spawns
+   * @param {number} max The max number of particles to spawn total
+   * @param {object} position Origin point of the particles
    * @param {CanvasRenderingContext2D} context Context to render with
-   * @param {Array} array activeEmitter array
+   * @param {array} array activeEmitter array
    * @param {boolean} under Whether or not to display UNDER previous particles
    */
   constructor(name, time, frequency, max, position, context, array, under) {

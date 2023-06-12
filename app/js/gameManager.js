@@ -62,8 +62,32 @@ async function decodeGuess(response) {
     await audio.playWait("fireFar", 0, 1500);
 
     if (hit) {
-      await audio.playWait("hit", 0.15, 350);
-      await audio.playWait("hit", 0.15, 225);
+      await audio.playWait("hit", 0.05, 285);
+      Drawing.postMessage({
+        type: "particle",
+        name: "defendIncoming",
+        time: 0.01,
+        max: 2,
+        frequency: 10,
+        position: {
+          x: Math.floor(position / 10),
+          y: position % 10,
+        },
+        under: true,
+      });
+      await timer(390);
+      Drawing.postMessage({
+        type: "particle",
+        name: "defendHit",
+        time: 0.5,
+        frequency: 8000,
+        max: 400,
+        position: {
+          x: Math.floor(position / 10),
+          y: position % 10,
+        },
+        under: true,
+      });
       Drawing.postMessage({
         type: "particle",
         name: "defendSmoke",
