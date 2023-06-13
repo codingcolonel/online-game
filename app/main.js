@@ -39,8 +39,6 @@ import {
 import {
   findTileByCoordinates,
   checkArrayPosition,
-  updateShips,
-  createShip,
   moveShip,
   updateTiles,
   randomInt,
@@ -324,7 +322,7 @@ mainManager.add(
     if (!state) return;
     await codecrypt.generateAuthenticator();
     codeOut.innerText = codecrypt.authenticator;
-    logger.generic(`Press backtick key to enter fullscreen`);
+    logger.generic("Press backtick (`) key to enter fullscreen");
   },
   true
 );
@@ -702,6 +700,12 @@ function windowResize() {
   drawBoard(false);
 }
 
+/**
+ * Handler that puts the screen in fullscreen and updates screen size when backtick is pressed
+ *
+ * @param {Event} e KeyUp event values
+ * @returns {void} Does not return anything
+ */
 async function fullscreenToggle(e) {
   if (e.key === "`") {
     // Change width and height when switching in/out of fullscreen
@@ -718,6 +722,10 @@ async function fullscreenToggle(e) {
     drawBoard(false);
   }
 }
+/**
+ * Handler for the fullscreen toggle
+ * @returns {void} Does not return anything
+ */
 async function fullscreenHandler() {
   // Update changes to the screen once the screen has transitioned in/out fullscreen
   if (!document.fullscreenElement) {
@@ -728,10 +736,13 @@ async function fullscreenHandler() {
   drawBoard(false);
 }
 
+/**
+ * Handler that manages most of the click events including the ship placing, guessing and buttons
+ *
+ * @param {Event} e Click event values
+ * @returns {void} Does not return anything
+ */
 async function getMouseCoordinates(e) {
-  // console.log(e);
-  // console.log('x' + e.x + ' y' + e.y);
-
   // Adjust mouse x and y to pixel ratio
   let mouseX = e.x * scale;
   let mouseY = e.y * scale;
@@ -813,6 +824,7 @@ async function getMouseCoordinates(e) {
         let hitCheck = checkArrayPosition(clickedAttackingTile, opponentShips);
         if (hitCheck !== false) {
           attackingTiles[clickedAttackingTile].state = "hit";
+          // If all the parts of the ship are hit change state to sunk
           if (
             hitCheck.position.every(
               (index) => attackingTiles[index].state === "hit"
@@ -835,6 +847,7 @@ async function getMouseCoordinates(e) {
             hit: hitCheck === false ? false : true,
           },
         });
+        // Particles
         Drawing.postMessage({
           type: "particle",
           name: "attackClick",
@@ -898,6 +911,7 @@ async function getMouseCoordinates(e) {
     gameManager.shipPlacing === true &&
     gameManager.gameActive
   ) {
+    // Set ships to the default position
     defaultPosition();
   } else if (
     mouseX >= randomizeButton.x &&
@@ -907,6 +921,7 @@ async function getMouseCoordinates(e) {
     gameManager.shipPlacing === true &&
     gameManager.gameActive
   ) {
+    // Set ships to a random position
     randomPosition();
   } else if (
     mouseX >= confirmationButton.x &&
@@ -916,10 +931,11 @@ async function getMouseCoordinates(e) {
     gameManager.shipPlacing === true &&
     gameManager.gameActive
   ) {
-    // Send off message containing confirmation here
-    startGame();
+    // Send off message containing confirmation here and then start game when both players are ready
+    nextPhase();
   }
 
+  // Update board for changes
   ctx.fillStyle = "white";
   ctx.fillRect(
     defendingBoard.x,
@@ -930,6 +946,12 @@ async function getMouseCoordinates(e) {
   drawBoard();
 }
 
+/**
+ * Handler that manages the hover events including the ship placing preview and the crosshair
+ *
+ * @param {Event} e Mousemove event values
+ * @returns {void} Does not return anything
+ */
 function hoverHandler(e) {
   // Adjust mouse x and y to pixel ratio
   let mouseX = e.x * scale;
@@ -972,6 +994,7 @@ function hoverHandler(e) {
     gameManager.gameActive
   ) {
     if (gameManager.yourTurn === true) {
+      // Get index of tile on attacking board being hovered on
       let hoverAttackingTile = findTileByCoordinates(
         mouseX,
         mouseY,
@@ -1001,6 +1024,7 @@ function hoverHandler(e) {
       return;
     }
   } else {
+    // Reset cursor to default if it is not inside attacking board
     hoveredIndex = undefined;
     document.body.style.cursor = "default";
   }
@@ -1023,17 +1047,12 @@ function dialogBtnClicked(event) {
   closeDialog(parent);
 }
 
-function startGame() {
-  // After both players have confirmed start the game
-  nextPhase();
-}
-
 // Utility
 
 /**
  * Use with await to wait a certain number of milliseconds
  *
- * @param {number} ms Number of milliseconds to wait
+ * @param {Number} ms Number of milliseconds to wait
  * @returns A promise, which will resolve after inputted time
  */
 function timer(ms) {
