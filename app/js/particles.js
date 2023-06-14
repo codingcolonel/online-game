@@ -1,4 +1,11 @@
-// Utility functions and variables
+// * Utility functions and variables
+
+/**
+ * Return a random float between min and max
+ * @param {number} min Minimum (inclusive)
+ * @param {number} max Maximum (exclusive)
+ * @returns {number} Random float
+ */
 function randomFloat(min, max) {
   if (typeof min !== "number" || typeof max !== "number") return NaN;
   if (min > max) throw new RangeError("min is larger than max");
@@ -6,17 +13,33 @@ function randomFloat(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-// Return a random integer between min and max
+/**
+ * Return a random integer between min and max
+ * @param {number} min Minimum (inclusive)
+ * @param {number} max Maximum (exclusive)
+ * @returns {number} Random integer
+ */
 function randomInt(min, max) {
   if (!Number.isInteger(min) || !Number.isInteger(max)) return NaN;
 
   return Math.floor(randomFloat(min, max));
 }
 
+/**
+ * Return a value clamped between a max and a min
+ * @param {number} num Value to clamp
+ * @param {number} min Minimum value
+ * @param {number} max Maximum value
+ * @returns {number} Clamped value
+ */
 function clamp(num, min, max) {
   return Math.max(min, Math.min(num, max));
 }
 
+/**
+ * Utility function which applies a clipping path to the defending board
+ * @returns {void} Does not return anything
+ */
 function clipDefending() {
   let longX = defBoard.x + defBoard.sideLength;
   let longY = defBoard.y + defBoard.sideLength;
@@ -35,18 +58,20 @@ class BezierCurve {
   points;
   scale;
   /**
-   * @param {Array.<{x:number, y:number}>} positions
+   * @param {Array.<{x:number, y:number}>} positions List of {x, y} positions. Must be a valid bezier path. {x, y} positions will be scaled with the assumption that default scale is on a canvas 1000px across.
    */
   constructor(...positions) {
     if (positions.length < 4 || positions.length % 3 !== 1)
       throw new Error("Invalid point length");
     this.points = positions;
   }
+
   /**
-   *
+   * Create the bezier curve on a canvas, ready to be drawn. Bezier curve is scaled to fit
    * @param {CanvasRenderingContext2D} context Canvas Context
-   * @param {{x:number, y:number}} referencePoint Object with an x and a y
+   * @param {{x:number, y:number}} referencePoint {x, y} reference position for drawing (represents {0, 0})
    * @param {number} widthScale New scale value
+   * @returns {void} Does not return anything
    */
   draw(context, referencePoint, widthScale) {
     context.beginPath();
@@ -67,15 +92,19 @@ class BezierCurve {
   }
   /**
    * Assuming a default scale of 1000, rescale a value relative to a new scale
-   * @param {number}
-   * @param {number} newScale
+   * @param {number} value Input value
+   * @param {number} newScale New scale value
+   * @returns {number} Rescaled value
    */
   #rescale(value, newScale) {
     return (value / 1000) * newScale;
   }
 }
 
-// ! Do not modify this class, it is the basis from which all other particles are created
+/**
+ * Parent particle class
+ * ! Do not modify this class
+ */
 class Particle {
   position = {
     x: undefined,
@@ -100,14 +129,13 @@ class Particle {
   life;
 
   /**
-   *
    * @param {{x:number, y:number}} pos Starting Position
    * @param {{x:number, y:number}} vel Starting Velocity
    * @param {{x:number, y:number}} acc Constant Acceleration
    * @param {number} drag Constant drag multiplier
-   * @param {*} ctx
-   * @param {*} life
-   * @param {*} arr
+   * @param {CanvasRenderingContext2D} ctx Canvas to draw on
+   * @param {number} life Particle lifespan (ms)
+   * @param {Array<Particle>} arr Array containing this particle
    */
   constructor(pos, vel, acc, drag, ctx, life = 0, arr) {
     this.position = pos;
@@ -119,39 +147,65 @@ class Particle {
     this.arrayReference = arr;
   }
 
+  /**
+   *
+   * @param {number} deltaTime DeltaTime since last update frame
+   * @returns {void} Does not return anything
+   */
   update(deltaTime) {
+    // Decrease life from starting life down to 0
     this.life = this.lifespan - Date.now();
+    // If life is negative, kill this particle
     if (this.life <= 0) {
       this.arrayReference.splice(this.arrayReference.indexOf(this), 1);
       return;
     }
 
+    // FinalVelocity = InitialVelocity + Acceleration * Time
     let finalVelocity = {
       x: this.velocity.x + this.acceleration.x * deltaTime,
       y: this.velocity.y + this.acceleration.y * deltaTime,
     };
 
+    // FinalPosition = InitialPosition + Time * ((FinalVelocity + InitalVelocity)/2)
     this.position.x += ((finalVelocity.x + this.velocity.x) / 2) * deltaTime;
     this.position.y += ((finalVelocity.y + this.velocity.y) / 2) * deltaTime;
 
+    // No longer need FinalVelocity, set velocity to new velocity
     this.velocity = finalVelocity;
 
+    // FinalVelocity = Velocity * (Drag ^ Time)
     this.velocity.x = this.velocity.x * this.drag ** (deltaTime / 1000);
     this.velocity.y = this.velocity.y * this.drag ** (deltaTime / 1000);
   }
 
-  draw() {
-    // Empty method simply to exist
-  }
+  /**
+   * Empty draw method to avoid errors from missing method
+   */
+  draw() {}
 }
 
+/**
+ * Growing outline applied when the user clicks an enemy tile
+ */
 class attackBoardClick extends Particle {
+  /**
+   * @param {{x:number, y:number}} position {x, y} position of the particle
+   * @param {CanvasRenderingContext2D} context Canvas to draw to
+   * @param {Array<Particle>} array Array containing this particle
+   */
   constructor(position, context, array) {
     super(position, { x: 0, y: 0 }, { x: 0, y: 0 }, 1, context, 4000, array);
   }
 
+  /**
+   * Draw the particle
+   * @returns {void} Does not return anything
+   */
   draw() {
     let width = attBoard.sideLength / 75;
+
+    // Value from 0 to 1
     let currLife = 1 - this.life / 4000;
 
     let additive = (-1 / (5 * currLife + 1) + 1) * 3.75 * width;
@@ -174,15 +228,24 @@ class attackBoardClick extends Particle {
   }
 }
 
+/**
+ * Glitch effect applied to enemy tile on impact
+ */
 class attackBoardImpact extends Particle {
+  /**
+   * @param {{x:number, y:number}} position {x, y} position of the particle
+   * @param {CanvasRenderingContext2D} context Canvas to draw to
+   * @param {Array<Particle>} array Array containing this particle
+   */
   constructor(position, context, array) {
     let width = randomInt(10, 100);
-    let length = randomInt(10, 66);
+    let height = randomInt(10, 66);
 
+    // Randomize position within the tile
     super(
       {
         x: position.x + randomFloat(0.05, 0.95) - 5 / width,
-        y: position.y + randomFloat(0.05, 0.95) - 5 / length,
+        y: position.y + randomFloat(0.05, 0.95) - 5 / height,
       },
       { x: 0, y: 0 },
       { x: 0, y: 0 },
@@ -191,11 +254,17 @@ class attackBoardImpact extends Particle {
       6,
       array
     );
+
+    // Random red color, width and height saved to fields
     this.color = `rgb(${randomInt(100, 230)},0,0)`;
     this.width = attBoard.sideLength / width;
-    this.length = attBoard.sideLength / length;
+    this.height = attBoard.sideLength / height;
   }
 
+  /**
+   * Draw the particle
+   * @returns {void} Does not return anything
+   */
   draw() {
     this.contextReference.fillStyle = this.color;
 
@@ -205,15 +274,26 @@ class attackBoardImpact extends Particle {
       attBoard.x + this.position.x * multiplier,
       attBoard.y + this.position.y * multiplier,
       this.width,
-      this.length
+      this.height
     );
   }
 }
 
+/**
+ * Rising smoke for impacted friendly ships
+ */
 class defendBoardSmoke extends Particle {
+  /**
+   * @param {{x:number, y:number}} position {x, y} position of the particle
+   * @param {CanvasRenderingContext2D} context Canvas to draw to
+   * @param {Array<Particle>} array Array containing this particle
+   */
   constructor(position, context, array) {
+    // Random "wind"
     let xMult = randomFloat(0.00000005, 0.0000001);
     let yMult = randomFloat(0.00000001, 0.0000001);
+
+    // Randomize position within the tile
     super(
       {
         x: position.x + randomFloat(0.42, 0.58),
@@ -227,19 +307,29 @@ class defendBoardSmoke extends Particle {
       array
     );
 
+    // Random size and color saved to fields
     this.size = randomFloat(0.01, 0.3);
     this.color = randomInt(10, 40);
   }
 
+  /**
+   * Draw the particle
+   * @returns {void} Does not return anything
+   */
   draw() {
+    // Value from 0 to 1
     let currLife = 1 - this.life / 7000;
+
+    // Very particular formula to create a smooth transition from bright to dark color
     let fireGlow = clamp(
       this.color + clamp(0.1 / (currLife + 0.087) - 0.17, 0, 1) * 255,
       0,
       255
     );
 
+    // Very particular formula to create smooth opacity transition
     let opacity = -25.81 * currLife * (currLife - 1) ** 9;
+
     this.contextReference.fillStyle = `rgba(${fireGlow},${fireGlow / 2},${
       this.color
     },${opacity})`;
@@ -258,8 +348,17 @@ class defendBoardSmoke extends Particle {
   }
 }
 
+/**
+ * Used when friendly shot is fired
+ */
 class defendBoardFireShot extends Particle {
+  /**
+   * @param {{x:number, y:number}} position {x, y} position of the particle
+   * @param {CanvasRenderingContext2D} context Canvas to draw to
+   * @param {Array<Particle>} array Array containing this particle
+   */
   constructor(position, context, array) {
+    // Randomize vertical position within row
     super(
       {
         x: -0.5,
@@ -273,6 +372,7 @@ class defendBoardFireShot extends Particle {
       array
     );
 
+    // Bezier curve saved to field
     this.curve = new BezierCurve(
       { x: 50, y: 0 },
       { x: 50, y: 10 },
@@ -284,11 +384,16 @@ class defendBoardFireShot extends Particle {
     );
   }
 
+  /**
+   * Draw the particle
+   * @returns {void} Does not return anything
+   */
   draw() {
     this.contextReference.save();
 
     clipDefending();
 
+    // Position used for bezier drawing
     let position = {
       x: defBoard.x + (this.position.x * defBoard.sideLength) / 10,
       y: defBoard.y + (this.position.y * defBoard.sideLength) / 10,
@@ -581,6 +686,7 @@ class defendBoardMiss extends Particle {
   }
 }
 
+// The particle registry that the particle emitters read from
 const particleRegistry = {
   attackClick: attackBoardClick,
   attackImpact: attackBoardImpact,
@@ -591,6 +697,9 @@ const particleRegistry = {
   defendMiss: defendBoardMiss,
 };
 
+/**
+ * Class for managing and emitting particles
+ */
 class ParticleEmitter {
   particleClass;
 
@@ -625,15 +734,18 @@ class ParticleEmitter {
    * @param {number} max The max number of particles to spawn total
    * @param {object} position Origin point of the particles
    * @param {CanvasRenderingContext2D} context Context to render with
-   * @param {array} array activeEmitter array
+   * @param {Array<ParticleEmitter>} array activeEmitter array
    * @param {boolean} under Whether or not to display UNDER previous particles
    */
   constructor(name, time, frequency, max, position, context, array, under) {
+    // Prevent overflow from excessive particle quantities
     if (typeof max !== "number") throw new Error("Possible overflow");
 
     this.startTime = Date.now();
 
+    // Get particle from the particle registry
     this.particleClass = particleRegistry[name];
+
     this.time = this.startTime + time * 1000;
     this.max = max;
     this.position = position;
@@ -654,6 +766,11 @@ class ParticleEmitter {
     this.name = name;
   }
 
+  /**
+   * Update all particles, and generate any new ones
+   * @param {number} deltaTime DeltaTime since last update frame (ms)
+   * @returns {void} Does not return anything
+   */
   update(deltaTime) {
     const currTime = Date.now();
 
