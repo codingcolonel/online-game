@@ -498,9 +498,87 @@ class defendBoardHit extends Particle {
 }
 
 class defendBoardMiss extends Particle {
-  constructor(position, context, array) {}
+  constructor(position, context, array) {
+    let xMult = randomFloat(0.00000005, 0.0000001);
+    let yMult = randomFloat(0.00000001, 0.0000001);
+    let direction = randomFloat(0, 2 * Math.PI);
 
-  draw() {}
+    let type = randomInt(1, 3);
+
+    let velocity = randomFloat(0.001, 0.009) / 1.5;
+
+    super(
+      {
+        x: position.x + randomFloat(0.42, 0.58),
+        y: position.y + randomFloat(0.42, 0.58),
+      },
+      {
+        x:
+          (Math.round(Math.cos(direction) * 100000) / 100000) * velocity * type,
+        y:
+          (Math.round(Math.sin(direction) * 100000) / 100000) * velocity * type,
+      },
+      { x: -5 * xMult, y: -1.75 * yMult },
+      0.01 * type,
+      context,
+      1800 / type,
+      array
+    );
+
+    this.size = randomFloat(0.01, 0.3);
+    this.color = randomInt(100, 140);
+    this.direction = direction;
+    this.type = type;
+  }
+
+  draw() {
+    if (this.type == 1) {
+      let currLife = 1 - this.life / 1200;
+      let waterClr = clamp(-0.75 / (currLife - 1.75), 0, 1);
+
+      this.contextReference.fillStyle = `rgb(${clamp(
+        this.color + 255 * waterClr ** 5,
+        0,
+        255
+      )},${clamp(this.color + 255 * waterClr ** 3, 0, 255)},${clamp(
+        this.color + 255 * waterClr,
+        0,
+        255
+      )})`;
+
+      let multiplier = defBoard.sideLength / 10;
+
+      this.contextReference.beginPath();
+      this.contextReference.ellipse(
+        defBoard.x + this.position.x * multiplier,
+        defBoard.y + this.position.y * multiplier,
+        multiplier * this.size * 0.85 * (1 - currLife),
+        multiplier * this.size * 0.5 * (1 - currLife),
+        this.direction,
+        0,
+        2 * Math.PI
+      );
+      this.contextReference.fill();
+    } else {
+      let currLife = 1 - this.life / 2400;
+
+      this.contextReference.fillStyle = `rgb(${this.color},${125},${255})`;
+
+      let multiplier = defBoard.sideLength / 10;
+
+      this.contextReference.beginPath();
+      this.contextReference.ellipse(
+        defBoard.x + this.position.x * multiplier,
+        defBoard.y + this.position.y * multiplier,
+        multiplier * this.size * 1.85 * (1 - currLife),
+        multiplier * this.size * 0.75 * (1 - currLife),
+        this.direction,
+        0,
+        2 * Math.PI
+      );
+      this.contextReference.fill();
+    }
+  }
 }
 
 const particleRegistry = {

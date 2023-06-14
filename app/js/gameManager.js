@@ -73,9 +73,8 @@ async function decodeGuess(response) {
           x: Math.floor(position / 10),
           y: position % 10,
         },
-        under: true,
       });
-      await timer(390);
+      await timer(190);
       Drawing.postMessage({
         type: "particle",
         name: "defendHit",
@@ -86,8 +85,8 @@ async function decodeGuess(response) {
           x: Math.floor(position / 10),
           y: position % 10,
         },
-        under: true,
       });
+      await timer(200);
       Drawing.postMessage({
         type: "particle",
         name: "defendSmoke",
@@ -101,7 +100,32 @@ async function decodeGuess(response) {
         under: true,
       });
     } else {
-      await audio.playWait("miss", 0.15, 575);
+      await audio.playWait("miss", 0.15, 285);
+      Drawing.postMessage({
+        type: "particle",
+        name: "defendIncoming",
+        time: 0.01,
+        max: 2,
+        frequency: 10,
+        position: {
+          x: Math.floor(position / 10),
+          y: position % 10,
+        },
+      });
+      await timer(190);
+      Drawing.postMessage({
+        type: "particle",
+        name: "defendMiss",
+        time: 0.2,
+        frequency: 8000,
+        max: 200,
+        position: {
+          x: Math.floor(position / 10),
+          y: position % 10,
+        },
+        under: false,
+      });
+      await timer(200);
     }
     setFavicon(2);
     return true;
