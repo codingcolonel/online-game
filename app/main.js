@@ -46,6 +46,10 @@ import {
 } from "./js/functions.js";
 
 // -- Classes --
+
+/**
+ * Manages the WebRTC connection
+ */
 class ConnectionManager {
   /** @type {"disabled"|"enabled"|"waiting"|"offering"|"answering"|"connected"|"disconnected"} */
   #status;
@@ -60,84 +64,150 @@ class ConnectionManager {
 
   /** @type {RTCPeerConnection} */
   session = null;
+
   constructor() {
     this.#status = "enabled";
   }
 
   get status() {
+    // If something is not properly fetched, return as disabled
     if (!this.ably || !this.servers) return "disabled";
+    // Else, return the current status
     return this.#status;
   }
 
   set status(newStatus) {
+    // Set new status
     this.#status = newStatus;
+    // Run event function
     if (this["on" + newStatus]) this["on" + newStatus]();
   }
 }
 
+/**
+ * Manages which elements are actively displayed
+ */
 class DisplayManager {
   references = {};
 
+  /**
+   * @callback DisplayFunction
+   * @param {boolean} state The state of the display. True if revealing, false if hiding
+   */
+
+  /**
+   * Add a new display to the display manager
+   * @param {HTMLElement} reference Reference to an HTML element
+   * @param {string} name What to refer to this display as
+   * @param {null|DisplayFunction} callback Null, or a callback to call on display change
+   * @param {boolean} sub Contains a sub-manager
+   * @returns {void} Does not return anything
+   */
   add(reference, name, callback, sub) {
     this.references[name] = { root: reference, callback };
     if (!sub) return;
     this.references[name].sub = new DisplayManager();
   }
 
+  /**
+   * Reveal a display, hiding all others
+   * @param {string} name The name of the display to reveal
+   * @returns {void} Does not return anything
+   */
   display(name) {
     for (const [key, value] of Object.entries(this.references)) {
+      // If this is the element to reveal:
       if (key === name) {
+        // If this is already displaying, continue
         if (value.root.classList.contains("reveal")) continue;
+
         value.root.classList.add("reveal");
         value.root.classList.remove("hide");
 
+        // If there is no callback, continue
         if (typeof value.callback !== "function") continue;
+        // Else, call the callback bound to any sub display that may exist
         value.callback.bind(value.sub, true)();
       } else {
+        // Otherwise:
+        // If this is already hidden, continue
         if (value.root.classList.contains("hide")) continue;
+
         value.root.classList.add("hide");
         value.root.classList.remove("reveal");
 
+        // If there is no callback, continue
         if (typeof value.callback !== "function") continue;
+        // Else, call the callback bound to any sub display that may exist
         value.callback.bind(value.sub, false)();
       }
     }
   }
 
+  /**
+   * Hide all displays in this manager
+   * @returns {void} Does not return anything
+   */
   hideAll() {
     for (const [key, value] of Object.entries(this.references)) {
+      // If this is already hidden, continue
       if (value.root.classList.contains("hide")) continue;
+
       value.root.classList.add("hide");
       value.root.classList.remove("reveal");
 
+      // If there is no callback, continue
       if (typeof value.callback !== "function") continue;
+      // Else, call the callback bound to any sub display that may exist
       value.callback.bind(value.sub, false)();
     }
   }
 }
 
+/**
+ * Manages the playing of audio files
+ */
 class AudioManager {
   #soundBuffers = {};
   #context;
 
+  /**
+   * @param {...{uris:Array<string>, soundName:string}} params
+   */
   constructor(...params) {
+    // Create new interactive audio context
     this.#context = new AudioContext({ latencyHint: "interactive" });
 
+    // For each sound
     params.forEach(async (parameter) => {
+      // Guard clauses against illegal sounds
       if (typeof parameter !== "object") return;
       if (!parameter.hasOwnProperty("soundName")) return;
       if (!parameter.hasOwnProperty("uris")) return;
+
+      /** @type {Array<AudioBuffer>} */
       let bufferList = new Array();
+
+      // For each provided link
       parameter.uris.forEach(async (uri) => {
+        // Fetch the audio
         let response = await this.#getAudio(uri);
+
+        // If it's not an error, add it to the list
         if (!(response instanceof Error)) {
           bufferList.push(response);
         }
       });
+
       this.#soundBuffers[parameter.soundName] = bufferList;
     });
   }
 
+  /**
+   * Fetch an audio file, and create an audio buffer
+   * @param {string} uri The audio file to fetch
+   * @returns {AudioBuffer|TypeError} The expected audio as a buffer, or an error
+   */
   async #getAudio(uri) {
     try {
       const request = await fetch(uri);
@@ -154,15 +224,31 @@ class AudioManager {
     }
   }
 
+  /**
+   * Play a sound with no delay
+   * @param {string} soundName Name of the sound to play
+   * @param {number} pitchRange Number from to 0 to 1 of the range of pitches to allow, 1 for no variance.
+   * @returns {void} Does not return anything
+   */
   play(soundName, pitchRange) {
     this.playWait(soundName, pitchRange, 0);
   }
 
+  /**
+   * Play a sound with delay
+   * @param {string} soundName Name of the sound to play
+   * @param {number} pitchRange Number from to 0 to 1 of the range of pitches to allow, 1 for no variance.
+   * @param {number} ms How long to wait before resolving the function
+   * @returns {void} Does not return anything
+   */
   playWait(soundName, pitchRange, ms) {
     return new Promise((resolve, reject) => {
+      // If the context is suspended, resume it
       if (this.#context.state === "suspended") this.#context.resume();
+      // Guard clause against illegal audio request
       if (!this.#soundBuffers.hasOwnProperty(soundName)) return;
 
+      // Play the sound
       let source = this.#context.createBufferSource();
       source.connect(this.#context.destination);
 
@@ -176,6 +262,8 @@ class AudioManager {
       });
 
       source.start(0);
+
+      // Wait before resolving
       setTimeout(resolve, ms);
     });
   }
@@ -190,8 +278,10 @@ let connection = new ConnectionManager();
 
 let gameManager = new Manager(connection, true, () => {});
 
+// Imported from the script tag in ./index.html
 const ably = new Ably.Realtime.Promise({
   authCallback: async (_, callback) => {
+    // Try to fetch the token
     const token = await tryCatchFetch(
       `${location.origin}/.netlify/functions/token?}`
     );
@@ -214,6 +304,7 @@ const servers = await tryCatchFetch(
   `${location.origin}/.netlify/functions/creds`
 );
 
+// If failed to fetch servers, do not set connection value to true
 if (servers instanceof Error) {
   connection.servers = false;
 } else {
@@ -420,6 +511,10 @@ cnv.addEventListener("mousemove", hoverHandler);
 
 // -- Connection Manager Functions --
 
+/**
+ * Subscribe to offers, unsubscribe from answers
+ * @returns {void} Does not return anything
+ */
 connection.onwaiting = async function () {
   if (connection.status === "disabled") return;
   setFavicon(1);
@@ -449,6 +544,10 @@ connection.onwaiting = async function () {
   });
 };
 
+/**
+ * Subscribe to answers, unsubscribe from offers, and initate WebRTC offer
+ * @returns {void} Does not return anything
+ */
 connection.onoffering = async function () {
   if (connection.status === "disabled") return;
   mainManager.display("loader");
@@ -528,6 +627,10 @@ connection.onoffering = async function () {
   );
 };
 
+/**
+ * Unsubscribe from answers, and send WebRTC answer
+ * @returns {void} Does not return anything
+ */
 connection.onanswering = async function () {
   if (connection.status === "disabled") return;
 
@@ -601,6 +704,10 @@ connection.onanswering = async function () {
   );
 };
 
+/**
+ * Display canvas, initiate game, close ably connection
+ * @returns {void} Does not return anything
+ */
 connection.onconnected = function () {
   if (connection.status === "disabled") return;
   setFavicon(2);
@@ -612,6 +719,10 @@ connection.onconnected = function () {
   drawBoard(true);
 };
 
+/**
+ * Reset, return to waiting state, and re-establish ably connection
+ * @returns {void} Does not return anything
+ */
 connection.ondisconnected = async function () {
   if (connection.status === "disabled") return;
   connection.session = null;
@@ -627,7 +738,11 @@ connection.ondisconnected = async function () {
 
 // -- Functions --
 
-// Dialog boxes
+/**
+ * Open invite dialog box
+ * @param {string} name Name to display
+ * @returns {void} Does not return anything
+ */
 function openInviteDialog(name) {
   return new Promise((resolve, reject) => {
     nameOut.innerText = name;
@@ -639,6 +754,11 @@ function openInviteDialog(name) {
   });
 }
 
+/**
+ * Close a dialog box
+ * @param {HTMLDialogElement} dialog Dialog to close
+ * @returns {void} Does not return anything
+ */
 async function closeDialog(dialog) {
   dialog.classList.add("hide");
   dialog.classList.remove("reveal");
@@ -646,6 +766,12 @@ async function closeDialog(dialog) {
   dialog.close();
 }
 
+/**
+ * Open gameover dialog box
+ * @param {string} name Name to display
+ * @param {string} condition Game state condition
+ * @returns {void} Does not return anything
+ */
 function openGameOverDialog(name, condition) {
   return new Promise((resolve, reject) => {
     victorOut.innerText = name;
@@ -658,8 +784,7 @@ function openGameOverDialog(name, condition) {
   });
 }
 
-// Listener
-
+// Listeners
 function recievedMessage(event) {
   gameManager.recieve(event);
 }
@@ -1050,7 +1175,7 @@ function dialogBtnClicked(event) {
 /**
  * Use with await to wait a certain number of milliseconds
  *
- * @param {Number} ms Number of milliseconds to wait
+ * @param {number} ms Number of milliseconds to wait
  * @returns A promise, which will resolve after inputted time
  */
 function timer(ms) {
