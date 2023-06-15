@@ -482,6 +482,7 @@ class defendBoardRecieveShot extends Particle {
 
     this.contextReference.filter = `blur(${1.5 * multiplier}px)`;
 
+    // Draw each bezier in different styles and sizes
     this.contextReference.fillStyle = "#b36f4d";
     this.curve.draw(
       this.contextReference,
@@ -543,7 +544,7 @@ class defendBoardRecieveShot extends Particle {
 }
 
 /**
- *
+ * Explosion when friendly ship is hit
  */
 class defendBoardHit extends Particle {
   /**
@@ -552,14 +553,18 @@ class defendBoardHit extends Particle {
    * @param {Array<Particle>} array Array containing this particle
    */
   constructor(position, context, array) {
+    // Random direction & wind values
     let xMult = randomFloat(0.00000005, 0.0000001);
     let yMult = randomFloat(0.00000001, 0.0000001);
     let direction = randomFloat(0, 2 * Math.PI);
 
+    // Random value: either 1 or 2
     let type = randomInt(1, 3);
 
+    // Random velocity
     let velocity = randomFloat(0.001, 0.009) / 1.5;
 
+    // Type 2 moves faster, lives shorter, and has more drag
     super(
       {
         x: position.x + randomFloat(0.42, 0.58),
@@ -578,13 +583,19 @@ class defendBoardHit extends Particle {
       array
     );
 
+    // Random size, color, direction and type saved fields
     this.size = randomFloat(0.01, 0.3);
     this.color = randomInt(10, 40);
     this.direction = direction;
     this.type = type;
   }
 
+  /**
+   * Draw the particle
+   * @returns {void} Does not return anything
+   */
   draw() {
+    // If type 1, draw similar to the smoke
     if (this.type == 1) {
       let currLife = 1 - this.life / 2400;
       let fireGlow = clamp(
@@ -610,6 +621,7 @@ class defendBoardHit extends Particle {
       );
       this.contextReference.fill();
     } else {
+      // If type 2, draw as orange spark
       let currLife = 1 - this.life / 2400;
 
       this.contextReference.fillStyle = `rgb(${255},${125},${this.color})`;
@@ -631,16 +643,28 @@ class defendBoardHit extends Particle {
   }
 }
 
+/**
+ * Explosion when enemy misses
+ */
 class defendBoardMiss extends Particle {
+  /**
+   * @param {{x:number, y:number}} position {x, y} position of the particle
+   * @param {CanvasRenderingContext2D} context Canvas to draw to
+   * @param {Array<Particle>} array Array containing this particle
+   */
   constructor(position, context, array) {
+    // Random direction & wind values
     let xMult = randomFloat(0.00000005, 0.0000001);
     let yMult = randomFloat(0.00000001, 0.0000001);
     let direction = randomFloat(0, 2 * Math.PI);
 
+    // Random value: either 1 or 2
     let type = randomInt(1, 3);
 
+    // Random velocity
     let velocity = randomFloat(0.001, 0.009) / 1.5;
 
+    // Type 2 moves faster, lives shorter, and has more drag
     super(
       {
         x: position.x + randomFloat(0.42, 0.58),
@@ -659,13 +683,19 @@ class defendBoardMiss extends Particle {
       array
     );
 
+    // Random size, color, direction and type saved fields
     this.size = randomFloat(0.01, 0.3);
     this.color = randomInt(100, 140);
     this.direction = direction;
     this.type = type;
   }
 
+  /**
+   * Draw the particle
+   * @returns {void} Does not return anything
+   */
   draw() {
+    // If type 1, draw as large blue shifting to white ellipse
     if (this.type == 1) {
       let currLife = 1 - this.life / 1200;
       let waterClr = clamp(-0.75 / (currLife - 1.75), 0, 1);
@@ -694,6 +724,7 @@ class defendBoardMiss extends Particle {
       );
       this.contextReference.fill();
     } else {
+      // If type 2, draw as thin blue ellipse
       let currLife = 1 - this.life / 2400;
 
       this.contextReference.fillStyle = `rgb(${this.color},${125},${255})`;
