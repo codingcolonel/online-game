@@ -15,7 +15,6 @@ let prevTime = Date.now();
 
 let TrueWidth;
 let TrueHeight;
-let scale;
 
 let activeEmitters = new Array();
 
@@ -24,7 +23,7 @@ addEventListener("message", receiveMessage);
 /**
  * Event Listener, which listens for messages posted to this worker
  * @param {MessageEvent} msg A message
- * @returns {void}
+ * @returns {void} Does not return anything
  */
 function receiveMessage(msg) {
   let data = msg.data;
@@ -37,18 +36,7 @@ function receiveMessage(msg) {
       dimensions(data);
       break;
     case "particle":
-      activeEmitters.push(
-        new ParticleEmitter(
-          data.name,
-          data.time,
-          data.frequency,
-          data.max,
-          data.position,
-          ctx,
-          activeEmitters,
-          data.hasOwnProperty("under") ? data.under : false
-        )
-      );
+      newParticle(data);
       break;
     case "killParticle":
       kill(data.name);
@@ -56,13 +44,23 @@ function receiveMessage(msg) {
   }
 }
 
+/**
+ * Initializes drawing web worker settings
+ * @param {{canvas: OffscreenCanvas}} data Data object
+ * @returns {void} Does not return anything
+ */
 function init(data) {
   cnv = data.canvas;
   ctx = cnv.getContext("2d");
-  scale = data.scale;
   requestAnimationFrame(draw);
 }
 
+/**
+ * Alter dimensions of recorded width and height, as well as canvas dimensions
+ * @param {Object} data
+ * @param {{width:number, height:number}} data.dim Dimensions of the active screen
+ * @returns {void} Does not return anything
+ */
 function dimensions(data) {
   cnv.width = Math.floor(data.dim.width);
   cnv.height = Math.floor(data.dim.height);
@@ -72,21 +70,59 @@ function dimensions(data) {
   attBoard = getBoard("attacking");
 }
 
+/**
+ * Update and draw particles
+ * @returns {void} Does not return anything
+ */
 function draw() {
   // Calculate DeltaTime
   let currTime = Date.now();
   let deltaTime = currTime - prevTime;
   prevTime = currTime;
 
+  // Clear canvas
   ctx.clearRect(0, 0, cnv.width, cnv.height);
 
+  // Update and draw each emitter
   activeEmitters.forEach((emitter) => {
     emitter.update(deltaTime);
     emitter.draw();
   });
+
   requestAnimationFrame(draw);
 }
 
+/**
+ * Create a new particle emitter
+ * @param {Object} data Data object
+ * @param {string} data.name Particle name
+ * @param {number} data.time Particle spawn time (s)
+ * @param {number} data.frequency Particle spawn frequency (hz)
+ * @param {number} data.max Max number of particles
+ * @param {{x:number, y:number}} data.position Particle spawn position
+ * @param {boolean} [data.under] Spawn particles under or over existing particles? (Optional)
+ * @returns {void} Does not return anything
+ */
+function newParticle(data) {
+  activeEmitters.push(
+    new ParticleEmitter(
+      data.name,
+      data.time,
+      data.frequency,
+      data.max,
+      data.position,
+      ctx,
+      activeEmitters,
+      data.hasOwnProperty("under") ? data.under : false
+    )
+  );
+}
+
+/**
+ * Kills ALL particle emitters matching a specific name
+ * @param {string} killName Name of particle to kill
+ * @returns {void} Does not return anything
+ */
 function kill(killName) {
   for (let index = activeEmitters.length; index > 0; index--) {
     const emitter = activeEmitters[index - 1];
@@ -95,8 +131,9 @@ function kill(killName) {
 }
 
 /**
- * @param {"defending"|"attacking"} boardName
- * @returns {object}
+ * Get the dimensions of one of the two boards
+ * @param {"defending"|"attacking"} boardName Name of board to fetch
+ * @returns {{x:number, y:number, sideLength:number}} Returns the x, y, and sidelength of the requested board
  */
 function getBoard(boardName) {
   let centerWidth = TrueWidth / 2;

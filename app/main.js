@@ -265,7 +265,7 @@ effectCnv.width = screen.width;
 effectCnv.height = screen.height;
 const offCnv = effectCnv.transferControlToOffscreen();
 const Drawing = new Worker("./js/drawWorker.js");
-Drawing.postMessage({ type: "init", canvas: offCnv, scale }, [offCnv]);
+Drawing.postMessage({ type: "init", canvas: offCnv }, [offCnv]);
 
 drawBoard(true);
 updateDim();
