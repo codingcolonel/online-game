@@ -148,7 +148,7 @@ class Particle {
   }
 
   /**
-   *
+   * Update particle position values
    * @param {number} deltaTime DeltaTime since last update frame
    * @returns {void} Does not return anything
    */
@@ -421,9 +421,19 @@ class defendBoardFireShot extends Particle {
   }
 }
 
+/**
+ * Used when enemy shot is incoming
+ */
 class defendBoardRecieveShot extends Particle {
+  /**
+   * @param {{x:number, y:number}} position {x, y} position of the particle
+   * @param {CanvasRenderingContext2D} context Canvas to draw to
+   * @param {Array<Particle>} array Array containing this particle
+   */
   constructor(position, context, array) {
+    // Randomize vertical position within row
     let yPos = position.y + randomFloat(0.25, 0.75);
+    // Move x position of the right side of the board
     super(
       {
         x: position.x + 10.5,
@@ -437,6 +447,7 @@ class defendBoardRecieveShot extends Particle {
       array
     );
 
+    // Bezier curve and target position saved to fields
     this.curve = new BezierCurve(
       { x: -50, y: 0 },
       { x: -50, y: 10 },
@@ -449,6 +460,10 @@ class defendBoardRecieveShot extends Particle {
     this.target = position;
   }
 
+  /**
+   * Draw the particle
+   * @returns {void} Does not return anything
+   */
   draw() {
     this.contextReference.save();
 
@@ -494,6 +509,11 @@ class defendBoardRecieveShot extends Particle {
     this.contextReference.restore();
   }
 
+  /**
+   * Specialized update method
+   * @param {number} deltaTime DeltaTime since last update frame
+   * @returns {void} Does not return anything
+   */
   update(deltaTime) {
     this.life = this.lifespan - Date.now();
     if (this.life <= 0) {
@@ -514,6 +534,7 @@ class defendBoardRecieveShot extends Particle {
 
     this.velocity = finalVelocity;
 
+    // * Only difference is here: kill the particle if it past the target position
     if (this.position.x < this.target.x + 0.2) {
       this.arrayReference.splice(this.arrayReference.indexOf(this), 1);
       return;
@@ -521,7 +542,15 @@ class defendBoardRecieveShot extends Particle {
   }
 }
 
+/**
+ *
+ */
 class defendBoardHit extends Particle {
+  /**
+   * @param {{x:number, y:number}} position {x, y} position of the particle
+   * @param {CanvasRenderingContext2D} context Canvas to draw to
+   * @param {Array<Particle>} array Array containing this particle
+   */
   constructor(position, context, array) {
     let xMult = randomFloat(0.00000005, 0.0000001);
     let yMult = randomFloat(0.00000001, 0.0000001);
@@ -727,7 +756,6 @@ class ParticleEmitter {
   name;
 
   /**
-   *
    * @param {string} name Name of the particle to spawn
    * @param {number} time How long the particle should spawn for (in seconds)
    * @param {number} frequency Frequency of particle spawns
@@ -774,6 +802,7 @@ class ParticleEmitter {
   update(deltaTime) {
     const currTime = Date.now();
 
+    // If allowed to spawn, spawn the correct number of particles for the amount of DeltaTime, including time from the previous update frame
     if (this.spawn) {
       for (
         let i = this.#prevTime + this.#leftoverTime;
@@ -783,6 +812,7 @@ class ParticleEmitter {
         this.#leftoverTime = this.interval - (currTime - i);
         if (this.particles.length >= this.max) continue;
 
+        // If under === true, spawn particles underneath, else, spawn above
         if (this.under) {
           this.particles.unshift(
             new this.particleClass(this.position, this.context, this.particles)
@@ -797,25 +827,36 @@ class ParticleEmitter {
       }
     }
 
+    // If out of time or not spawning (ran out of time, or was killed)
     if (currTime > this.time || !this.spawn) {
       this.spawn = false;
+      // Wait until all particles are dead, then remove this emitter
       if (this.particles.length === 0) {
         this.arrayReference.splice(this.arrayReference.indexOf(this), 1);
         return;
       }
     }
 
+    // Update all particles
     this.particles.forEach((particle) => {
       particle.update(deltaTime);
     });
   }
 
+  /**
+   * Draw all particles
+   * @returns {void} Does not return anything
+   */
   draw() {
     this.particles.forEach((particle) => {
       particle.draw();
     });
   }
 
+  /**
+   * Stop spawning particles, remove this emitter when all particles are dead
+   * @returns {void} Does not return anything
+   */
   kill() {
     this.spawn = false;
     if (this.particles.length === 0) {

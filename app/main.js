@@ -266,10 +266,6 @@ effectCnv.height = screen.height;
 const offCnv = effectCnv.transferControlToOffscreen();
 const Drawing = new Worker("./js/drawWorker.js");
 Drawing.postMessage({ type: "init", canvas: offCnv, scale }, [offCnv]);
-// ! Temporary
-window.Drawing = Drawing;
-window.timer = timer;
-window.audio = audio;
 
 drawBoard(true);
 updateDim();
@@ -370,7 +366,7 @@ mainManager.references.query.sub.add(connectionBox, "connect", null, false);
 
 mainManager.references.loader.sub.add(cancelBtn, "button", null, false);
 
-mainManager.display("canvas");
+mainManager.display("query");
 
 // -- Event Listeners --
 confirmBtn.addEventListener("click", confirmUser);
